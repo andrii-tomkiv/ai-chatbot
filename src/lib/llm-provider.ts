@@ -101,7 +101,6 @@ export class MockLLMProvider implements LLMProvider {
     const response = this.responses[this.currentIndex % this.responses.length];
     this.currentIndex++;
     
-    // Simulate API delay
     await new Promise(resolve => setTimeout(resolve, 100));
     
     const promptTokens = messages.reduce((sum, msg) => sum + msg.content.length, 0);
@@ -120,10 +119,8 @@ export class MockLLMProvider implements LLMProvider {
     const response = this.responses[this.currentIndex % this.responses.length];
     this.currentIndex++;
     
-    // Log the messages for debugging (using the parameter)
     console.log('Mock streaming response for messages:', messages.length);
     
-    // Simulate streaming by yielding characters
     for (const char of response) {
       await new Promise(resolve => setTimeout(resolve, 10));
       yield char;
@@ -131,7 +128,69 @@ export class MockLLMProvider implements LLMProvider {
   }
 }
 
-// Factory function to create LLM providers
+export class LLMProviderManager {
+  private providers: Map<string, LLMProvider> = new Map();
+  private currentProvider: string;
+  private fallbackProvider: string;
+
+  constructor(primaryProvider: string, fallbackProvider: string = 'mock') {
+    this.currentProvider = primaryProvider;
+    this.fallbackProvider = fallbackProvider;
+  }
+
+  registerProvider(name: string, provider: LLMProvider): void {
+    this.providers.set(name, provider);
+  }
+
+  setCurrentProvider(name: string): void {
+    if (!this.providers.has(name)) {
+      throw new Error(`Provider '${name}' not found`);
+    }
+    this.currentProvider = name;
+    console.log(`Switched to provider: ${name}`);
+  }
+
+  getCurrentProvider(): LLMProvider {
+    const provider = this.providers.get(this.currentProvider);
+    if (!provider) {
+      throw new Error(`Current provider '${this.currentProvider}' not found`);
+    }
+    return provider;
+  }
+
+  async generateResponseWithFallback(messages: Message[], config?: Partial<LLMConfig>): Promise<LLMResponse> {
+    try {
+      return await this.getCurrentProvider().generateResponse(messages, config);
+    } catch (error) {
+      console.warn(`Primary provider failed, falling back to ${this.fallbackProvider}:`, error);
+      
+      this.setCurrentProvider(this.fallbackProvider);
+      
+      return await this.getCurrentProvider().generateResponse(messages, config);
+    }
+  }
+
+  async *generateStreamingResponseWithFallback(messages: Message[], config?: Partial<LLMConfig>): AsyncGenerator<string> {
+    try {
+      yield* this.getCurrentProvider().generateStreamingResponse(messages, config);
+    } catch (error) {
+      console.warn(`Primary provider failed, falling back to ${this.fallbackProvider}:`, error);
+      
+      this.setCurrentProvider(this.fallbackProvider);
+      
+      yield* this.getCurrentProvider().generateStreamingResponse(messages, config);
+    }
+  }
+
+  getProviderStatus(): { current: string; fallback: string; available: string[] } {
+    return {
+      current: this.currentProvider,
+      fallback: this.fallbackProvider,
+      available: Array.from(this.providers.keys()),
+    };
+  }
+}
+
 export function createLLMProvider(type: 'mistral' | 'mock', config?: Partial<LLMConfig>): LLMProvider {
   switch (type) {
     case 'mistral':
@@ -143,24 +202,46 @@ export function createLLMProvider(type: 'mistral' | 'mock', config?: Partial<LLM
   }
 }
 
-// Global LLM provider instance
-let globalLLMProvider: LLMProvider | null = null;
+let globalProviderManager: LLMProviderManager | null = null;
 
-export function getLLMProvider(): LLMProvider {
-  if (!globalLLMProvider) {
-    const providerType = process.env.LLM_PROVIDER as 'mistral' | 'mock' || 'mistral';
-    const config: Partial<LLMConfig> = {
+export function getLLMProviderManager(): LLMProviderManager {
+  if (!globalProviderManager) {
+    const primaryProvider = process.env.LLM_PROVIDER as 'mistral' | 'mock' || 'mistral';
+    const fallbackProvider = process.env.LLM_FALLBACK_PROVIDER as 'mistral' | 'mock' || 'mock';
+    
+    globalProviderManager = new LLMProviderManager(primaryProvider, fallbackProvider);
+    
+    const mistralConfig: Partial<LLMConfig> = {
       model: process.env.MISTRAL_MODEL || 'mistral-small-latest',
       maxTokens: parseInt(process.env.MISTRAL_MAX_TOKENS || '1000'),
       temperature: parseFloat(process.env.MISTRAL_TEMPERATURE || '0.7'),
     };
     
-    globalLLMProvider = createLLMProvider(providerType, config);
+    globalProviderManager.registerProvider('mistral', new MistralProvider(mistralConfig));
+    globalProviderManager.registerProvider('mock', new MockLLMProvider());
   }
   
-  return globalLLMProvider;
+  return globalProviderManager;
+}
+
+export function getLLMProvider(): LLMProvider {
+  return getLLMProviderManager().getCurrentProvider();
 }
 
 export function setLLMProvider(provider: LLMProvider): void {
-  globalLLMProvider = provider;
+  console.warn('setLLMProvider is deprecated. Use getLLMProviderManager().registerProvider() instead.');
+  // For backward compatibility, register as 'custom' provider
+  getLLMProviderManager().registerProvider('custom', provider);
+}
+
+export function switchToProvider(providerName: string): void {
+  getLLMProviderManager().setCurrentProvider(providerName);
+}
+
+export function getProviderStatus(): { current: string; fallback: string; available: string[] } {
+  return getLLMProviderManager().getProviderStatus();
+}
+
+export function registerCustomProvider(name: string, provider: LLMProvider): void {
+  getLLMProviderManager().registerProvider(name, provider);
 } 

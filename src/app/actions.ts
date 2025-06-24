@@ -3,7 +3,7 @@
 import { createStreamableValue } from 'ai/rsc';
 import { vectorDB } from '@/lib/vector-db';
 import { buildChatPrompt } from '@/lib/prompts';
-import { getLLMProvider, Message as LLMMessage } from '@/lib/llm-provider';
+import { getLLMProviderManager, Message as LLMMessage } from '@/lib/llm-provider';
 
 export interface Message {
   role: 'user' | 'assistant';
@@ -49,10 +49,10 @@ export async function continueConversation(
         })),
       ];
 
-      const llmProvider = getLLMProvider();
+      const providerManager = getLLMProviderManager();
       const config = options.model ? { model: options.model } : undefined;
       
-      const streamingResponse = llmProvider.generateStreamingResponse(messages, config);
+      const streamingResponse = providerManager.generateStreamingResponseWithFallback(messages, config);
 
       for await (const text of streamingResponse) {
         stream.update(text);
