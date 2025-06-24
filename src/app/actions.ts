@@ -1,10 +1,9 @@
 'use server';
 
-import { streamText } from 'ai';
-import { mistral } from '@ai-sdk/mistral';
 import { createStreamableValue } from 'ai/rsc';
 import { vectorDB } from '@/lib/vector-db';
 import { buildChatPrompt } from '@/lib/prompts';
+import { getLLMProvider, Message as LLMMessage } from '@/lib/llm-provider';
 
 export interface Message {
   role: 'user' | 'assistant';
@@ -42,21 +41,20 @@ export async function continueConversation(
 
       const systemMessage = buildChatPrompt(context, options.promptType);
 
-      const mistralMessages = [
-        { role: 'system' as const, content: systemMessage },
+      const messages: LLMMessage[] = [
+        { role: 'system', content: systemMessage },
         ...history.slice(-5).map((msg: Message) => ({
-          role: msg.role === 'user' ? 'user' as const : 'assistant' as const,
+          role: msg.role as 'user' | 'assistant',
           content: msg.content,
         })),
       ];
 
-      const modelName = options.model || 'mistral-small-latest';
-      const { textStream } = streamText({
-        model: mistral(modelName),
-        messages: mistralMessages,
-      });
+      const llmProvider = getLLMProvider();
+      const config = options.model ? { model: options.model } : undefined;
+      
+      const streamingResponse = llmProvider.generateStreamingResponse(messages, config);
 
-      for await (const text of textStream) {
+      for await (const text of streamingResponse) {
         stream.update(text);
       }
 
