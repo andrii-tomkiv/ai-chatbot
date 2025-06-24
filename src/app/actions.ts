@@ -4,13 +4,23 @@ import { streamText } from 'ai';
 import { mistral } from '@ai-sdk/mistral';
 import { createStreamableValue } from 'ai/rsc';
 import { vectorDB } from '@/lib/vector-db';
+import { buildChatPrompt } from '@/lib/prompts';
 
 export interface Message {
   role: 'user' | 'assistant';
   content: string;
 }
 
-export async function continueConversation(history: Message[]) {
+export interface ChatOptions {
+  promptType?: string;
+  maxResults?: number;
+  model?: string;
+}
+
+export async function continueConversation(
+  history: Message[], 
+  options: ChatOptions = {}
+) {
   const stream = createStreamableValue('');
 
   (async () => {
@@ -23,18 +33,14 @@ export async function continueConversation(history: Message[]) {
         return;
       }
 
-      const relevantDocs = await vectorDB.search(latestMessage.content, 3);
+      const maxResults = options.maxResults || 3;
+      const relevantDocs = await vectorDB.search(latestMessage.content, maxResults);
       
       const context = relevantDocs
         .map(doc => `Content: ${doc.pageContent}\nSource: ${doc.metadata.url}`)
         .join('\n\n');
 
-      const systemMessage = `You are a helpful assistant that answers questions based only on the provided context. 
-      If the context doesn't contain enough information to answer the question, respond with: "I'm not sure based on the current information."
-      Always cite the source URLs when providing information.
-      
-      Context:
-      ${context}`;
+      const systemMessage = buildChatPrompt(context, options.promptType);
 
       const mistralMessages = [
         { role: 'system' as const, content: systemMessage },
@@ -44,8 +50,9 @@ export async function continueConversation(history: Message[]) {
         })),
       ];
 
+      const modelName = options.model || 'mistral-small-latest';
       const { textStream } = streamText({
-        model: mistral('mistral-small-latest'),
+        model: mistral(modelName),
         messages: mistralMessages,
       });
 
