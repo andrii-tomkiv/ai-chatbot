@@ -52,10 +52,15 @@ export async function continueConversation(
       const providerManager = getLLMProviderManager();
       const config = options.model ? { model: options.model } : undefined;
       
-      const streamingResponse = providerManager.generateStreamingResponseWithFallback(messages, config);
+      try {
+        const streamingResponse = providerManager.generateStreamingResponseWithFallback(messages, config);
 
-      for await (const text of streamingResponse) {
-        stream.update(text);
+        for await (const text of streamingResponse) {
+          stream.update(text);
+        }
+      } catch (error) {
+        console.error('Error in streaming response:', error);
+        stream.update('Sorry, I encountered an error. Please try again.');
       }
 
       stream.done();

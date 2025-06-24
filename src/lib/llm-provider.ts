@@ -54,6 +54,10 @@ export class MistralProvider implements LLMProvider {
         content += text;
       }
 
+      if (!content.trim()) {
+        throw new Error('No response content received from Mistral API');
+      }
+
       return {
         content,
         usage: {
@@ -64,7 +68,19 @@ export class MistralProvider implements LLMProvider {
       };
     } catch (error) {
       console.error('Mistral API error:', error);
-      throw new Error(`Failed to generate response: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      
+      // Check for specific error types
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      
+      if (errorMessage.includes('401') || errorMessage.includes('Unauthorized')) {
+        throw new Error('Mistral API authentication failed - invalid API key');
+      } else if (errorMessage.includes('429') || errorMessage.includes('Rate limit')) {
+        throw new Error('Mistral API rate limit exceeded');
+      } else if (errorMessage.includes('500') || errorMessage.includes('Internal server error')) {
+        throw new Error('Mistral API server error');
+      } else {
+        throw new Error(`Mistral API error: ${errorMessage}`);
+      }
     }
   }
 
@@ -79,12 +95,29 @@ export class MistralProvider implements LLMProvider {
         temperature: finalConfig.temperature,
       });
 
+      let hasContent = false;
       for await (const text of textStream) {
+        hasContent = true;
         yield text;
+      }
+
+      if (!hasContent) {
+        throw new Error('No response content received from Mistral API');
       }
     } catch (error) {
       console.error('Mistral streaming error:', error);
-      throw new Error(`Failed to generate streaming response: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      
+      if (errorMessage.includes('401') || errorMessage.includes('Unauthorized')) {
+        throw new Error('Mistral API authentication failed - invalid API key');
+      } else if (errorMessage.includes('429') || errorMessage.includes('Rate limit')) {
+        throw new Error('Mistral API rate limit exceeded');
+      } else if (errorMessage.includes('500') || errorMessage.includes('Internal server error')) {
+        throw new Error('Mistral API server error');
+      } else {
+        throw new Error(`Mistral API error: ${errorMessage}`);
+      }
     }
   }
 }
@@ -115,11 +148,9 @@ export class MockLLMProvider implements LLMProvider {
     };
   }
 
-  async *generateStreamingResponse(messages: Message[]): AsyncGenerator<string> {
+  async *generateStreamingResponse(): AsyncGenerator<string> {
     const response = this.responses[this.currentIndex % this.responses.length];
     this.currentIndex++;
-    
-    console.log('Mock streaming response for messages:', messages.length);
     
     for (const char of response) {
       await new Promise(resolve => setTimeout(resolve, 10));
@@ -159,26 +190,38 @@ export class LLMProviderManager {
   }
 
   async generateResponseWithFallback(messages: Message[], config?: Partial<LLMConfig>): Promise<LLMResponse> {
+    console.log(`Attempting to generate response with provider: ${this.currentProvider}`);
+    
     try {
-      return await this.getCurrentProvider().generateResponse(messages, config);
+      const result = await this.getCurrentProvider().generateResponse(messages, config);
+      console.log(`Successfully generated response with provider: ${this.currentProvider}`);
+      return result;
     } catch (error) {
-      console.warn(`Primary provider failed, falling back to ${this.fallbackProvider}:`, error);
+      console.warn(`Primary provider (${this.currentProvider}) failed, falling back to ${this.fallbackProvider}:`, error);
       
       this.setCurrentProvider(this.fallbackProvider);
       
-      return await this.getCurrentProvider().generateResponse(messages, config);
+      console.log(`Now using fallback provider: ${this.fallbackProvider}`);
+      const fallbackResult = await this.getCurrentProvider().generateResponse(messages, config);
+      console.log(`Successfully generated response with fallback provider: ${this.fallbackProvider}`);
+      return fallbackResult;
     }
   }
 
   async *generateStreamingResponseWithFallback(messages: Message[], config?: Partial<LLMConfig>): AsyncGenerator<string> {
+    console.log(`Attempting to generate streaming response with provider: ${this.currentProvider}`);
+    
     try {
       yield* this.getCurrentProvider().generateStreamingResponse(messages, config);
+      console.log(`Successfully completed streaming response with provider: ${this.currentProvider}`);
     } catch (error) {
-      console.warn(`Primary provider failed, falling back to ${this.fallbackProvider}:`, error);
+      console.warn(`Primary provider (${this.currentProvider}) failed, falling back to ${this.fallbackProvider}:`, error);
       
       this.setCurrentProvider(this.fallbackProvider);
       
+      console.log(`Now using fallback provider: ${this.fallbackProvider}`);
       yield* this.getCurrentProvider().generateStreamingResponse(messages, config);
+      console.log(`Successfully completed streaming response with fallback provider: ${this.fallbackProvider}`);
     }
   }
 
@@ -230,7 +273,6 @@ export function getLLMProvider(): LLMProvider {
 
 export function setLLMProvider(provider: LLMProvider): void {
   console.warn('setLLMProvider is deprecated. Use getLLMProviderManager().registerProvider() instead.');
-  // For backward compatibility, register as 'custom' provider
   getLLMProviderManager().registerProvider('custom', provider);
 }
 

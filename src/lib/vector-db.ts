@@ -3,14 +3,14 @@ import * as path from 'path';
 
 export interface Document {
   pageContent: string;
-  metadata: Record<string, any>;
+  metadata: Record<string, string | number | boolean>;
 }
 
 export interface ContentChunk {
   id: string;
   content: string;
   url: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, string | number | boolean>;
 }
 
 export interface StoredDocument extends Document {
@@ -133,7 +133,17 @@ export class VectorDB {
       return this.fallbackTextSearch(documents, query, k);
     }
 
-    // Semantic search using embeddings
+    // Try semantic search first
+    try {
+      console.log(`🧠 Attempting semantic search with embeddings...`);
+      return await this.semanticSearch(documentsWithEmbeddings, query, k);
+    } catch (error) {
+      console.warn(`❌ Semantic search failed, falling back to text search:`, error);
+      return this.fallbackTextSearch(documents, query, k);
+    }
+  }
+
+  private async semanticSearch(documentsWithEmbeddings: StoredDocument[], query: string, k: number): Promise<Document[]> {
     console.log(`🧠 Generating embedding for query: "${query}"`);
     const queryEmbedding = await this.getQueryEmbedding(query);
     console.log(`✅ Query embedding generated, length: ${queryEmbedding.length}`);
@@ -141,9 +151,8 @@ export class VectorDB {
     // Calculate cosine similarity between query and all documents
     console.log(`🔢 Calculating similarities for ${documentsWithEmbeddings.length} documents...`);
     const scoredDocuments = documentsWithEmbeddings
-      .map((doc, index) => {
+      .map((doc) => {
         const similarity = this.cosineSimilarity(queryEmbedding, doc.embedding);
-        // console.log(`📊 Document ${index + 1}: "${doc.metadata?.title || 'No title'}" - Similarity: ${similarity.toFixed(4)}`);
         return {
           document: doc,
           similarity: similarity
@@ -172,8 +181,8 @@ export class VectorDB {
     const results = documents
       .filter(doc => 
         doc.pageContent.toLowerCase().includes(queryLower) ||
-        doc.metadata.url.toLowerCase().includes(queryLower) ||
-        (doc.metadata.title && doc.metadata.title.toLowerCase().includes(queryLower))
+        (typeof doc.metadata.url === 'string' && doc.metadata.url.toLowerCase().includes(queryLower)) ||
+        (typeof doc.metadata.title === 'string' && doc.metadata.title.toLowerCase().includes(queryLower))
       )
       .slice(0, k);
 
