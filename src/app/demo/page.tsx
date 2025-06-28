@@ -41,7 +41,7 @@ export default function DemoPage() {
   ];
 
   const buildUrl = (baseUrl: string, params: Record<string, string>) => {
-    const url = new URL(baseUrl, 'http://localhost:3002');
+    const url = new URL(baseUrl, 'http://localhost:3000');
     Object.entries(params).forEach(([key, value]) => {
       if (value !== undefined) {
         url.searchParams.set(key, value);

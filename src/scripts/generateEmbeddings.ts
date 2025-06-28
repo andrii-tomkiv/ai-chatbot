@@ -1,8 +1,8 @@
 import 'dotenv/config';
 import * as fs from 'fs';
 import * as path from 'path';
-import { MistralAIEmbeddings } from '@langchain/mistralai';
 import { vectorDB } from '@/lib/vector-db';
+import { MistralEmbeddingProvider } from '@/lib/embedding-provider';
 
 interface ScrapedChunk {
   id: string;
@@ -15,9 +15,9 @@ interface ScrapedChunk {
   };
 }
 
-// Generate embeddings using LangChain
+// Generate embeddings using direct HTTP approach
 export async function generateEmbeddings() {
-  console.log('🚀 Starting embedding generation with LangChain...');
+  console.log('🚀 Starting embedding generation with direct HTTP approach...');
   
   // Find the most recent scraped content file
   const dataDir = './data/scraped-content';
@@ -55,18 +55,27 @@ export async function generateEmbeddings() {
   
   console.log(`📦 Found ${chunks.length} chunks to process`);
   
-  // Initialize LangChain embeddings
-  const embeddings = new MistralAIEmbeddings({
+  // Initialize embedding provider
+  const embeddingProvider = new MistralEmbeddingProvider({
     model: 'mistral-embed',
-    apiKey: process.env.MISTRAL_API_KEY,
+    apiKey: process.env.MISTRAL_API_KEY!,
   });
   
-  console.log('✅ LangChain embeddings initialized');
+  console.log('✅ Embedding provider initialized');
   
   // Process chunks in batches
   const batchSize = 10;
   const allEmbeddings: number[][] = [];
-  const contentChunks: any[] = [];
+  const contentChunks: {
+    id: string;
+    content: string;
+    url: string;
+    metadata: {
+      title: string;
+      type: string;
+      chunkIndex?: number;
+    };
+  }[] = [];
   
   for (let i = 0; i < chunks.length; i += batchSize) {
     const batch = chunks.slice(i, i + batchSize);
@@ -77,7 +86,7 @@ export async function generateEmbeddings() {
     
     try {
       // Generate embeddings for the batch
-      const batchEmbeddings = await embeddings.embedDocuments(texts);
+      const batchEmbeddings = await embeddingProvider.generateEmbeddings(texts);
       allEmbeddings.push(...batchEmbeddings);
       
       // Prepare content chunks for vector DB

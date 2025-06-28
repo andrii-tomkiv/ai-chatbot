@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { serviceFactory } from './service-factory';
 
 export interface Document {
   pageContent: string;
@@ -133,10 +134,17 @@ export class VectorDB {
       return this.fallbackTextSearch(documents, query, k);
     }
 
-    // Try semantic search first
+    // Try semantic search first with timeout
     try {
       console.log(`🧠 Attempting semantic search with embeddings...`);
-      return await this.semanticSearch(documentsWithEmbeddings, query, k);
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        setTimeout(() => {
+          reject(new Error('Semantic search timed out, falling back to text search'));
+        }, 15000); // 15 second timeout for entire search
+      });
+
+      const searchPromise = this.semanticSearch(documentsWithEmbeddings, query, k);
+      return await Promise.race([searchPromise, timeoutPromise]);
     } catch (error) {
       console.warn(`❌ Semantic search failed, falling back to text search:`, error);
       return this.fallbackTextSearch(documents, query, k);
@@ -196,20 +204,10 @@ export class VectorDB {
   private async getQueryEmbedding(query: string): Promise<number[]> {
     console.log(`🧠 Generating embedding for query: "${query}"`);
     try {
-      // For now, we'll use a simple approach
-      // In production, you'd call the embedding API here
-      const { MistralAIEmbeddings } = await import('@langchain/mistralai');
-      
-      console.log(`🔧 Initializing MistralAIEmbeddings...`);
-      const embeddings = new MistralAIEmbeddings({
-        model: 'mistral-embed',
-        apiKey: process.env.MISTRAL_API_KEY,
-      });
-
-      console.log(`🚀 Calling embedQuery API...`);
-      const queryEmbedding = await embeddings.embedQuery(query);
-      console.log(`✅ Embedding generated successfully, length: ${queryEmbedding.length}`);
-      return queryEmbedding;
+      // Use the service factory to get embeddings
+      const embedding = await serviceFactory.generateEmbedding(query);
+      console.log(`✅ Embedding generated successfully, length: ${embedding.length}`);
+      return embedding;
     } catch (error) {
       console.error('❌ Error generating query embedding:', error);
       throw error;

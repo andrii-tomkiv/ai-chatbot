@@ -1,5 +1,6 @@
 import { streamText } from 'ai';
 import { mistral } from '@ai-sdk/mistral';
+import { GroqProviderImpl, groqProvider } from './groq-provider';
 
 export interface LLMConfig {
   model: string;
@@ -163,10 +164,12 @@ export class LLMProviderManager {
   private providers: Map<string, LLMProvider> = new Map();
   private currentProvider: string;
   private fallbackProvider: string;
+  private timeoutMs: number = 5000;
 
-  constructor(primaryProvider: string, fallbackProvider: string = 'mock') {
+  constructor(primaryProvider: string, fallbackProvider: string = 'groq', timeoutMs: number = 5000) {
     this.currentProvider = primaryProvider;
     this.fallbackProvider = fallbackProvider;
+    this.timeoutMs = timeoutMs;
   }
 
   registerProvider(name: string, provider: LLMProvider): void {
@@ -190,38 +193,91 @@ export class LLMProviderManager {
   }
 
   async generateResponseWithFallback(messages: Message[], config?: Partial<LLMConfig>): Promise<LLMResponse> {
-    console.log(`Attempting to generate response with provider: ${this.currentProvider}`);
+    const startTime = Date.now();
+    console.log(`[${new Date().toISOString()}] Starting response generation with provider: ${this.currentProvider}`);
     
     try {
-      const result = await this.getCurrentProvider().generateResponse(messages, config);
-      console.log(`Successfully generated response with provider: ${this.currentProvider}`);
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        setTimeout(() => {
+          console.log(`[${new Date().toISOString()}] TIMEOUT: Provider ${this.currentProvider} exceeded ${this.timeoutMs}ms`);
+          reject(new Error(`Provider ${this.currentProvider} timed out after ${this.timeoutMs}ms`));
+        }, this.timeoutMs);
+      });
+
+      const result = await Promise.race([
+        this.getCurrentProvider().generateResponse(messages, config),
+        timeoutPromise
+      ]);
+      
+      const duration = Date.now() - startTime;
+      console.log(`[${new Date().toISOString()}] SUCCESS: Generated response with ${this.currentProvider} in ${duration}ms`);
       return result;
     } catch (error) {
-      console.warn(`Primary provider (${this.currentProvider}) failed, falling back to ${this.fallbackProvider}:`, error);
+      const duration = Date.now() - startTime;
+      console.warn(`[${new Date().toISOString()}] FAILED: Primary provider (${this.currentProvider}) failed after ${duration}ms, falling back to ${this.fallbackProvider}:`, error);
       
-      this.setCurrentProvider(this.fallbackProvider);
+      try {
+        console.log(`[${new Date().toISOString()}] SWITCHING: Attempting fallback to ${this.fallbackProvider}`);
+        const fallbackResult = await this.providers.get(this.fallbackProvider)?.generateResponse(messages, config);
+        if (fallbackResult) {
+          const totalDuration = Date.now() - startTime;
+          console.log(`[${new Date().toISOString()}] SUCCESS: Generated response with fallback provider ${this.fallbackProvider} in ${totalDuration}ms total`);
+          return fallbackResult;
+        }
+      } catch (fallbackError) {
+        const totalDuration = Date.now() - startTime;
+        console.error(`[${new Date().toISOString()}] FAILED: Fallback provider (${this.fallbackProvider}) also failed after ${totalDuration}ms total:`, fallbackError);
+      }
       
-      console.log(`Now using fallback provider: ${this.fallbackProvider}`);
-      const fallbackResult = await this.getCurrentProvider().generateResponse(messages, config);
-      console.log(`Successfully generated response with fallback provider: ${this.fallbackProvider}`);
-      return fallbackResult;
+      throw error;
     }
   }
 
   async *generateStreamingResponseWithFallback(messages: Message[], config?: Partial<LLMConfig>): AsyncGenerator<string> {
-    console.log(`Attempting to generate streaming response with provider: ${this.currentProvider}`);
+    const startTime = Date.now();
+    console.log(`[${new Date().toISOString()}] Starting streaming response with provider: ${this.currentProvider}`);
     
     try {
-      yield* this.getCurrentProvider().generateStreamingResponse(messages, config);
-      console.log(`Successfully completed streaming response with provider: ${this.currentProvider}`);
+      const stream = this.getCurrentProvider().generateStreamingResponse(messages, config);
+      let hasContent = false;
+      let firstChunkTime = 0;
+      
+      for await (const text of stream) {
+        if (!hasContent) {
+          firstChunkTime = Date.now() - startTime;
+          console.log(`[${new Date().toISOString()}] FIRST CHUNK: Received first response from ${this.currentProvider} after ${firstChunkTime}ms`);
+          hasContent = true;
+        }
+        
+        yield text;
+      }
+      
+      if (!hasContent) {
+        console.log(`[${new Date().toISOString()}] NO CONTENT: No content received from ${this.currentProvider}`);
+        throw new Error('No content received from primary provider');
+      }
+      
+      const duration = Date.now() - startTime;
+      console.log(`[${new Date().toISOString()}] SUCCESS: Completed streaming response with ${this.currentProvider} in ${duration}ms`);
     } catch (error) {
-      console.warn(`Primary provider (${this.currentProvider}) failed, falling back to ${this.fallbackProvider}:`, error);
+      const duration = Date.now() - startTime;
+      console.warn(`[${new Date().toISOString()}] FAILED: Primary provider (${this.currentProvider}) failed after ${duration}ms, falling back to ${this.fallbackProvider}:`, error);
       
-      this.setCurrentProvider(this.fallbackProvider);
-      
-      console.log(`Now using fallback provider: ${this.fallbackProvider}`);
-      yield* this.getCurrentProvider().generateStreamingResponse(messages, config);
-      console.log(`Successfully completed streaming response with fallback provider: ${this.fallbackProvider}`);
+      try {
+        console.log(`[${new Date().toISOString()}] SWITCHING: Attempting streaming fallback to ${this.fallbackProvider}`);
+        const fallbackStream = this.providers.get(this.fallbackProvider)?.generateStreamingResponse(messages, config);
+        if (fallbackStream) {
+          for await (const text of fallbackStream) {
+            yield text;
+          }
+          const totalDuration = Date.now() - startTime;
+          console.log(`[${new Date().toISOString()}] SUCCESS: Completed streaming response with fallback provider ${this.fallbackProvider} in ${totalDuration}ms total`);
+        }
+      } catch (fallbackError) {
+        const totalDuration = Date.now() - startTime;
+        console.error(`[${new Date().toISOString()}] FAILED: Fallback provider (${this.fallbackProvider}) also failed after ${totalDuration}ms total:`, fallbackError);
+        throw fallbackError;
+      }
     }
   }
 
@@ -232,48 +288,47 @@ export class LLMProviderManager {
       available: Array.from(this.providers.keys()),
     };
   }
+
+  getFallbackProvider(): LLMProvider | undefined {
+    return this.providers.get(this.fallbackProvider);
+  }
 }
 
-export function createLLMProvider(type: 'mistral' | 'mock', config?: Partial<LLMConfig>): LLMProvider {
+export function createLLMProvider(type: 'mistral' | 'groq' | 'mock', config?: Partial<LLMConfig>): LLMProvider {
   switch (type) {
     case 'mistral':
       return new MistralProvider(config);
+    case 'groq':
+      return new GroqProviderImpl(config);
     case 'mock':
       return new MockLLMProvider();
     default:
-      throw new Error(`Unknown LLM provider type: ${type}`);
+      throw new Error(`Unknown provider type: ${type}`);
   }
 }
 
-let globalProviderManager: LLMProviderManager | null = null;
+export { GroqProviderImpl };
+
+let providerManager: LLMProviderManager;
 
 export function getLLMProviderManager(): LLMProviderManager {
-  if (!globalProviderManager) {
-    const primaryProvider = process.env.LLM_PROVIDER as 'mistral' | 'mock' || 'mistral';
-    const fallbackProvider = process.env.LLM_FALLBACK_PROVIDER as 'mistral' | 'mock' || 'mock';
+  if (!providerManager) {
+    providerManager = new LLMProviderManager('mistral', 'groq');
     
-    globalProviderManager = new LLMProviderManager(primaryProvider, fallbackProvider);
-    
-    const mistralConfig: Partial<LLMConfig> = {
-      model: process.env.MISTRAL_MODEL || 'mistral-small-latest',
-      maxTokens: parseInt(process.env.MISTRAL_MAX_TOKENS || '1000'),
-      temperature: parseFloat(process.env.MISTRAL_TEMPERATURE || '0.7'),
-    };
-    
-    globalProviderManager.registerProvider('mistral', new MistralProvider(mistralConfig));
-    globalProviderManager.registerProvider('mock', new MockLLMProvider());
+    providerManager.registerProvider('mistral', new MistralProvider());
+    providerManager.registerProvider('groq', groqProvider);
+    providerManager.registerProvider('mock', new MockLLMProvider());
   }
   
-  return globalProviderManager;
+  return providerManager;
 }
 
 export function getLLMProvider(): LLMProvider {
   return getLLMProviderManager().getCurrentProvider();
 }
 
-export function setLLMProvider(provider: LLMProvider): void {
-  console.warn('setLLMProvider is deprecated. Use getLLMProviderManager().registerProvider() instead.');
-  getLLMProviderManager().registerProvider('custom', provider);
+export function setLLMProvider(): void {
+  console.warn('setLLMProvider is deprecated. Use registerProvider and setCurrentProvider instead.');
 }
 
 export function switchToProvider(providerName: string): void {
