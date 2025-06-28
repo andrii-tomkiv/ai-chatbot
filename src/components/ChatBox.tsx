@@ -103,30 +103,6 @@ export default function ChatBox() {
   }, []);
 
   useEffect(() => {
-    const options = getUrlParams();
-    setChatOptions(options);
-    
-    if (options.action) {
-      const actionQuestions = {
-        'surrogacy': 'What are the requirements to become a surrogate?',
-        'egg-donation': 'How does the egg donation process work?',
-        'intended-parents': 'What services do you offer for intended parents?'
-      };
-      
-      const question = actionQuestions[options.action as keyof typeof actionQuestions];
-      if (question) {
-        const url = new URL(window.location.href);
-        url.searchParams.delete('action');
-        window.history.pushState({}, '', url.toString());
-        
-        setTimeout(() => {
-          sendMessage(question);
-        }, 500);
-      }
-    }
-  }, [sendMessage]);
-
-  useEffect(() => {
     scrollToBottom();
   }, [conversation]);
 
