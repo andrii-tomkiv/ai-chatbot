@@ -17,20 +17,6 @@ const SUGGESTED_QUESTIONS = [
   "What support do you provide during the process?"
 ];
 
-function getUrlParams(): ChatOptions {
-  if (typeof window === 'undefined') return {};
-  
-  const urlParams = new URLSearchParams(window.location.search);
-  const options = {
-    promptType: urlParams.get('prompt') || undefined,
-    maxResults: urlParams.get('maxResults') ? parseInt(urlParams.get('maxResults')!) : undefined,
-    model: urlParams.get('model') || undefined,
-    action: urlParams.get('action') || undefined,
-  };
-  
-  return options;
-}
-
 function formatTime(date: Date): string {
   return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 }
@@ -38,7 +24,6 @@ function formatTime(date: Date): string {
 export default function ChatBox() {
   const [conversation, setConversation] = useState<Message[]>([]);
   const [input, setInput] = useState<string>('');
-  const [chatOptions, setChatOptions] = useState<ChatOptions>({});
   const [isStreaming, setIsStreaming] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -48,10 +33,6 @@ export default function ChatBox() {
   useEffect(() => {
     conversationRef.current = conversation;
   }, [conversation]);
-
-  useEffect(() => {
-    chatOptionsRef.current = chatOptions;
-  }, [chatOptions]);
 
   const sendMessage = useCallback(async (messageContent: string) => {
     if (!messageContent.trim()) return;
@@ -142,9 +123,6 @@ export default function ChatBox() {
         <div className="flex justify-between items-start mb-3">
           <div>
             <h2 className="text-lg font-semibold text-white">AI Assistant</h2>
-            <p className="text-sm text-white/80">
-              {chatOptions.promptType ? `Mode: ${chatOptions.promptType}` : 'Ask me anything about our content'}
-            </p>
           </div>
           <div className="flex space-x-2">
             <button
@@ -182,12 +160,6 @@ export default function ChatBox() {
                   </button>
                 ))}
               </div>
-            </div>
-            
-            <div className="text-xs text-conab-dark-blue/70 mt-4">
-              {chatOptions.promptType && (
-                <p>Using {chatOptions.promptType} mode</p>
-              )}
             </div>
           </div>
         ) : (
