@@ -29,25 +29,14 @@ export class ServiceFactory {
   }
 
   private initializeServices(): void {
-    console.log('🏭 Initializing ServiceFactory...');
-    
-    // Validate configuration
     const validation = config.validateConfig();
     if (!validation.isValid) {
       console.error('❌ Configuration validation failed:', validation.errors);
       throw new Error(`Configuration errors: ${validation.errors.join(', ')}`);
     }
-
-    // Initialize LLM Provider Manager
     this.initializeLLMManager();
-    
-    // Initialize Embedding Provider Manager
     this.initializeEmbeddingManager();
-    
-    // Initialize Vector Database
     this.initializeVectorDB();
-    
-    console.log('✅ ServiceFactory initialized successfully');
   }
 
   private initializeLLMManager(): void {
@@ -60,7 +49,6 @@ export class ServiceFactory {
       llmConfig.timeoutMs
     );
 
-    // Register Mistral provider
     if (config.getApiKeys().mistral) {
       const mistralConfig = config.getMistralConfig();
       const mistralProvider = new MistralProvider({
@@ -69,10 +57,8 @@ export class ServiceFactory {
         temperature: config.getChatConfig().temperature,
       });
       this.llmManager.registerProvider('mistral', mistralProvider);
-      console.log('✅ Registered Mistral LLM provider');
     }
 
-    // Register Groq provider
     if (config.getApiKeys().groq) {
       const groqConfig = config.getGroqConfig();
       const groqProvider = new GroqProviderImpl({
@@ -81,25 +67,20 @@ export class ServiceFactory {
         temperature: config.getChatConfig().temperature,
       });
       this.llmManager.registerProvider('groq', groqProvider);
-      console.log('✅ Registered Groq LLM provider');
     }
 
-    // Register mock provider for testing
     const mockProvider = createLLMProvider('mock');
     this.llmManager.registerProvider('mock', mockProvider);
-    console.log('✅ Registered Mock LLM provider');
   }
 
   private initializeEmbeddingManager(): void {
     const embeddingConfig = config.getEmbeddingConfig();
-    console.log(`🧠 Initializing Embedding Manager: ${embeddingConfig.primary} -> ${embeddingConfig.fallback}`);
     
     this.embeddingManager = new EmbeddingProviderManager(
       embeddingConfig.primary,
       embeddingConfig.fallback
     );
 
-    // Register Mistral embedding provider
     if (config.getApiKeys().mistral) {
       const mistralConfig = config.getMistralConfig();
       const mistralEmbedding = createEmbeddingProvider('mistral', {
@@ -109,10 +90,8 @@ export class ServiceFactory {
         maxRetries: embeddingConfig.maxRetries,
       });
       this.embeddingManager.registerProvider('mistral', mistralEmbedding);
-      console.log('✅ Registered Mistral embedding provider');
     }
 
-    // Register Groq embedding provider (placeholder)
     if (config.getApiKeys().groq) {
       const groqConfig = config.getGroqConfig();
       const groqEmbedding = createEmbeddingProvider('groq', {
@@ -122,19 +101,14 @@ export class ServiceFactory {
         maxRetries: embeddingConfig.maxRetries,
       });
       this.embeddingManager.registerProvider('groq', groqEmbedding);
-      console.log('✅ Registered Groq embedding provider (placeholder)');
     }
   }
 
   private initializeVectorDB(): void {
     const vectorDbConfig = config.getVectorDbConfig();
-    console.log(`🗄️  Initializing VectorDB: ${vectorDbConfig.storePath}`);
-    
     this.vectorDB = new VectorDB(vectorDbConfig.storePath);
-    console.log('✅ VectorDB initialized');
   }
 
-  // Public getters
   getLLMManager(): LLMProviderManager {
     return this.llmManager;
   }
@@ -147,7 +121,6 @@ export class ServiceFactory {
     return this.vectorDB;
   }
 
-  // Convenience methods
   async generateEmbedding(text: string): Promise<number[]> {
     return this.embeddingManager.generateEmbedding(text);
   }
@@ -156,7 +129,6 @@ export class ServiceFactory {
     return this.embeddingManager.generateEmbeddings(texts);
   }
 
-  // Health check method
   async healthCheck(): Promise<{
     llm: boolean;
     embedding: boolean;
@@ -172,7 +144,6 @@ export class ServiceFactory {
     };
 
     try {
-      // Test LLM
       const llmProvider = this.llmManager.getCurrentProvider();
       if (llmProvider) {
         await llmProvider.generateResponse([
@@ -185,7 +156,6 @@ export class ServiceFactory {
     }
 
     try {
-      // Test embedding
       await this.embeddingManager.generateEmbedding('test');
       results.embedding = true;
     } catch (error) {
@@ -193,7 +163,6 @@ export class ServiceFactory {
     }
 
     try {
-      // Test vector DB
       await this.vectorDB.search('test', 1);
       results.vectorDb = true;
     } catch (error) {
@@ -204,5 +173,4 @@ export class ServiceFactory {
   }
 }
 
-// Export singleton instance
 export const serviceFactory = ServiceFactory.getInstance(); 

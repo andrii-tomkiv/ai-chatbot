@@ -90,7 +90,6 @@ export class MistralEmbeddingProvider extends BaseEmbeddingProvider {
 }
 
 export class GroqEmbeddingProvider extends BaseEmbeddingProvider {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async _generateEmbeddings(_texts: string[]): Promise<number[][]> {
     throw new Error('Groq embedding provider not yet implemented');
   }
@@ -104,7 +103,6 @@ export class GroqEmbeddingProvider extends BaseEmbeddingProvider {
   }
 }
 
-// Factory function to create embedding providers
 export function createEmbeddingProvider(
   providerType: 'mistral' | 'groq',
   config: EmbeddingConfig
@@ -119,7 +117,6 @@ export function createEmbeddingProvider(
   }
 }
 
-// Embedding provider manager
 export class EmbeddingProviderManager {
   private providers: Map<string, EmbeddingProvider> = new Map();
   private currentProvider: string;

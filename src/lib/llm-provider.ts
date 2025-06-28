@@ -326,19 +326,3 @@ export function getLLMProviderManager(): LLMProviderManager {
 export function getLLMProvider(): LLMProvider {
   return getLLMProviderManager().getCurrentProvider();
 }
-
-export function setLLMProvider(): void {
-  console.warn('setLLMProvider is deprecated. Use registerProvider and setCurrentProvider instead.');
-}
-
-export function switchToProvider(providerName: string): void {
-  getLLMProviderManager().setCurrentProvider(providerName);
-}
-
-export function getProviderStatus(): { current: string; fallback: string; available: string[] } {
-  return getLLMProviderManager().getProviderStatus();
-}
-
-export function registerCustomProvider(name: string, provider: LLMProvider): void {
-  getLLMProviderManager().registerProvider(name, provider);
-} 

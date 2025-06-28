@@ -5,7 +5,6 @@ import { Message, continueConversation, ChatOptions } from '@/app/actions';
 import { readStreamableValue } from 'ai/rsc';
 import VoiceInput from './VoiceInput';
 import MarkdownRenderer from './MarkdownRenderer';
-import ProviderStatus from './ProviderStatus';
 
 export const maxDuration = 30;
 
@@ -181,8 +180,6 @@ export default function ChatBox() {
             </button>
           </div>
         </div>
-        
-        <ProviderStatus className="text-white" />
       </div>
 
       <div className="flex-1 overflow-y-auto p-4 space-y-4">

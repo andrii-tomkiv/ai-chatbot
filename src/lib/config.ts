@@ -1,12 +1,10 @@
 export interface AppConfig {
-  // LLM Providers
   llm: {
     primary: string;
     fallback: string;
     timeoutMs: number;
   };
   
-  // Embedding Providers
   embedding: {
     primary: string;
     fallback: string;
@@ -14,20 +12,17 @@ export interface AppConfig {
     maxRetries: number;
   };
   
-  // Vector Database
   vectorDb: {
     storePath: string;
     maxResults: number;
     searchTimeoutMs: number;
   };
   
-  // API Keys
   apiKeys: {
     mistral?: string;
     groq?: string;
   };
   
-  // Models
   models: {
     mistral: {
       chat: string;
@@ -39,7 +34,6 @@ export interface AppConfig {
     };
   };
   
-  // Chat Settings
   chat: {
     maxTokens: number;
     temperature: number;
@@ -135,7 +129,6 @@ export class ConfigManager {
     return this.config.chat;
   }
 
-  // Helper methods for specific configurations
   getMistralConfig() {
     return {
       apiKey: this.config.apiKeys.mistral,
@@ -152,7 +145,6 @@ export class ConfigManager {
     };
   }
 
-  // Validation methods
   validateConfig(): { isValid: boolean; errors: string[] } {
     const errors: string[] = [];
 
@@ -180,11 +172,9 @@ export class ConfigManager {
     };
   }
 
-  // Update config at runtime (useful for testing)
   updateConfig(updates: Partial<AppConfig>): void {
     this.config = { ...this.config, ...updates };
   }
 }
 
-// Export singleton instance
 export const config = ConfigManager.getInstance(); 
