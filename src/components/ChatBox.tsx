@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { Message, continueConversation, ChatOptions } from '@/app/actions';
+import { Message, continueConversation } from '@/app/actions';
 import { readStreamableValue } from 'ai/rsc';
 import VoiceInput from './VoiceInput';
 import MarkdownRenderer from './MarkdownRenderer';
@@ -17,8 +17,58 @@ const SUGGESTED_QUESTIONS = [
   "What support do you provide during the process?"
 ];
 
+const CHAT_HISTORY_KEY = 'conab_chat_history';
+const CHAT_TIMESTAMP_KEY = 'conab_chat_timestamp';
+const MAX_HISTORY_AGE = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
+const MAX_HISTORY_LENGTH = 50; // Maximum number of messages to store
+
 function formatTime(date: Date): string {
   return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+}
+
+function saveChatHistory(conversation: Message[]): void {
+  try {
+    const historyData = {
+      messages: conversation,
+      timestamp: Date.now()
+    };
+    localStorage.setItem(CHAT_HISTORY_KEY, JSON.stringify(historyData));
+  } catch (error) {
+    console.error('Failed to save chat history:', error);
+  }
+}
+
+function loadChatHistory(): Message[] {
+  try {
+    const savedHistory = localStorage.getItem(CHAT_HISTORY_KEY);
+    if (!savedHistory) return [];
+
+    const historyData = JSON.parse(savedHistory);
+    
+    if (Date.now() - historyData.timestamp > MAX_HISTORY_AGE) {
+      localStorage.removeItem(CHAT_HISTORY_KEY);
+      return [];
+    }
+
+    const messages = historyData.messages.map((msg: any) => ({
+      ...msg,
+      timestamp: msg.timestamp ? new Date(msg.timestamp) : undefined
+    }));
+
+    return messages.slice(-MAX_HISTORY_LENGTH);
+  } catch (error) {
+    console.error('Failed to load chat history:', error);
+    return [];
+  }
+}
+
+function clearChatHistory(): void {
+  try {
+    localStorage.removeItem(CHAT_HISTORY_KEY);
+    localStorage.removeItem(CHAT_TIMESTAMP_KEY);
+  } catch (error) {
+    console.error('Failed to clear chat history:', error);
+  }
 }
 
 export default function ChatBox() {
@@ -26,14 +76,38 @@ export default function ChatBox() {
   const [input, setInput] = useState<string>('');
   const [isStreaming, setIsStreaming] = useState(false);
   const [rateLimitInfo, setRateLimitInfo] = useState<{ remaining: number; resetTime: number } | null>(null);
+  const [hasLoadedHistory, setHasLoadedHistory] = useState(false);
+  const [notification, setNotification] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const conversationRef = useRef<Message[]>([]);
-  const chatOptionsRef = useRef<ChatOptions>({});
+
+  useEffect(() => {
+    const savedHistory = loadChatHistory();
+    if (savedHistory.length > 0) {
+      setConversation(savedHistory);
+    }
+    setHasLoadedHistory(true);
+  }, []);
 
   useEffect(() => {
     conversationRef.current = conversation;
   }, [conversation]);
+
+  useEffect(() => {
+    if (hasLoadedHistory && conversation.length > 0) {
+      saveChatHistory(conversation);
+    }
+  }, [conversation, hasLoadedHistory]);
+
+  useEffect(() => {
+    if (notification) {
+      const timer = setTimeout(() => {
+        setNotification(null);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [notification]);
 
   const sendMessage = useCallback(async (messageContent: string) => {
     if (!messageContent.trim()) return;
@@ -59,7 +133,6 @@ export default function ChatBox() {
       for await (const delta of readStreamableValue(newMessage)) {
         textContent = `${textContent}${delta}`;
 
-        // Check if this is a rate limit error
         if (textContent.includes('Rate limit exceeded')) {
           setRateLimitInfo({
             remaining: 0,
@@ -102,6 +175,7 @@ export default function ChatBox() {
 
   const clearConversation = () => {
     setConversation([]);
+    clearChatHistory();
   };
 
   const handleKeyDown = (event: React.KeyboardEvent) => {
@@ -128,6 +202,16 @@ export default function ChatBox() {
 
   return (
     <div className="flex flex-col h-full max-w-2xl mx-auto bg-conab-light-background rounded-lg shadow-lg border border-conab-middle-blue">
+      {notification && (
+        <div className={`p-3 text-sm font-medium ${
+          notification.type === 'success' 
+            ? 'bg-green-100 text-green-800 border-b border-green-200' 
+            : 'bg-red-100 text-red-800 border-b border-red-200'
+        }`}>
+          {notification.message}
+        </div>
+      )}
+      
       <div className="p-4 border-b bg-conab-header rounded-t-lg">
         <div className="flex justify-between items-start mb-3">
           <div>
