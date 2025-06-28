@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { serviceFactory } from './service-factory';
+import { embeddingRateLimiter } from './rate-limiter';
 
 export interface Document {
   pageContent: string;
@@ -113,10 +114,20 @@ export class VectorDB {
     console.log(`🎉 Successfully added ${documents.length} new documents to vector store`);
   }
 
-  async search(query: string, k: number = 3): Promise<Document[]> {
+  async search(query: string, k: number = 3, clientIdentifier?: string): Promise<Document[]> {
     console.log(`🔍 Starting semantic search...`);
     console.log(`❓ Query: "${query}"`);
     console.log(`📊 Requesting top ${k} results`);
+    
+    // Rate limiting for embedding generation
+    if (clientIdentifier) {
+      const rateLimitResult = embeddingRateLimiter.isAllowed(clientIdentifier);
+      if (!rateLimitResult.allowed) {
+        console.log(`🚫 Rate limit exceeded for ${clientIdentifier}, falling back to text search`);
+        const documents = this.loadDocuments();
+        return this.fallbackTextSearch(documents, query, k);
+      }
+    }
     
     const documents = this.loadDocuments();
     console.log(`📚 Loaded ${documents.length} documents from disk`);

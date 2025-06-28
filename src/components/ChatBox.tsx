@@ -25,6 +25,7 @@ export default function ChatBox() {
   const [conversation, setConversation] = useState<Message[]>([]);
   const [input, setInput] = useState<string>('');
   const [isStreaming, setIsStreaming] = useState(false);
+  const [rateLimitInfo, setRateLimitInfo] = useState<{ remaining: number; resetTime: number } | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const conversationRef = useRef<Message[]>([]);
@@ -51,12 +52,20 @@ export default function ChatBox() {
       const { messages, newMessage, sources } = await continueConversation([
         ...conversationRef.current,
         userMessage,
-      ], chatOptionsRef.current);
+      ]);
 
       let textContent = '';
 
       for await (const delta of readStreamableValue(newMessage)) {
         textContent = `${textContent}${delta}`;
+
+        // Check if this is a rate limit error
+        if (textContent.includes('Rate limit exceeded')) {
+          setRateLimitInfo({
+            remaining: 0,
+            resetTime: Date.now() + 60000 // 1 minute from now
+          });
+        }
 
         setConversation([
           ...messages,
@@ -232,6 +241,12 @@ export default function ChatBox() {
       </div>
 
       <div className="p-4 border-t border-conab-middle-blue bg-conab-light-background rounded-b-lg">
+        {rateLimitInfo && rateLimitInfo.remaining <= 2 && (
+          <div className="mb-3 p-2 bg-yellow-100 border border-yellow-300 rounded text-yellow-800 text-xs">
+            ⚠️ Rate limit warning: {rateLimitInfo.remaining} requests remaining. 
+            Reset in {Math.ceil((rateLimitInfo.resetTime - Date.now()) / 1000)}s
+          </div>
+        )}
         <div className="flex space-x-2">
           <textarea
             ref={textareaRef}

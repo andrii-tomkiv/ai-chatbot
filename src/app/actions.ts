@@ -5,6 +5,9 @@ import { serviceFactory } from '@/lib/service-factory';
 import { buildChatPrompt } from '@/lib/prompts';
 import { Message as LLMMessage } from '@/lib/llm-provider';
 import { config } from '@/lib/config';
+import { headers } from 'next/headers';
+import { getClientIdentifier, rateLimitMiddleware, spamDetectionMiddleware, contentValidationMiddleware } from '@/lib/middleware';
+import { chatRateLimiter } from '@/lib/rate-limiter';
 
 export interface Message {
   role: 'user' | 'assistant';
@@ -23,6 +26,20 @@ export interface ChatOptions {
   action?: string;
 }
 
+// Helper function to get request info for rate limiting
+async function getRequestInfo() {
+  const headersList = await headers();
+  const forwarded = headersList.get('x-forwarded-for');
+  const realIp = headersList.get('x-real-ip');
+  const cfConnectingIp = headersList.get('cf-connecting-ip');
+  const userAgent = headersList.get('user-agent') || 'unknown';
+  
+  let ip = forwarded?.split(',')[0] || realIp || cfConnectingIp || 'unknown';
+  ip = ip.trim();
+  
+  return `${ip}:${userAgent.substring(0, 50)}`;
+}
+
 export async function continueConversation(
   history: Message[], 
   options: ChatOptions = {}
@@ -32,10 +49,51 @@ export async function continueConversation(
 
   (async () => {
     try {
+      // Rate limiting check
+      const identifier = await getRequestInfo();
+      const rateLimitResult = chatRateLimiter.isAllowed(identifier);
+      
+      if (!rateLimitResult.allowed) {
+        const errorMessage = `Rate limit exceeded. Please wait ${Math.ceil((rateLimitResult.resetTime - Date.now()) / 1000)} seconds before trying again.`;
+        stream.update(errorMessage);
+        stream.done();
+        return;
+      }
+
+      // Spam detection
+      const headersList = await headers();
+      const userAgent = headersList.get('user-agent') || '';
+      const botPatterns = [/bot/i, /crawler/i, /spider/i, /scraper/i, /curl/i, /wget/i];
+      if (botPatterns.some(pattern => pattern.test(userAgent))) {
+        stream.update('Access denied.');
+        stream.done();
+        return;
+      }
+
       const latestMessage = history[history.length - 1];
       
       if (!latestMessage?.content) {
         stream.update('No message content provided');
+        stream.done();
+        return;
+      }
+
+      // Content validation
+      if (latestMessage.content.length > 1000) {
+        stream.update('Message too long. Please keep messages under 1000 characters.');
+        stream.done();
+        return;
+      }
+
+      // Check for repetitive content
+      const recentMessages = history.slice(-5);
+      const similarMessages = recentMessages.filter(msg => 
+        msg.role === 'user' && 
+        msg.content.toLowerCase() === latestMessage.content.toLowerCase()
+      );
+      
+      if (similarMessages.length > 2) {
+        stream.update('Please avoid sending the same message repeatedly.');
         stream.done();
         return;
       }
@@ -46,7 +104,7 @@ export async function continueConversation(
       
       const maxResults = options.maxResults || vectorDbConfig.maxResults;
       const vectorDB = serviceFactory.getVectorDB();
-      const relevantDocs = await vectorDB.search(latestMessage.content, maxResults);
+      const relevantDocs = await vectorDB.search(latestMessage.content, maxResults, identifier);
       
       // Extract unique sources from the search results
       sources = relevantDocs
