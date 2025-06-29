@@ -61,12 +61,17 @@ export class ServiceFactory {
 
     if (config.getApiKeys().groq) {
       const groqConfig = config.getGroqConfig();
+      console.log(`🤖 Registering Groq provider with model: ${groqConfig.chatModel}`);
+      console.log(`🤖 Groq config:`, groqConfig);
       const groqProvider = new GroqProviderImpl({
         model: groqConfig.chatModel,
         maxTokens: config.getChatConfig().maxTokens,
         temperature: config.getChatConfig().temperature,
       });
       this.llmManager.registerProvider('groq', groqProvider);
+      console.log(`✅ Groq provider registered successfully`);
+    } else {
+      console.log(`⚠️ Groq API key not found, skipping Groq provider registration`);
     }
 
     const mockProvider = createLLMProvider('mock');

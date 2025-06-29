@@ -30,16 +30,20 @@ export class GroqProviderImpl implements GroqProvider {
   private defaultConfig: GroqConfig;
 
   constructor(config?: Partial<GroqConfig>) {
+    console.log(`[GROQ] Creating GroqProviderImpl with config:`, config);
     this.defaultConfig = {
       model: 'llama3-70b-8192', // Fast and reliable model
       maxTokens: 1000,
       temperature: 0.7,
       ...config,
     };
+    console.log(`[GROQ] Final default config:`, this.defaultConfig);
   }
 
   async generateResponse(messages: Message[], config?: Partial<GroqConfig>): Promise<GroqResponse> {
     const finalConfig = { ...this.defaultConfig, ...config };
+    
+    console.log(`[GROQ] Attempting to generate response with model: ${finalConfig.model}`);
     
     try {
       const { textStream } = streamText({
@@ -58,6 +62,8 @@ export class GroqProviderImpl implements GroqProvider {
         throw new Error('No response content received from Groq API');
       }
 
+      console.log(`[GROQ] Successfully generated response with ${content.length} characters`);
+      
       return {
         content,
         usage: {
@@ -67,7 +73,7 @@ export class GroqProviderImpl implements GroqProvider {
         },
       };
     } catch (error) {
-      console.error('Groq API error:', error);
+      console.error('[GROQ] API error:', error);
       
       const errorMessage = error instanceof Error ? error.message : String(error);
       
@@ -77,6 +83,8 @@ export class GroqProviderImpl implements GroqProvider {
         throw new Error('Groq API rate limit exceeded');
       } else if (errorMessage.includes('500') || errorMessage.includes('Internal server error')) {
         throw new Error('Groq API server error');
+      } else if (errorMessage.includes('model') || errorMessage.includes('Model')) {
+        throw new Error(`Groq model '${finalConfig.model}' not found or invalid`);
       } else {
         throw new Error(`Groq API error: ${errorMessage}`);
       }
@@ -86,7 +94,12 @@ export class GroqProviderImpl implements GroqProvider {
   async *generateStreamingResponse(messages: Message[], config?: Partial<GroqConfig>): AsyncGenerator<string> {
     const finalConfig = { ...this.defaultConfig, ...config };
     
+    console.log(`[GROQ] generateStreamingResponse called with config:`, config);
+    console.log(`[GROQ] Merged config:`, finalConfig);
+    console.log(`[GROQ] Attempting to generate streaming response with model: ${finalConfig.model}`);
+    
     try {
+      console.log(`[GROQ] Calling streamText with model: ${finalConfig.model}`);
       const { textStream } = streamText({
         model: groq(finalConfig.model),
         messages: messages as Array<{ role: 'user' | 'assistant' | 'system'; content: string }>,
@@ -94,17 +107,29 @@ export class GroqProviderImpl implements GroqProvider {
         temperature: finalConfig.temperature,
       });
 
+      console.log(`[GROQ] streamText returned, starting to read stream`);
       let hasContent = false;
+      let chunkCount = 0;
       for await (const text of textStream) {
+        chunkCount++;
         hasContent = true;
+        console.log(`[GROQ] Received chunk ${chunkCount}: "${text}"`);
         yield text;
       }
 
+      console.log(`[GROQ] Stream ended, received ${chunkCount} chunks`);
       if (!hasContent) {
         throw new Error('No response content received from Groq API');
       }
+      
+      console.log(`[GROQ] Successfully completed streaming response`);
     } catch (error) {
-      console.error('Groq streaming error:', error);
+      console.error('[GROQ] Streaming error:', error);
+      console.error('[GROQ] Error details:', {
+        message: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+        name: error instanceof Error ? error.name : undefined
+      });
       
       const errorMessage = error instanceof Error ? error.message : String(error);
       
@@ -114,6 +139,8 @@ export class GroqProviderImpl implements GroqProvider {
         throw new Error('Groq API rate limit exceeded');
       } else if (errorMessage.includes('500') || errorMessage.includes('Internal server error')) {
         throw new Error('Groq API server error');
+      } else if (errorMessage.includes('model') || errorMessage.includes('Model')) {
+        throw new Error(`Groq model '${finalConfig.model}' not found or invalid`);
       } else {
         throw new Error(`Groq API error: ${errorMessage}`);
       }

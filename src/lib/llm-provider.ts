@@ -1,6 +1,6 @@
 import { streamText } from 'ai';
 import { mistral } from '@ai-sdk/mistral';
-import { GroqProviderImpl, groqProvider } from './groq-provider';
+import { GroqProviderImpl } from './groq-provider';
 
 export interface LLMConfig {
   model: string;
@@ -309,20 +309,6 @@ export function createLLMProvider(type: 'mistral' | 'groq' | 'mock', config?: Pa
 
 export { GroqProviderImpl };
 
-let providerManager: LLMProviderManager;
-
-export function getLLMProviderManager(): LLMProviderManager {
-  if (!providerManager) {
-    providerManager = new LLMProviderManager('mistral', 'groq');
-    
-    providerManager.registerProvider('mistral', new MistralProvider());
-    providerManager.registerProvider('groq', groqProvider);
-    providerManager.registerProvider('mock', new MockLLMProvider());
-  }
-  
-  return providerManager;
-}
-
-export function getLLMProvider(): LLMProvider {
-  return getLLMProviderManager().getCurrentProvider();
-}
+// Note: Use serviceFactory.getLLMManager() instead of this function
+// This function creates a separate provider manager with default configuration
+// which conflicts with the properly configured one in ServiceFactory

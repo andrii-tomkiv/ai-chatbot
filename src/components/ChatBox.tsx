@@ -78,6 +78,8 @@ export default function ChatBox() {
   const [rateLimitInfo, setRateLimitInfo] = useState<{ remaining: number; resetTime: number } | null>(null);
   const [hasLoadedHistory, setHasLoadedHistory] = useState(false);
   const [notification, setNotification] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+  const [regeneratingMessageId, setRegeneratingMessageId] = useState<string | null>(null);
+  const [openDropdownIndex, setOpenDropdownIndex] = useState<number | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const conversationRef = useRef<Message[]>([]);
@@ -108,6 +110,20 @@ export default function ChatBox() {
       return () => clearTimeout(timer);
     }
   }, [notification]);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (openDropdownIndex !== null) {
+        setOpenDropdownIndex(null);
+      }
+    };
+
+    if (openDropdownIndex !== null) {
+      document.addEventListener('click', handleClickOutside);
+      return () => document.removeEventListener('click', handleClickOutside);
+    }
+  }, [openDropdownIndex]);
 
   const sendMessage = useCallback(async (messageContent: string) => {
     if (!messageContent.trim()) return;
@@ -164,6 +180,99 @@ export default function ChatBox() {
       setIsStreaming(false);
     }
   }, []);
+
+  const regenerateResponse = useCallback(async (messageIndex: number, strategy: 'quick' | 'detailed' | 'concise' | 'different-sources' = 'quick') => {
+    if (messageIndex < 0 || messageIndex >= conversation.length) return;
+    
+    const targetMessage = conversation[messageIndex];
+    if (targetMessage.role !== 'assistant') return;
+
+    // Find the user message that prompted this response
+    const userMessageIndex = messageIndex - 1;
+    if (userMessageIndex < 0 || conversation[userMessageIndex].role !== 'user') return;
+
+    const userMessage = conversation[userMessageIndex];
+    const messageId = `msg-${messageIndex}`;
+    
+    setRegeneratingMessageId(messageId);
+    setIsStreaming(true);
+
+    try {
+      // Create regeneration options based on strategy
+      const regenerationOptions = {
+        model: strategy === 'different-sources' ? 'groq' : undefined,
+        maxResults: strategy === 'different-sources' ? 8 : 5,
+        promptType: strategy === 'detailed' ? 'educational' : 
+                   strategy === 'concise' ? 'customerService' : undefined
+      };
+
+      // Instead of removing the message, we'll create a new one with the regenerated content
+      // Keep the conversation up to the user message, then add a new assistant response
+      const conversationUpToUser = conversation.slice(0, messageIndex);
+      
+      const { messages, newMessage, sources } = await continueConversation([
+        ...conversationUpToUser,
+        userMessage,
+      ], regenerationOptions);
+
+      let textContent = '';
+
+      for await (const delta of readStreamableValue(newMessage)) {
+        textContent = `${textContent}${delta}`;
+
+        if (textContent.includes('Rate limit exceeded')) {
+          setRateLimitInfo({
+            remaining: 0,
+            resetTime: Date.now() + 60000 // 1 minute from now
+          });
+        }
+
+        // Update the conversation by replacing the assistant message at the specific index
+        setConversation(prev => {
+          const newConversation = [...prev];
+          newConversation[messageIndex] = {
+            ...newConversation[messageIndex],
+            content: textContent,
+            timestamp: new Date(),
+            sources: sources,
+            regenerated: true // Mark as regenerated
+          };
+          return newConversation;
+        });
+      }
+    } catch (error) {
+      console.error('Error regenerating response:', error);
+      
+      // Show specific error message for different error types
+      let errorMessage = 'Sorry, I encountered an error while regenerating. Please try again.';
+      
+      if (error instanceof Error) {
+        if (error.message.includes('Groq API') || error.message.includes('GROQ_API_KEY')) {
+          errorMessage = 'Groq API not configured. Please contact support to enable different sources feature.';
+        } else if (error.message.includes('Rate limit')) {
+          errorMessage = 'Rate limit exceeded. Please wait a moment and try again.';
+        } else if (error.message.includes('401') || error.message.includes('Unauthorized')) {
+          errorMessage = 'API authentication failed. Please contact support.';
+        } else if (error.message.includes('500') || error.message.includes('Internal server error')) {
+          errorMessage = 'Server error. Please try again in a moment.';
+        }
+      }
+      
+      setConversation(prev => {
+        const newConversation = [...prev];
+        newConversation[messageIndex] = {
+          ...newConversation[messageIndex],
+          content: errorMessage,
+          timestamp: new Date(),
+          regenerated: true
+        };
+        return newConversation;
+      });
+    } finally {
+      setIsStreaming(false);
+      setRegeneratingMessageId(null);
+    }
+  }, [conversation]);
 
   useEffect(() => {
     scrollToBottom();
@@ -305,6 +414,77 @@ export default function ChatBox() {
                           </a>
                         ))}
                       </div>
+                    </div>
+                  )}
+                  
+                  {message.role === 'assistant' && (
+                    <div className="mt-2 flex items-center space-x-2">
+                      <div className="flex space-x-1">
+                        <button
+                          onClick={() => regenerateResponse(index, 'quick')}
+                          disabled={isStreaming || regeneratingMessageId === `msg-${index}`}
+                          className="px-2 py-1 text-xs bg-conab-action text-white rounded hover:bg-conab-action-lighten disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                          title="Regenerate with same approach"
+                        >
+                          {regeneratingMessageId === `msg-${index}` ? (
+                            <div className="w-3 h-3 border border-white border-t-transparent rounded-full animate-spin"></div>
+                          ) : (
+                            '🔄'
+                          )}
+                        </button>
+                        <div className="relative">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setOpenDropdownIndex(openDropdownIndex === index ? null : index);
+                            }}
+                            disabled={isStreaming}
+                            className="px-2 py-1 text-xs bg-conab-middle-blue text-white rounded hover:bg-conab-dark-blue disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                            title="More regeneration options"
+                          >
+                            ⋯
+                          </button>
+                          {openDropdownIndex === index && (
+                            <div className="absolute bottom-full left-0 mb-1 bg-white border border-conab-middle-blue rounded-lg shadow-lg z-20 min-w-40">
+                              <div className="p-1 space-y-1">
+                                <button
+                                  onClick={() => {
+                                    regenerateResponse(index, 'detailed');
+                                    setOpenDropdownIndex(null);
+                                  }}
+                                  disabled={isStreaming}
+                                  className="w-full text-left px-2 py-1 text-xs text-conab-dark-blue hover:bg-conab-light-background rounded transition-colors"
+                                >
+                                  📝 More detailed
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    regenerateResponse(index, 'concise');
+                                    setOpenDropdownIndex(null);
+                                  }}
+                                  disabled={isStreaming}
+                                  className="w-full text-left px-2 py-1 text-xs text-conab-dark-blue hover:bg-conab-light-background rounded transition-colors"
+                                >
+                                  ✂️ More concise
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    regenerateResponse(index, 'different-sources');
+                                    setOpenDropdownIndex(null);
+                                  }}
+                                  disabled={isStreaming}
+                                  className="w-full text-left px-2 py-1 text-xs text-conab-dark-blue hover:bg-conab-light-background rounded transition-colors"
+                                >
+                                  🔍 Different sources
+                                </button>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      {message.regenerated && (
+                        <span className="text-xs text-conab-action/70 italic">(regenerated)</span>
+                      )}
                     </div>
                   )}
                   

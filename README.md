@@ -10,6 +10,8 @@ A fullstack Next.js AI chatbot that uses Mistral models to provide intelligent r
 - 📱 **Embeddable**: Can be embedded in any website using iframes
 - ⚡ **Real-time Streaming**: Fast, responsive chat interface
 - 🎯 **Source Citations**: Always cites the source URLs for information
+- 🔄 **Smart Regeneration**: Regenerate responses with different strategies (detailed, concise, different sources)
+- 🛡️ **Fallback Support**: Automatic fallback to Groq when Mistral is unavailable
 
 ## Tech Stack
 
@@ -36,6 +38,9 @@ Create a `.env.local` file:
 # Mistral AI API Key
 MISTRAL_API_KEY=your_mistral_api_key_here
 
+# Groq AI API Key (optional - for fallback and different sources feature)
+GROQ_API_KEY=your_groq_api_key_here
+
 # Optional: Customize the target website
 TARGET_WEBSITE=https://concealabilities.com
 
@@ -44,6 +49,7 @@ VECTOR_STORE_PATH=./data/vector-store
 ```
 
 Get your Mistral API key from [Mistral Console](https://console.mistral.ai/).
+Get your Groq API key from [Groq Console](https://console.groq.com/) (optional).
 
 ### 3. Index Content
 

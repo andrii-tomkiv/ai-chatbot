@@ -17,6 +17,7 @@ export interface Message {
     url: string;
     title?: string;
   }>;
+  regenerated?: boolean;
 }
 
 export interface ChatOptions {
@@ -140,12 +141,21 @@ export async function continueConversation(
       const llmManager = serviceFactory.getLLMManager();
       const llmConfigOverride = options.model ? { model: options.model } : undefined;
       
+      // If we want to use a different provider (like Groq for different sources)
+      // we need to switch the provider temporarily
+      let originalProvider = null;
+      if (options.model === 'groq') {
+        originalProvider = llmManager.getProviderStatus().current;
+        llmManager.setCurrentProvider('groq');
+        console.log(`[ACTIONS] Switched to Groq provider for different sources`);
+      }
+      
       try {
         console.log('[ACTIONS] Starting streaming response with timeout...');
         const startTime = Date.now();
         
-        // Create the streaming response
-        const streamingResponse = llmManager.generateStreamingResponseWithFallback(messages, llmConfigOverride);
+        // Create the streaming response - don't pass model override when using Groq
+        const streamingResponse = llmManager.generateStreamingResponseWithFallback(messages, options.model === 'groq' ? undefined : llmConfigOverride);
         
         // Track if we've received any content
         let hasContent = false;
@@ -184,7 +194,7 @@ export async function continueConversation(
           const fallbackProvider = llmManager.getFallbackProvider();
           if (fallbackProvider) {
             const fallbackResponse = await fallbackProvider.generateResponse(messages, {
-              model: options.model || config.getModels().groq.chat,
+              model: options.model === 'groq' ? undefined : (options.model || config.getModels().groq.chat),
               maxTokens: chatConfig.maxTokens,
               temperature: chatConfig.temperature,
             });
@@ -201,6 +211,12 @@ export async function continueConversation(
         } catch (fallbackError) {
           console.error('[ACTIONS] Fallback also failed:', fallbackError);
           stream.update('Sorry, I encountered an error. Please try again.');
+        }
+      } finally {
+        // Restore original provider if we switched
+        if (originalProvider) {
+          llmManager.setCurrentProvider(originalProvider);
+          console.log(`[ACTIONS] Restored original provider: ${originalProvider}`);
         }
       }
 
