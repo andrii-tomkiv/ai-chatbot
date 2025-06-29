@@ -41,6 +41,33 @@ async function getRequestInfo() {
   return `${ip}:${userAgent.substring(0, 50)}`;
 }
 
+// Helper function to detect gibberish messages
+function isGibberishMessage(content: string): boolean {
+  const trimmed = content.trim();
+  
+  // Very short messages
+  if (trimmed.length < 3) return true;
+  
+  // Check for random character patterns
+  const randomPatterns = [
+    /^[a-zA-Z0-9]{2,15}$/, // Random alphanumeric
+    /^[0-9]+[a-zA-Z]+[0-9]+$/, // Number-letter-number pattern
+    /^[a-zA-Z]+[0-9]+[a-zA-Z]+$/, // Letter-number-letter pattern
+    /^[a-zA-Z]{1,3}[0-9]{1,3}[a-zA-Z]{1,3}$/, // Short mixed patterns
+  ];
+  
+  if (randomPatterns.some(pattern => pattern.test(trimmed))) {
+    // Allow some legitimate short words
+    const legitimateShortWords = ['hi', 'hello', 'hey', 'ok', 'yes', 'no', 'why', 'how', 'what', 'when', 'where', 'who'];
+    if (legitimateShortWords.includes(trimmed.toLowerCase())) {
+      return false;
+    }
+    return true;
+  }
+  
+  return false;
+}
+
 export async function continueConversation(
   history: Message[], 
   options: ChatOptions = {}
@@ -79,6 +106,47 @@ export async function continueConversation(
         return;
       }
 
+      // Enhanced spam detection for gibberish messages
+      const messageContent = latestMessage.content.trim();
+      
+      // Check for gibberish messages
+      if (isGibberishMessage(messageContent)) {
+        // Track spam and check if should block
+        const spamResult = chatRateLimiter.trackSpam(identifier);
+        if (spamResult.shouldBlock) {
+          const blockMinutes = Math.ceil((spamResult.blockDuration || 600000) / 60000);
+          stream.update(`Too many invalid messages. You are blocked for ${blockMinutes} minutes.`);
+          stream.done();
+          return;
+        }
+        
+        stream.update('Please provide a meaningful question or message.');
+        stream.done();
+        return;
+      }
+
+      // Check for repeated gibberish patterns
+      const recentMessages = history.slice(-5);
+      const gibberishMessages = recentMessages.filter(msg => {
+        if (msg.role !== 'user') return false;
+        return isGibberishMessage(msg.content);
+      });
+      
+      if (gibberishMessages.length >= 2) {
+        // Track spam and check if should block
+        const spamResult = chatRateLimiter.trackSpam(identifier);
+        if (spamResult.shouldBlock) {
+          const blockMinutes = Math.ceil((spamResult.blockDuration || 600000) / 60000);
+          stream.update(`Too many invalid messages. You are blocked for ${blockMinutes} minutes.`);
+          stream.done();
+          return;
+        }
+        
+        stream.update('Too many invalid messages. Please wait before trying again.');
+        stream.done();
+        return;
+      }
+
       // Content validation
       if (latestMessage.content.length > 1000) {
         stream.update('Message too long. Please keep messages under 1000 characters.');
@@ -87,13 +155,12 @@ export async function continueConversation(
       }
 
       // Check for repetitive content
-      const recentMessages = history.slice(-5);
       const similarMessages = recentMessages.filter(msg => 
         msg.role === 'user' && 
         msg.content.toLowerCase() === latestMessage.content.toLowerCase()
       );
       
-      if (similarMessages.length > 2) {
+      if (similarMessages.length > 1) {
         stream.update('Please avoid sending the same message repeatedly.');
         stream.done();
         return;

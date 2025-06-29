@@ -20,6 +20,8 @@ export default function ChatBox() {
   const [notification, setNotification] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
   const [regeneratingMessageId, setRegeneratingMessageId] = useState<string | null>(null);
   const [openDropdownIndex, setOpenDropdownIndex] = useState<number | null>(null);
+  const [isBlocked, setIsBlocked] = useState(false);
+  const [blockMessage, setBlockMessage] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const conversationRef = useRef<Message[]>([]);
 
@@ -49,6 +51,21 @@ export default function ChatBox() {
       return () => clearTimeout(timer);
     }
   }, [notification]);
+
+  // Auto-clear blocked state when rate limit resets
+  useEffect(() => {
+    if (rateLimitInfo && rateLimitInfo.remaining === 0) {
+      const timeUntilReset = rateLimitInfo.resetTime - Date.now();
+      if (timeUntilReset > 0) {
+        const timer = setTimeout(() => {
+          setRateLimitInfo(null);
+          setIsBlocked(false);
+          setBlockMessage(null);
+        }, timeUntilReset);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [rateLimitInfo]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -94,6 +111,21 @@ export default function ChatBox() {
           });
         }
 
+        // Check for blocked messages
+        if (textContent.includes('You are blocked for') || textContent.includes('Too many invalid messages')) {
+          setIsBlocked(true);
+          setBlockMessage(textContent);
+          // Extract block duration if available
+          const blockMatch = textContent.match(/blocked for (\d+) minutes/);
+          if (blockMatch) {
+            const blockMinutes = parseInt(blockMatch[1]);
+            setTimeout(() => {
+              setIsBlocked(false);
+              setBlockMessage(null);
+            }, blockMinutes * 60 * 1000);
+          }
+        }
+
         setConversation([
           ...messages,
           { 
@@ -106,6 +138,20 @@ export default function ChatBox() {
       }
     } catch (error) {
       console.error('Error sending message:', error);
+      
+      // Check if it's a rate limit or block error
+      if (error instanceof Error) {
+        if (error.message.includes('Rate limit exceeded')) {
+          setRateLimitInfo({
+            remaining: 0,
+            resetTime: Date.now() + 60000
+          });
+        } else if (error.message.includes('blocked') || error.message.includes('Too many invalid messages')) {
+          setIsBlocked(true);
+          setBlockMessage(error.message);
+        }
+      }
+      
       setConversation(prev => [
         ...prev,
         { 
@@ -275,6 +321,8 @@ export default function ChatBox() {
         input={input}
         isStreaming={isStreaming}
         rateLimitInfo={rateLimitInfo}
+        isBlocked={isBlocked}
+        blockMessage={blockMessage}
         onInputChange={handleInputChange}
         onKeyDown={handleKeyDown}
         onSendMessage={() => sendMessage(input)}
