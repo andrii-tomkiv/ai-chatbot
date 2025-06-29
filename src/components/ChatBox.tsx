@@ -145,9 +145,14 @@ export default function ChatBox() {
       ]);
 
       let textContent = '';
+      let chunkCount = 0;
 
       for await (const delta of readStreamableValue(newMessage)) {
+        chunkCount++;
         textContent = `${textContent}${delta}`;
+        
+        console.log(`[FRONTEND] Received chunk ${chunkCount}: "${delta}"`);
+        console.log(`[FRONTEND] Total content length: ${textContent.length}`);
 
         if (textContent.includes('Rate limit exceeded')) {
           setRateLimitInfo({
@@ -155,6 +160,9 @@ export default function ChatBox() {
             resetTime: Date.now() + 60000 // 1 minute from now
           });
         }
+
+        // Add a small delay to make streaming more visible (optional)
+        await new Promise(resolve => setTimeout(resolve, 10));
 
         setConversation([
           ...messages,
@@ -166,6 +174,8 @@ export default function ChatBox() {
           },
         ]);
       }
+      
+      console.log(`[FRONTEND] Streaming completed. Total chunks: ${chunkCount}, Final length: ${textContent.length}`);
     } catch (error) {
       console.error('Error sending message:', error);
       setConversation(prev => [
@@ -216,9 +226,14 @@ export default function ChatBox() {
       ], regenerationOptions);
 
       let textContent = '';
+      let chunkCount = 0;
 
       for await (const delta of readStreamableValue(newMessage)) {
+        chunkCount++;
         textContent = `${textContent}${delta}`;
+        
+        console.log(`[FRONTEND] Received chunk ${chunkCount}: "${delta}"`);
+        console.log(`[FRONTEND] Total content length: ${textContent.length}`);
 
         if (textContent.includes('Rate limit exceeded')) {
           setRateLimitInfo({
@@ -226,6 +241,9 @@ export default function ChatBox() {
             resetTime: Date.now() + 60000 // 1 minute from now
           });
         }
+
+        // Add a small delay to make streaming more visible (optional)
+        await new Promise(resolve => setTimeout(resolve, 10));
 
         // Update the conversation by replacing the assistant message at the specific index
         setConversation(prev => {
@@ -240,6 +258,8 @@ export default function ChatBox() {
           return newConversation;
         });
       }
+      
+      console.log(`[FRONTEND] Streaming completed. Total chunks: ${chunkCount}, Final length: ${textContent.length}`);
     } catch (error) {
       console.error('Error regenerating response:', error);
       

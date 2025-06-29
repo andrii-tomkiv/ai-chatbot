@@ -32,7 +32,7 @@ export class GroqProviderImpl implements GroqProvider {
   constructor(config?: Partial<GroqConfig>) {
     console.log(`[GROQ] Creating GroqProviderImpl with config:`, config);
     this.defaultConfig = {
-      model: 'llama3-70b-8192', // Fast and reliable model
+      model: 'llama-3.3-70b-versatile', // More reliable model for streaming
       maxTokens: 1000,
       temperature: 0.7,
       ...config,
@@ -46,6 +46,8 @@ export class GroqProviderImpl implements GroqProvider {
     console.log(`[GROQ] Attempting to generate response with model: ${finalConfig.model}`);
     
     try {
+      console.log(`[GROQ] Calling streamText with model: ${finalConfig.model}`);
+      
       const { textStream } = streamText({
         model: groq(finalConfig.model),
         messages: messages as Array<{ role: 'user' | 'assistant' | 'system'; content: string }>,
@@ -97,9 +99,11 @@ export class GroqProviderImpl implements GroqProvider {
     console.log(`[GROQ] generateStreamingResponse called with config:`, config);
     console.log(`[GROQ] Merged config:`, finalConfig);
     console.log(`[GROQ] Attempting to generate streaming response with model: ${finalConfig.model}`);
+    console.log(`[GROQ] Messages:`, messages.map(m => ({ role: m.role, content: m.content.substring(0, 100) + '...' })));
     
     try {
       console.log(`[GROQ] Calling streamText with model: ${finalConfig.model}`);
+      
       const { textStream } = streamText({
         model: groq(finalConfig.model),
         messages: messages as Array<{ role: 'user' | 'assistant' | 'system'; content: string }>,
@@ -169,7 +173,7 @@ export const GROQ_MODELS = {
 
 // Create default Groq provider instance
 export const groqProvider = new GroqProviderImpl({
-  model: 'llama3-70b-8192', // Default to fast and reliable model
+  model: 'llama-3.3-70b-versatile', // More reliable model for streaming
   maxTokens: 1000,
   temperature: 0.7,
 }); 

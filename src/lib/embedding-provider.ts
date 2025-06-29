@@ -90,8 +90,26 @@ export class MistralEmbeddingProvider extends BaseEmbeddingProvider {
 }
 
 export class GroqEmbeddingProvider extends BaseEmbeddingProvider {
-  async _generateEmbeddings(_texts: string[]): Promise<number[][]> {
-    throw new Error('Groq embedding provider not yet implemented');
+  async _generateEmbeddings(texts: string[]): Promise<number[][]> {
+    const response = await fetch('https://api.groq.com/openai/v1/embeddings', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${this.config.apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: this.config.model,
+        input: texts,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Groq embedding API error: ${response.status} ${response.statusText} - ${errorText}`);
+    }
+
+    const data = await response.json();
+    return data.data.map((item: { embedding: number[] }) => item.embedding);
   }
 
   getModelName(): string {
