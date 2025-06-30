@@ -129,7 +129,7 @@ export default function ChatBox() {
         userMessage,
       ], {
         model: modelName,
-        maxResults: 5,
+        maxResults: config.getVectorDbConfig().maxResults,
         temperature: chatSettings.temperature,
         maxTokens: chatSettings.maxTokens
       });
@@ -226,7 +226,7 @@ export default function ChatBox() {
           ? config.getModels().mistral.chat
           : config.getModels().groq.chat;
       const regenerationOptions = {
-        maxResults: 5,
+        maxResults: config.getVectorDbConfig().maxResults,
         model: modelName,
         temperature: chatSettings.temperature,
         maxTokens: chatSettings.maxTokens,
