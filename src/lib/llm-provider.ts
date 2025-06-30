@@ -308,7 +308,3 @@ export function createLLMProvider(type: 'mistral' | 'groq' | 'mock', config?: Pa
 }
 
 export { GroqProviderImpl };
-
-// Note: Use serviceFactory.getLLMManager() instead of this function
-// This function creates a separate provider manager with default configuration
-// which conflicts with the properly configured one in ServiceFactory

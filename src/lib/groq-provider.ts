@@ -32,7 +32,7 @@ export class GroqProviderImpl implements GroqProvider {
   constructor(config?: Partial<GroqConfig>) {
     console.log(`[GROQ] Creating GroqProviderImpl with config:`, config);
     this.defaultConfig = {
-      model: 'llama-3.3-70b-versatile', // More reliable model for streaming
+      model: 'llama-3.3-70b-versatile',
       maxTokens: 1000,
       temperature: 0.7,
       ...config,
@@ -171,9 +171,8 @@ export const GROQ_MODELS = {
   'meta-llama/llama-4-scout-17b-16e-instruct': 'Llama 4 Scout 17B (Specialized)'
 };
 
-// Create default Groq provider instance
 export const groqProvider = new GroqProviderImpl({
-  model: 'llama-3.3-70b-versatile', // More reliable model for streaming
+  model: 'llama-3.3-70b-versatile',
   maxTokens: 1000,
   temperature: 0.7,
 }); 

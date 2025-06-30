@@ -48,7 +48,6 @@ export abstract class BaseEmbeddingProvider implements EmbeddingProvider {
         console.warn(`${this.getProviderName()} embedding attempt ${attempt} failed:`, error);
         
         if (attempt < this.maxRetries) {
-          // Wait before retry (exponential backoff)
           await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000));
         }
       }
