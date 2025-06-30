@@ -65,8 +65,8 @@ export class ConfigManager {
       },
       
       embedding: {
-        primary: process.env.EMBEDDING_PRIMARY_PROVIDER || 'mistral',
-        fallback: process.env.EMBEDDING_FALLBACK_PROVIDER || 'groq',
+        primary: 'mistral',
+        fallback: 'text',
         timeoutMs: parseInt(process.env.EMBEDDING_TIMEOUT_MS || '10000'),
         maxRetries: parseInt(process.env.EMBEDDING_MAX_RETRIES || '3'),
       },
@@ -161,10 +161,7 @@ export class ConfigManager {
       errors.push('MISTRAL_API_KEY is required when using Mistral as primary embedding provider');
     }
 
-    // Note: Groq embeddings are not yet implemented, so we'll use text search as fallback
-    if (this.config.embedding.fallback === 'groq' && !this.config.apiKeys.groq) {
-      errors.push('GROQ_API_KEY is required when using Groq as fallback embedding provider');
-    }
+    // No validation for text fallback (text search is always available)
 
     return {
       isValid: errors.length === 0,

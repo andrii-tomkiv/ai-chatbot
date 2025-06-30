@@ -82,8 +82,8 @@ export class ServiceFactory {
     const embeddingConfig = config.getEmbeddingConfig();
     
     this.embeddingManager = new EmbeddingProviderManager(
-      embeddingConfig.primary,
-      embeddingConfig.fallback
+      'mistral',
+      'text'
     );
 
     if (config.getApiKeys().mistral) {
@@ -95,17 +95,6 @@ export class ServiceFactory {
         maxRetries: embeddingConfig.maxRetries,
       });
       this.embeddingManager.registerProvider('mistral', mistralEmbedding);
-    }
-
-    if (config.getApiKeys().groq) {
-      const groqConfig = config.getGroqConfig();
-      const groqEmbedding = createEmbeddingProvider('groq', {
-        model: groqConfig.embeddingModel,
-        apiKey: config.getApiKeys().groq!,
-        timeoutMs: embeddingConfig.timeoutMs,
-        maxRetries: embeddingConfig.maxRetries,
-      });
-      this.embeddingManager.registerProvider('groq', groqEmbedding);
     }
   }
 
