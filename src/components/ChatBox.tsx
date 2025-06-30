@@ -230,8 +230,8 @@ export default function ChatBox() {
         model: modelName,
         temperature: chatSettings.temperature,
         maxTokens: chatSettings.maxTokens,
-        promptType: strategy === 'detailed' ? 'educational' : 
-                   strategy === 'concise' ? 'customerService' : undefined
+                promptType: strategy === 'detailed' ? 'detailed' :
+                   strategy === 'concise' ? 'concise' : undefined
       };
 
       const { messages, newMessage } = await continueConversation([
