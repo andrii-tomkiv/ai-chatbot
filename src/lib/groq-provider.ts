@@ -151,7 +151,7 @@ export class GroqProviderImpl implements GroqProvider {
           chunkCount++;
           hasContent = true;
           totalContent += text;
-          console.log(`[GROQ] Received chunk ${chunkCount}: "${text}"`);
+  
           yield text;
         }
 

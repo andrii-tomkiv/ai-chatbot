@@ -149,7 +149,7 @@ export class MistralProviderImpl implements MistralProvider {
           chunkCount++;
           hasContent = true;
           totalContent += text;
-          console.log(`[MISTRAL] Received chunk ${chunkCount}: "${text}"`);
+  
           yield text;
         }
 
