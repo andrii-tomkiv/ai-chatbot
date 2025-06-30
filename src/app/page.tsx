@@ -10,10 +10,6 @@ export default function Home() {
               <h1 className="text-2xl font-bold">ConceiveAbilities AI Assistant</h1>
               <p className="text-white/80 mt-1">Your trusted guide for surrogacy and egg donation information</p>
             </div>
-            <div className="text-right">
-              <div className="text-sm text-white/70">Powered by Mistral AI</div>
-              <div className="text-xs text-white/50">Real-time semantic search</div>
-            </div>
           </div>
         </div>
       </header>
