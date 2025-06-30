@@ -11,7 +11,8 @@
     "test-embeddings": "tsx src/scripts/testLangchainEmbeddings.ts",
     "generate-embeddings": "tsx src/scripts/generateEmbeddings.ts",
     "test-sitemap": "tsx src/scripts/test-sitemap.ts",
-    "test-groq": "tsx src/scripts/test-groq.ts"
+    "test-groq": "tsx src/scripts/test-groq.ts",
+    "evaluate": "tsx scripts/evaluate-chatbot.ts"
   },
   "dependencies": {
     "@ai-sdk/groq": "^1.2.9",
