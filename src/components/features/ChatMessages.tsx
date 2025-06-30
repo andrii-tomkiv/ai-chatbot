@@ -57,26 +57,6 @@ export default function ChatMessages({
               )}
             </div>
             
-            {message.role === 'assistant' && message.sources && message.sources.length > 0 && (
-              <div className="mt-2 text-xs text-conab-dark-blue/70">
-                <div className="font-medium mb-1">Sources:</div>
-                <div className="space-y-1">
-                  {message.sources.map((source, sourceIndex) => (
-                    <a
-                      key={sourceIndex}
-                      href={source.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="block text-conab-action hover:underline truncate"
-                      title={source.title || source.url}
-                    >
-                      {source.title || source.url}
-                    </a>
-                  ))}
-                </div>
-              </div>
-            )}
-            
             {message.role === 'assistant' && (
               <MessageRegeneration
                 messageIndex={index}

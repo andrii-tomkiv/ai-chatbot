@@ -233,19 +233,45 @@ export class LLMProviderManager {
     }
   }
 
+  getFallbackProvider(): LLMProvider | undefined {
+    return this.providers.get(this.fallbackProvider);
+  }
+
+  private getProviderForModel(model?: string): string {
+    if (!model) {
+      return this.currentProvider;
+    }
+    
+    // Determine provider based on model name
+    if (model.includes('mistral') || model.includes('small') || model.includes('large') || model.includes('medium')) {
+      return 'mistral';
+    } else if (model.includes('groq') || model.includes('llama') || model.includes('mixtral') || model.includes('gemma')) {
+      return 'groq';
+    }
+    
+    // Default to current provider if model doesn't match known patterns
+    return this.currentProvider;
+  }
+
   async *generateStreamingResponseWithFallback(messages: Message[], config?: Partial<LLMConfig>): AsyncGenerator<string> {
+    const providerToUse = this.getProviderForModel(config?.model);
     const startTime = Date.now();
-    console.log(`[${new Date().toISOString()}] Starting streaming response with provider: ${this.currentProvider}`);
+    console.log(`[${new Date().toISOString()}] Starting streaming response with provider: ${providerToUse} (model: ${config?.model})`);
     
     try {
-      const stream = this.getCurrentProvider().generateStreamingResponse(messages, config);
+      const provider = this.providers.get(providerToUse);
+      if (!provider) {
+        throw new Error(`Provider '${providerToUse}' not found for model '${config?.model}'`);
+      }
+      
+      const stream = provider.generateStreamingResponse(messages, config);
       let hasContent = false;
       let firstChunkTime = 0;
       
       for await (const text of stream) {
         if (!hasContent) {
           firstChunkTime = Date.now() - startTime;
-          console.log(`[${new Date().toISOString()}] FIRST CHUNK: Received first response from ${this.currentProvider} after ${firstChunkTime}ms`);
+          console.log(`[${new Date().toISOString()}] FIRST CHUNK: Received first response from ${providerToUse} after ${firstChunkTime}ms`);
           hasContent = true;
         }
         
@@ -253,15 +279,15 @@ export class LLMProviderManager {
       }
       
       if (!hasContent) {
-        console.log(`[${new Date().toISOString()}] NO CONTENT: No content received from ${this.currentProvider}`);
+        console.log(`[${new Date().toISOString()}] NO CONTENT: No content received from ${providerToUse}`);
         throw new Error('No content received from primary provider');
       }
       
       const duration = Date.now() - startTime;
-      console.log(`[${new Date().toISOString()}] SUCCESS: Completed streaming response with ${this.currentProvider} in ${duration}ms`);
+      console.log(`[${new Date().toISOString()}] SUCCESS: Completed streaming response with ${providerToUse} in ${duration}ms`);
     } catch (error) {
       const duration = Date.now() - startTime;
-      console.warn(`[${new Date().toISOString()}] FAILED: Primary provider (${this.currentProvider}) failed after ${duration}ms, falling back to ${this.fallbackProvider}:`, error);
+      console.warn(`[${new Date().toISOString()}] FAILED: Primary provider (${providerToUse}) failed after ${duration}ms, falling back to ${this.fallbackProvider}:`, error);
       
       try {
         console.log(`[${new Date().toISOString()}] SWITCHING: Attempting streaming fallback to ${this.fallbackProvider}`);
@@ -287,10 +313,6 @@ export class LLMProviderManager {
       fallback: this.fallbackProvider,
       available: Array.from(this.providers.keys()),
     };
-  }
-
-  getFallbackProvider(): LLMProvider | undefined {
-    return this.providers.get(this.fallbackProvider);
   }
 }
 

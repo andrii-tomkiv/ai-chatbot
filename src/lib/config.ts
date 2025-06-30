@@ -88,7 +88,7 @@ export class ConfigManager {
           embedding: process.env.MISTRAL_EMBEDDING_MODEL || 'mistral-embed',
         },
         groq: {
-          chat: process.env.GROQ_CHAT_MODEL || 'llama-3.3-70b-versatile',
+          chat: process.env.GROQ_CHAT_MODEL || 'llama3-70b-8192',
           embedding: process.env.GROQ_EMBEDDING_MODEL || 'text-embedding-3-small',
         },
       },

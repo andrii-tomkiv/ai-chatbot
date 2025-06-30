@@ -32,7 +32,7 @@ export class GroqProviderImpl implements GroqProvider {
   constructor(config?: Partial<GroqConfig>) {
     console.log(`[GROQ] Creating GroqProviderImpl with config:`, config);
     this.defaultConfig = {
-      model: 'llama-3.3-70b-versatile',
+      model: 'llama3-70b-8192',
       maxTokens: 1000,
       temperature: 0.7,
       ...config,
@@ -114,15 +114,22 @@ export class GroqProviderImpl implements GroqProvider {
       console.log(`[GROQ] streamText returned, starting to read stream`);
       let hasContent = false;
       let chunkCount = 0;
+      let totalContent = '';
+      
       for await (const text of textStream) {
         chunkCount++;
         hasContent = true;
+        totalContent += text;
         console.log(`[GROQ] Received chunk ${chunkCount}: "${text}"`);
         yield text;
       }
 
       console.log(`[GROQ] Stream ended, received ${chunkCount} chunks`);
+      console.log(`[GROQ] Total content length: ${totalContent.length}`);
+      console.log(`[GROQ] Total content: "${totalContent}"`);
+      
       if (!hasContent) {
+        console.log(`[GROQ] No content received - this might indicate an API issue`);
         throw new Error('No response content received from Groq API');
       }
       
@@ -172,7 +179,7 @@ export const GROQ_MODELS = {
 };
 
 export const groqProvider = new GroqProviderImpl({
-  model: 'llama-3.3-70b-versatile',
+  model: 'llama3-70b-8192',
   maxTokens: 1000,
   temperature: 0.7,
 }); 

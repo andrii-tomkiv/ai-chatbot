@@ -124,7 +124,7 @@ export default function ChatBox() {
         chatSettings.model === 'mistral'
           ? config.getModels().mistral.chat
           : config.getModels().groq.chat;
-      const { messages, newMessage, sources } = await continueConversation([
+      const { messages, newMessage } = await continueConversation([
         ...conversationRef.current,
         userMessage,
       ], {
@@ -166,8 +166,7 @@ export default function ChatBox() {
           { 
             role: 'assistant', 
             content: textContent,
-            timestamp: new Date(),
-            sources: sources
+            timestamp: new Date()
           },
         ]);
       }
@@ -235,7 +234,7 @@ export default function ChatBox() {
                    strategy === 'concise' ? 'customerService' : undefined
       };
 
-      const { messages, newMessage, sources } = await continueConversation([
+      const { messages, newMessage } = await continueConversation([
         ...conversationUpToUser,
         userMessage,
         systemRegenerate,
@@ -252,7 +251,6 @@ export default function ChatBox() {
             role: 'assistant',
             content: textContent,
             timestamp: new Date(),
-            sources: sources,
             regenerated: true
           },
         ]);
