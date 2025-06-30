@@ -6,11 +6,10 @@ import { buildChatPrompt } from '@/lib/prompts';
 import { Message as LLMMessage } from '@/lib/llm-provider';
 import { config } from '@/lib/config';
 import { headers } from 'next/headers';
-import { getClientIdentifier, rateLimitMiddleware, spamDetectionMiddleware, contentValidationMiddleware } from '@/lib/middleware';
 import { chatRateLimiter } from '@/lib/rate-limiter';
 
 export interface Message {
-  role: 'user' | 'assistant';
+  role: 'user' | 'assistant' | 'system';
   content: string;
   timestamp?: Date;
   sources?: Array<{
@@ -25,6 +24,8 @@ export interface ChatOptions {
   maxResults?: number;
   model?: string;
   action?: string;
+  temperature?: number;
+  maxTokens?: number;
 }
 
 // Helper function to get request info for rate limiting
@@ -206,10 +207,15 @@ export async function continueConversation(
       ];
 
       const llmManager = serviceFactory.getLLMManager();
-      const llmConfigOverride = options.model ? { model: options.model } : undefined;
+      const llmConfigOverride = {
+        model: options.model,
+        maxTokens: options.maxTokens || chatConfig.maxTokens,
+        temperature: options.temperature !== undefined ? options.temperature : chatConfig.temperature,
+      };
       
       try {
         console.log('[ACTIONS] Starting streaming response with timeout...');
+        console.log('[ACTIONS] LLM Config:', llmConfigOverride);
         const startTime = Date.now();
         
         // Create the streaming response
@@ -249,12 +255,14 @@ export async function continueConversation(
         try {
           console.log(`[ACTIONS] Attempting direct fallback to ${llmConfig.fallback}...`);
           
+          console.log('check options temperature',options.temperature);
+
           const fallbackProvider = llmManager.getFallbackProvider();
           if (fallbackProvider) {
             const fallbackResponse = await fallbackProvider.generateResponse(messages, {
               model: options.model === 'groq' ? undefined : (options.model || config.getModels().groq.chat),
-              maxTokens: chatConfig.maxTokens,
-              temperature: chatConfig.temperature,
+              maxTokens: options.maxTokens || chatConfig.maxTokens,
+              temperature: options.temperature !== undefined ? options.temperature : chatConfig.temperature,
             });
             
             if (fallbackResponse) {

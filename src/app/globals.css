@@ -25,3 +25,99 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Custom slider styles with CONAB theme colors */
+.slider {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent !important;
+  cursor: pointer;
+  outline: none;
+  position: relative;
+  z-index: 1;
+}
+
+/* Webkit (Chrome, Safari, Edge) */
+.slider::-webkit-slider-track {
+  background: #004a63 !important;
+  height: 8px;
+  border-radius: 4px;
+  border: 1px solid #004a63;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  background: #be1e68 !important;
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid #be1e68;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+  margin-top: -6px; /* Center the thumb on the 8px track */
+}
+
+.slider::-webkit-slider-thumb:hover {
+  background: #cf307a !important;
+  border-color: #cf307a;
+  transform: scale(1.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.slider::-webkit-slider-thumb:active {
+  background: #a01856 !important;
+  border-color: #a01856;
+  transform: scale(1.05);
+}
+
+/* Firefox */
+.slider::-moz-range-track {
+  background: #004a63 !important;
+  height: 8px;
+  border-radius: 4px;
+  border: 1px solid #004a63;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.slider::-moz-range-thumb {
+  background: #be1e68 !important;
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid #be1e68;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+  top: 50%;
+  margin-top: -10px; /* Center the thumb on the 8px track */
+  position: relative;
+}
+
+.slider::-moz-range-thumb:hover {
+  background: #cf307a !important;
+  border-color: #cf307a;
+  transform: scale(1.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.slider::-moz-range-thumb:active {
+  background: #a01856 !important;
+  border-color: #a01856;
+  transform: scale(1.05);
+}
+
+/* Focus states for accessibility */
+.slider:focus {
+  outline: none;
+}
+
+.slider:focus::-webkit-slider-thumb {
+  box-shadow: 0 0 0 3px rgba(190, 30, 104, 0.3);
+}
+
+.slider:focus::-moz-range-thumb {
+  box-shadow: 0 0 0 3px rgba(190, 30, 104, 0.3);
+}

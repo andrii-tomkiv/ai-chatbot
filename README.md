@@ -1,214 +1,154 @@
-# AI Chatbot with Mistral
+# CONAB AI Chatbot
 
-A fullstack Next.js AI chatbot that uses Mistral models to provide intelligent responses based on indexed website content. The chatbot is embeddable across multiple sites using iframes.
+A Next.js AI chatbot with Mistral and Groq integration, featuring semantic search and customizable settings.
 
 ## Features
 
-- 🤖 **Mistral AI Integration**: Uses `mistral-small-latest` for chat and `mistral-embed` for embeddings
-- 📚 **Content-Based Responses**: Answers only based on indexed website content
-- 🔍 **Semantic Search**: Finds relevant content using vector similarity
-- 📱 **Embeddable**: Can be embedded in any website using iframes
-- ⚡ **Real-time Streaming**: Fast, responsive chat interface
-- 🎯 **Source Citations**: Always cites the source URLs for information
-- 🔄 **Smart Regeneration**: Regenerate responses with different strategies (detailed, concise, different sources)
-- 🛡️ **Fallback Support**: Automatic fallback to Groq when Mistral is unavailable
+### Core Features
+- **AI Chat Interface** - Powered by Mistral and Groq LLMs
+- **Semantic Search** - Vector database for context-aware responses
+- **Streaming Responses** - Real-time AI responses with fallback support
+- **Rate Limiting** - Built-in protection against abuse
+- **Message History** - Persistent chat sessions
 
-## Tech Stack
+### Temperature/Model Settings
+- **Model Selection** - Choose between Mistral and Groq models
+- **Temperature Control** - Adjust AI creativity (0.0 - 1.0)
+- **Max Tokens** - Control response length (100 - 2000 tokens)
+- **Preset Configurations** - Quick settings for different use cases
+- **Persistent Settings** - Settings saved to localStorage
 
-- **Frontend**: Next.js 14 (App Router), TypeScript, Tailwind CSS
-- **AI**: Mistral AI (chat + embeddings)
-- **Vector Database**: HNSWLib for semantic search
-- **Streaming**: Vercel AI SDK
+#### Temperature Presets
+- **Focused (0.1)** - Very consistent, factual responses
+- **Balanced (0.3)** - Good balance of creativity and accuracy  
+- **Creative (0.7)** - More imaginative and varied responses
+- **Explorative (1.0)** - Maximum creativity and variety
 
-## Quick Start
+## Getting Started
 
-### 1. Clone and Install
+### Prerequisites
+- Node.js 18+ 
+- npm or yarn
+- API keys for Mistral and/or Groq
 
+### Installation
+
+1. Clone the repository:
 ```bash
-git clone <your-repo>
+git clone <repository-url>
 cd conab-ai-chatbot-next-js
+```
+
+2. Install dependencies:
+```bash
 npm install
 ```
 
-### 2. Environment Setup
-
-Create a `.env.local` file:
-
+3. Set up environment variables:
 ```bash
-# Mistral AI API Key
-MISTRAL_API_KEY=your_mistral_api_key_here
-
-# Groq AI API Key (optional - for fallback and different sources feature)
-GROQ_API_KEY=your_groq_api_key_here
-
-# Optional: Customize the target website
-TARGET_WEBSITE=https://concealabilities.com
-
-# Optional: Vector store path
-VECTOR_STORE_PATH=./data/vector-store
+cp env.example .env.local
 ```
 
-Get your Mistral API key from [Mistral Console](https://console.mistral.ai/).
-Get your Groq API key from [Groq Console](https://console.groq.com/) (optional).
-
-### 3. Index Content
-
-Run the content indexing script:
-
-```bash
-npm run embed-content
+4. Configure your API keys in `.env.local`:
+```env
+MISTRAL_API_KEY=your_mistral_api_key
+GROQ_API_KEY=your_groq_api_key
 ```
 
-This will:
-- Scrape content from the target website
-- Generate embeddings using Mistral
-- Store content in the vector database
-
-### 4. Start Development Server
-
+5. Run the development server:
 ```bash
 npm run dev
 ```
 
-Visit `http://localhost:3000` to see the chatbot in action!
+6. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## Usage
 
-### Local Development
+### Chat Interface
+- Type your message and press Enter to send
+- Use Shift+Enter for new lines
+- Click the settings icon to customize AI behavior
 
-1. Start the development server: `npm run dev`
-2. Open `http://localhost:3000`
-3. Start chatting with the AI assistant
+### Settings Panel
+- **Model Selection**: Choose between Mistral (fast and reliable) or Groq (high-speed inference)
+- **Temperature Slider**: Drag to adjust creativity level
+- **Max Tokens**: Set maximum response length
+- **Quick Presets**: Click preset buttons for common configurations
 
-### Embedding in Other Websites
+### Message Management
+- **Regenerate**: Click the three dots on any AI response to regenerate
+- **Clear Chat**: Use the "Clear" button to start a new conversation
+- **History**: Chat history is automatically saved and restored
 
-The chatbot can be embedded in any website using an iframe:
+## Architecture
 
-```html
-<iframe 
-  src="http://localhost:3000" 
-  width="400" 
-  height="600" 
-  frameborder="0"
-  style="border: 1px solid #ccc; border-radius: 8px;">
-</iframe>
-```
-
-For production, replace `localhost:3000` with your deployed URL.
-
-### Customizing Content
-
-To index content from a different website:
-
-1. Update `TARGET_WEBSITE` in your `.env.local`
-2. Run `npm run embed-content` again
-3. The chatbot will now answer based on the new content
-
-## API Endpoints
-
-### POST /api/chat
-
-Handles chat conversations with the AI assistant.
-
-**Request Body:**
-```json
-{
-  "messages": [
-    {
-      "role": "user",
-      "content": "What services do you offer?"
-    }
-  ]
-}
-```
-
-**Response:**
-```json
-{
-  "content": "Based on our content, we offer comprehensive technology solutions and consulting services...",
-  "sources": [
-    "https://concealabilities.com/about",
-    "https://concealabilities.com/services"
-  ]
-}
-```
-
-## Project Structure
-
-```
-src/
-├── app/
-│   ├── api/chat/route.ts    # Chat API endpoint
-│   └── page.tsx             # Main page with ChatBox
-├── components/
-│   └── ChatBox.tsx          # Chat interface component
-├── lib/
-│   ├── embedding.ts         # Mistral embedding utilities
-│   └── vector-db.ts         # Vector database wrapper
-└── scripts/
-    └── embedSiteContent.ts  # Content indexing script
-```
-
-## Scripts
-
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run start` - Start production server
-- `npm run embed-content` - Index website content
-
-## Configuration
-
-### CORS and Iframe Support
-
-The app is configured to allow iframe embedding and CORS from any domain:
-
-- `X-Frame-Options: ALLOWALL`
-- `Access-Control-Allow-Origin: *`
+### LLM Providers
+- **Primary**: Mistral AI (mistral-small-latest)
+- **Fallback**: Groq (llama-3.3-70b-versatile)
+- **Automatic Fallback**: Switches to fallback if primary fails or times out
 
 ### Vector Database
+- **Storage**: HNSW-based vector store
+- **Embeddings**: Mistral embeddings for semantic search
+- **Context**: Relevant documents retrieved for each query
 
-The vector database stores:
-- Content chunks with their text
-- Source URLs for citation
-- Embeddings for semantic search
+### Configuration
+- **Modular Design**: Separate providers for LLM, embeddings, and vector DB
+- **Environment Variables**: All settings configurable via .env
+- **Service Factory**: Centralized service management
 
-## Troubleshooting
+## Development
 
-### Common Issues
+### Scripts
+```bash
+npm run dev          # Start development server
+npm run build        # Build for production
+npm run start        # Start production server
+npm run lint         # Run ESLint
+npm run scrape-content    # Scrape website content
+npm run generate-embeddings  # Generate embeddings from scraped content
+```
 
-1. **"Mistral API key not found"**
-   - Ensure `MISTRAL_API_KEY` is set in `.env.local`
+### Project Structure
+```
+src/
+├── app/                 # Next.js app directory
+│   ├── actions.ts      # Server actions for chat
+│   └── layout.tsx      # Root layout
+├── components/         # React components
+│   ├── ChatBox.tsx     # Main chat interface
+│   └── features/       # Chat feature components
+├── lib/               # Core libraries
+│   ├── config.ts      # Configuration management
+│   ├── llm-provider.ts # LLM service providers
+│   ├── embedding-provider.ts # Embedding services
+│   ├── vector-db.ts   # Vector database
+│   └── service-factory.ts # Service orchestration
+└── scripts/           # Utility scripts
+    ├── scrapeContent.ts # Content scraping
+    └── generateEmbeddings.ts # Embedding generation
+```
 
-2. **"No content found"**
-   - Run `npm run embed-content` to index website content
+## Environment Variables
 
-3. **Iframe not loading**
-   - Check that the server is running and accessible
-   - Verify CORS headers are properly set
-
-### Debug Mode
-
-Enable debug logging by setting `DEBUG=true` in your environment variables.
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `MISTRAL_API_KEY` | Mistral AI API key | Required |
+| `GROQ_API_KEY` | Groq API key | Required |
+| `LLM_PRIMARY_PROVIDER` | Primary LLM provider | `mistral` |
+| `LLM_FALLBACK_PROVIDER` | Fallback LLM provider | `groq` |
+| `LLM_TIMEOUT_MS` | LLM request timeout | `5000` |
+| `CHAT_TEMPERATURE` | Default temperature | `0.7` |
+| `CHAT_MAX_TOKENS` | Default max tokens | `1000` |
 
 ## Contributing
 
 1. Fork the repository
 2. Create a feature branch
 3. Make your changes
-4. Test thoroughly
+4. Add tests if applicable
 5. Submit a pull request
 
 ## License
 
-MIT License - see LICENSE file for details.
-
-## Support
-
-For issues and questions:
-1. Check the troubleshooting section
-2. Review the Mistral AI documentation
-3. Open an issue in the repository
-
----
-
-**Note**: This chatbot is designed to answer questions based only on the indexed content. It will respond with "I'm not sure based on the current information" if it cannot find relevant content to answer a question.
+This project is licensed under the MIT License.

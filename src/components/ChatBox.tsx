@@ -8,6 +8,8 @@ import ChatHeader from './features/ChatHeader';
 import WelcomeScreen from './features/WelcomeScreen';
 import ChatMessages from './features/ChatMessages';
 import ChatInput from './features/ChatInput';
+import ChatSettings, { ChatSettings as ChatSettingsType } from './features/ChatSettings';
+import { config } from '@/lib/config';
 
 export const maxDuration = 30;
 
@@ -22,8 +24,32 @@ export default function ChatBox() {
   const [openDropdownIndex, setOpenDropdownIndex] = useState<number | null>(null);
   const [isBlocked, setIsBlocked] = useState(false);
   const [blockMessage, setBlockMessage] = useState<string | null>(null);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [chatSettings, setChatSettings] = useState<ChatSettingsType>({
+    temperature: 0.7,
+    model: 'mistral',
+    maxTokens: 1000
+  });
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const conversationRef = useRef<Message[]>([]);
+
+  // Load settings from localStorage
+  useEffect(() => {
+    const savedSettings = localStorage.getItem('chatSettings');
+    if (savedSettings) {
+      try {
+        const parsed = JSON.parse(savedSettings);
+        setChatSettings(parsed);
+      } catch (error) {
+        console.error('Error loading chat settings:', error);
+      }
+    }
+  }, []);
+
+  // Save settings to localStorage when they change
+  useEffect(() => {
+    localStorage.setItem('chatSettings', JSON.stringify(chatSettings));
+  }, [chatSettings]);
 
   useEffect(() => {
     const savedHistory = loadChatHistory();
@@ -94,10 +120,19 @@ export default function ChatBox() {
     setIsStreaming(true);
     
     try {
+      const modelName =
+        chatSettings.model === 'mistral'
+          ? config.getModels().mistral.chat
+          : config.getModels().groq.chat;
       const { messages, newMessage, sources } = await continueConversation([
         ...conversationRef.current,
         userMessage,
-      ]);
+      ], {
+        model: modelName,
+        maxResults: 5,
+        temperature: chatSettings.temperature,
+        maxTokens: chatSettings.maxTokens
+      });
 
       let textContent = '';
 
@@ -163,7 +198,7 @@ export default function ChatBox() {
     } finally {
       setIsStreaming(false);
     }
-  }, []);
+  }, [chatSettings.model, chatSettings.temperature, chatSettings.maxTokens]);
 
   const regenerateResponse = useCallback(async (messageIndex: number, strategy: 'quick' | 'detailed' | 'concise' = 'quick') => {
     if (messageIndex < 0 || messageIndex >= conversation.length) return;
@@ -174,24 +209,36 @@ export default function ChatBox() {
     const userMessageIndex = messageIndex - 1;
     if (userMessageIndex < 0 || conversation[userMessageIndex].role !== 'user') return;
 
+    // For regeneration: send up to user message, then user message, then system instruction
+    const conversationUpToUser = conversation.slice(0, messageIndex); // up to the user message
     const userMessage = conversation[userMessageIndex];
+    const systemRegenerate: Message = {
+      role: 'system',
+      content: 'Regenerate the previous answer. Rewrite it in a different way.',
+    };
     const messageId = `msg-${messageIndex}`;
     
     setRegeneratingMessageId(messageId);
     setIsStreaming(true);
 
     try {
+      const modelName =
+        chatSettings.model === 'mistral'
+          ? config.getModels().mistral.chat
+          : config.getModels().groq.chat;
       const regenerationOptions = {
         maxResults: 5,
+        model: modelName,
+        temperature: chatSettings.temperature,
+        maxTokens: chatSettings.maxTokens,
         promptType: strategy === 'detailed' ? 'educational' : 
                    strategy === 'concise' ? 'customerService' : undefined
       };
 
-      const conversationUpToUser = conversation.slice(0, messageIndex);
-      
       const { messages, newMessage, sources } = await continueConversation([
         ...conversationUpToUser,
         userMessage,
+        systemRegenerate,
       ], regenerationOptions);
 
       let textContent = '';
@@ -199,57 +246,32 @@ export default function ChatBox() {
       for await (const delta of readStreamableValue(newMessage)) {
         textContent = `${textContent}${delta}`;
 
-        if (textContent.includes('Rate limit exceeded')) {
-          setRateLimitInfo({
-            remaining: 0,
-            resetTime: Date.now() + 60000
-          });
-        }
-
-        setConversation(prev => {
-          const newConversation = [...prev];
-          newConversation[messageIndex] = {
-            ...newConversation[messageIndex],
+        setConversation(prev => [
+          ...prev.slice(0, messageIndex), // up to the user message (inclusive)
+          {
+            role: 'assistant',
             content: textContent,
             timestamp: new Date(),
             sources: sources,
             regenerated: true
-          };
-          return newConversation;
-        });
+          },
+        ]);
       }
     } catch (error) {
       console.error('Error regenerating response:', error);
-      
-      let errorMessage = 'Sorry, I encountered an error while regenerating. Please try again.';
-      
-      if (error instanceof Error) {
-        if (error.message.includes('Groq API') || error.message.includes('GROQ_API_KEY')) {
-          errorMessage = 'Groq API not configured. Please contact support to enable different sources feature.';
-        } else if (error.message.includes('Rate limit')) {
-          errorMessage = 'Rate limit exceeded. Please wait a moment and try again.';
-        } else if (error.message.includes('401') || error.message.includes('Unauthorized')) {
-          errorMessage = 'API authentication failed. Please contact support.';
-        } else if (error.message.includes('500') || error.message.includes('Internal server error')) {
-          errorMessage = 'Server error. Please try again in a moment.';
-        }
-      }
-      
-      setConversation(prev => {
-        const newConversation = [...prev];
-        newConversation[messageIndex] = {
-          ...newConversation[messageIndex],
-          content: errorMessage,
-          timestamp: new Date(),
-          regenerated: true
-        };
-        return newConversation;
-      });
+      setConversation(prev => [
+        ...prev,
+        { 
+          role: 'assistant', 
+          content: 'Sorry, I encountered an error while regenerating the response.',
+          timestamp: new Date()
+        },
+      ]);
     } finally {
       setIsStreaming(false);
       setRegeneratingMessageId(null);
     }
-  }, [conversation]);
+  }, [conversation, chatSettings.model, chatSettings.temperature, chatSettings.maxTokens]);
 
   useEffect(() => {
     scrollToBottom();
@@ -267,23 +289,34 @@ export default function ChatBox() {
   const handleKeyDown = (event: React.KeyboardEvent) => {
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();
-      sendMessage(input);
+      if (input.trim() && !isStreaming) {
+        sendMessage(input);
+      }
     }
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInput(event.target.value);
-    const textarea = event.target;
-    textarea.style.height = 'auto';
-    textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
   };
 
   const handleSuggestedQuestion = (question: string) => {
-    sendMessage(question);
+    setInput(question);
   };
 
   const handleVoiceTranscript = (transcript: string) => {
     setInput(transcript);
+  };
+
+  const handleSettingsChange = (newSettings: ChatSettingsType) => {
+    setChatSettings(newSettings);
+    setNotification({
+      message: `Settings updated: ${newSettings.model} model, temperature ${newSettings.temperature}`,
+      type: 'success'
+    });
+  };
+
+  const toggleSettings = () => {
+    setIsSettingsOpen(!isSettingsOpen);
   };
 
   return (
@@ -298,7 +331,19 @@ export default function ChatBox() {
         </div>
       )}
       
-      <ChatHeader onClearConversation={clearConversation} />
+      <ChatHeader 
+        onClearConversation={clearConversation}
+        currentModel={chatSettings.model}
+        currentTemperature={chatSettings.temperature}
+        settingsComponent={
+          <ChatSettings
+            settings={chatSettings}
+            onSettingsChange={handleSettingsChange}
+            isOpen={isSettingsOpen}
+            onToggle={toggleSettings}
+          />
+        }
+      />
 
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {conversation.length === 0 ? (
