@@ -42,7 +42,11 @@ export class MistralProviderImpl implements MistralProvider {
   }
 
   async generateResponse(messages: Message[], mistralConfig?: Partial<MistralConfig>): Promise<MistralResponse> {
-    const finalConfig = { ...this.defaultConfig, ...mistralConfig };
+    const mergedConfig = { ...this.defaultConfig, ...mistralConfig };
+    const finalConfig = {
+      ...mergedConfig,
+      temperature: config.getValidatedTemperature('mistral', mergedConfig.temperature)
+    };
     
     console.log(`[MISTRAL] Attempting to generate response with model: ${finalConfig.model}`);
     
@@ -113,7 +117,11 @@ export class MistralProviderImpl implements MistralProvider {
   }
 
   async *generateStreamingResponse(messages: Message[], mistralConfig?: Partial<MistralConfig>): AsyncGenerator<string> {
-    const finalConfig = { ...this.defaultConfig, ...mistralConfig };
+    const mergedConfig = { ...this.defaultConfig, ...mistralConfig };
+    const finalConfig = {
+      ...mergedConfig,
+      temperature: config.getValidatedTemperature('mistral', mergedConfig.temperature)
+    };
     
     console.log(`[MISTRAL] generateStreamingResponse called with config:`, mistralConfig);
     console.log(`[MISTRAL] Merged config:`, finalConfig);

@@ -39,6 +39,17 @@ export interface AppConfig {
     temperature: number;
     maxHistoryLength: number;
   };
+  
+  providers: {
+    mistral: {
+      maxTemperature: number;
+      defaultTemperature: number;
+    };
+    groq: {
+      maxTemperature: number;
+      defaultTemperature: number;
+    };
+  };
 }
 
 export class ConfigManager {
@@ -98,6 +109,17 @@ export class ConfigManager {
         temperature: parseFloat(process.env.CHAT_TEMPERATURE || '0.7'),
         maxHistoryLength: parseInt(process.env.CHAT_MAX_HISTORY_LENGTH || '10'),
       },
+      
+      providers: {
+        mistral: {
+          maxTemperature: 1.5,
+          defaultTemperature: 0.7,
+        },
+        groq: {
+          maxTemperature: 2.0,
+          defaultTemperature: 0.7,
+        },
+      },
     };
   }
 
@@ -143,6 +165,38 @@ export class ConfigManager {
       chatModel: this.config.models.groq.chat,
       embeddingModel: this.config.models.groq.embedding,
     };
+  }
+
+  getProviderConfig(provider: 'mistral' | 'groq') {
+    return this.config.providers[provider];
+  }
+
+  validateTemperature(provider: 'mistral' | 'groq', temperature: number): { isValid: boolean; error?: string } {
+    const providerConfig = this.config.providers[provider];
+    const maxTemp = providerConfig.maxTemperature;
+    
+    if (temperature < 0 || temperature > maxTemp) {
+      return {
+        isValid: false,
+        error: `Temperature for ${provider} must be between 0.0 and ${maxTemp}. Got: ${temperature}`
+      };
+    }
+    
+    return { isValid: true };
+  }
+
+  getValidatedTemperature(provider: 'mistral' | 'groq', temperature?: number): number {
+    if (temperature === undefined) {
+      return this.config.providers[provider].defaultTemperature;
+    }
+    
+    const validation = this.validateTemperature(provider, temperature);
+    if (!validation.isValid) {
+      console.warn(`[CONFIG] ${validation.error}, using default temperature`);
+      return this.config.providers[provider].defaultTemperature;
+    }
+    
+    return temperature;
   }
 
   validateConfig(): { isValid: boolean; errors: string[] } {

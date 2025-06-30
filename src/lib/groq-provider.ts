@@ -42,7 +42,11 @@ export class GroqProviderImpl implements GroqProvider {
   }
 
   async generateResponse(messages: Message[], groqConfig?: Partial<GroqConfig>): Promise<GroqResponse> {
-    const finalConfig = { ...this.defaultConfig, ...groqConfig };
+    const mergedConfig = { ...this.defaultConfig, ...groqConfig };
+    const finalConfig = {
+      ...mergedConfig,
+      temperature: config.getValidatedTemperature('groq', mergedConfig.temperature)
+    };
     
     console.log(`[GROQ] Attempting to generate response with model: ${finalConfig.model}`);
     
@@ -115,7 +119,11 @@ export class GroqProviderImpl implements GroqProvider {
   }
 
   async *generateStreamingResponse(messages: Message[], groqConfig?: Partial<GroqConfig>): AsyncGenerator<string> {
-    const finalConfig = { ...this.defaultConfig, ...groqConfig };
+    const mergedConfig = { ...this.defaultConfig, ...groqConfig };
+    const finalConfig = {
+      ...mergedConfig,
+      temperature: config.getValidatedTemperature('groq', mergedConfig.temperature)
+    };
     
     console.log(`[GROQ] generateStreamingResponse called with config:`, groqConfig);
     console.log(`[GROQ] Merged config:`, finalConfig);

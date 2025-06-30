@@ -31,11 +31,12 @@ const modelOptions = [
   }
 ];
 
-const temperaturePresets = [
+const getTemperaturePresets = (maxTemp: number) => [
   { value: 0.1, label: 'Focused', description: 'Very consistent, factual responses' },
   { value: 0.3, label: 'Balanced', description: 'Good balance of creativity and accuracy' },
   { value: 0.7, label: 'Creative', description: 'More imaginative and varied responses' },
-  { value: 1.0, label: 'Explorative', description: 'Maximum creativity and variety' }
+  { value: Math.min(1.0, maxTemp), label: 'Explorative', description: 'Maximum creativity and variety' },
+  ...(maxTemp > 1.0 ? [{ value: maxTemp, label: 'Maximum', description: 'Highest possible creativity' }] : [])
 ];
 
 export default function ChatSettings({ 
@@ -75,7 +76,13 @@ export default function ChatSettings({
     return 'Highly creative and explorative';
   };
 
+  const getMaxTemperature = (model: 'mistral' | 'groq') => {
+    return model === 'mistral' ? 1.5 : 2.0;
+  };
+
   const selectedModel = modelOptions.find(m => m.id === localSettings.model);
+  const maxTemperature = getMaxTemperature(localSettings.model);
+  const temperaturePresets = getTemperaturePresets(maxTemperature);
 
   return (
     <div className="relative">
@@ -161,12 +168,12 @@ export default function ChatSettings({
               {/* Filled bar */}
               <div
                 className="absolute h-2 rounded-lg bg-conab-middle-blue"
-                style={{ width: `${localSettings.temperature * 100}%` }}
+                style={{ width: `${(localSettings.temperature / maxTemperature) * 100}%` }}
               />
               <input
                 type="range"
                 min="0"
-                max="1"
+                max={maxTemperature}
                 step="0.1"
                 value={localSettings.temperature}
                 onChange={(e) => handleTemperatureChange(parseFloat(e.target.value))}
@@ -177,6 +184,9 @@ export default function ChatSettings({
             {/* Temperature Description */}
             <p className="text-xs text-conab-middle-blue/70 mt-2">
               {getTemperatureDescription(localSettings.temperature)}
+            </p>
+            <p className="text-xs text-conab-middle-blue/50 mt-1">
+              Range: 0.0 - {maxTemperature} ({localSettings.model === 'mistral' ? 'Mistral' : 'Groq'} limit)
             </p>
 
             {/* Temperature Presets */}
