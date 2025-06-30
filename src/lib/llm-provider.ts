@@ -1,6 +1,8 @@
 import { streamText } from 'ai';
 import { mistral } from '@ai-sdk/mistral';
+import { config } from './config';
 import { GroqProviderImpl } from './groq-provider';
+import { MistralProviderImpl } from './mistral-provider';
 
 export interface LLMConfig {
   model: string;
@@ -25,102 +27,6 @@ export interface Message {
 export interface LLMProvider {
   generateResponse(messages: Message[], config?: Partial<LLMConfig>): Promise<LLMResponse>;
   generateStreamingResponse(messages: Message[], config?: Partial<LLMConfig>): AsyncGenerator<string>;
-}
-
-export class MistralProvider implements LLMProvider {
-  private defaultConfig: LLMConfig;
-
-  constructor(config?: Partial<LLMConfig>) {
-    this.defaultConfig = {
-      model: 'mistral-small-latest',
-      maxTokens: 1000,
-      temperature: 0.7,
-      ...config,
-    };
-  }
-
-  async generateResponse(messages: Message[], config?: Partial<LLMConfig>): Promise<LLMResponse> {
-    const finalConfig = { ...this.defaultConfig, ...config };
-    
-    try {
-      const { textStream } = streamText({
-        model: mistral(finalConfig.model),
-        messages: messages as Array<{ role: 'user' | 'assistant' | 'system'; content: string }>,
-        maxTokens: finalConfig.maxTokens,
-        temperature: finalConfig.temperature,
-      });
-
-      let content = '';
-      for await (const text of textStream) {
-        content += text;
-      }
-
-      if (!content.trim()) {
-        throw new Error('No response content received from Mistral API');
-      }
-
-      return {
-        content,
-        usage: {
-          promptTokens: messages.reduce((sum, msg) => sum + msg.content.length, 0),
-          completionTokens: content.length,
-          totalTokens: messages.reduce((sum, msg) => sum + msg.content.length, 0) + content.length,
-        },
-      };
-    } catch (error) {
-      console.error('Mistral API error:', error);
-      
-      // Check for specific error types
-      const errorMessage = error instanceof Error ? error.message : String(error);
-      
-      if (errorMessage.includes('401') || errorMessage.includes('Unauthorized')) {
-        throw new Error('Mistral API authentication failed - invalid API key');
-      } else if (errorMessage.includes('429') || errorMessage.includes('Rate limit')) {
-        throw new Error('Mistral API rate limit exceeded');
-      } else if (errorMessage.includes('500') || errorMessage.includes('Internal server error')) {
-        throw new Error('Mistral API server error');
-      } else {
-        throw new Error(`Mistral API error: ${errorMessage}`);
-      }
-    }
-  }
-
-  async *generateStreamingResponse(messages: Message[], config?: Partial<LLMConfig>): AsyncGenerator<string> {
-    const finalConfig = { ...this.defaultConfig, ...config };
-    
-    try {
-      const { textStream } = streamText({
-        model: mistral(finalConfig.model),
-        messages: messages as Array<{ role: 'user' | 'assistant' | 'system'; content: string }>,
-        maxTokens: finalConfig.maxTokens,
-        temperature: finalConfig.temperature,
-      });
-
-      let hasContent = false;
-      for await (const text of textStream) {
-        hasContent = true;
-        yield text;
-      }
-
-      if (!hasContent) {
-        throw new Error('No response content received from Mistral API');
-      }
-    } catch (error) {
-      console.error('Mistral streaming error:', error);
-      
-      const errorMessage = error instanceof Error ? error.message : String(error);
-      
-      if (errorMessage.includes('401') || errorMessage.includes('Unauthorized')) {
-        throw new Error('Mistral API authentication failed - invalid API key');
-      } else if (errorMessage.includes('429') || errorMessage.includes('Rate limit')) {
-        throw new Error('Mistral API rate limit exceeded');
-      } else if (errorMessage.includes('500') || errorMessage.includes('Internal server error')) {
-        throw new Error('Mistral API server error');
-      } else {
-        throw new Error(`Mistral API error: ${errorMessage}`);
-      }
-    }
-  }
 }
 
 export class MockLLMProvider implements LLMProvider {
@@ -182,6 +88,14 @@ export class LLMProviderManager {
     }
     this.currentProvider = name;
     console.log(`Switched to provider: ${name}`);
+  }
+
+  setFallbackProvider(name: string): void {
+    if (!this.providers.has(name)) {
+      throw new Error(`Provider '${name}' not found`);
+    }
+    this.fallbackProvider = name;
+    console.log(`Set fallback provider to: ${name}`);
   }
 
   getCurrentProvider(): LLMProvider {
@@ -253,18 +167,19 @@ export class LLMProviderManager {
     return this.currentProvider;
   }
 
-  async *generateStreamingResponseWithFallback(messages: Message[], config?: Partial<LLMConfig>): AsyncGenerator<string> {
-    const providerToUse = this.getProviderForModel(config?.model);
+  async *generateStreamingResponseWithFallback(messages: Message[], configOverride?: Partial<LLMConfig>): AsyncGenerator<string> {
+    // Use the current provider (user's choice) instead of determining from model name
+    const providerToUse = this.currentProvider;
     const startTime = Date.now();
-    console.log(`[${new Date().toISOString()}] Starting streaming response with provider: ${providerToUse} (model: ${config?.model})`);
+    console.log(`[${new Date().toISOString()}] Starting streaming response with provider: ${providerToUse} (user selected: ${providerToUse}, model: ${configOverride?.model})`);
     
     try {
       const provider = this.providers.get(providerToUse);
       if (!provider) {
-        throw new Error(`Provider '${providerToUse}' not found for model '${config?.model}'`);
+        throw new Error(`Provider '${providerToUse}' not found for model '${configOverride?.model}'`);
       }
       
-      const stream = provider.generateStreamingResponse(messages, config);
+      const stream = provider.generateStreamingResponse(messages, configOverride);
       let hasContent = false;
       let firstChunkTime = 0;
       
@@ -287,17 +202,29 @@ export class LLMProviderManager {
       console.log(`[${new Date().toISOString()}] SUCCESS: Completed streaming response with ${providerToUse} in ${duration}ms`);
     } catch (error) {
       const duration = Date.now() - startTime;
-      console.warn(`[${new Date().toISOString()}] FAILED: Primary provider (${providerToUse}) failed after ${duration}ms, falling back to ${this.fallbackProvider}:`, error);
+      console.warn(`[${new Date().toISOString()}] FAILED: Primary provider (${providerToUse}) failed after ${duration}ms, trying fallback provider:`, error);
+      
+      // Use the configured fallback provider
+      console.log(`[${new Date().toISOString()}] SWITCHING: Attempting fallback provider: ${this.fallbackProvider}`);
       
       try {
-        console.log(`[${new Date().toISOString()}] SWITCHING: Attempting streaming fallback to ${this.fallbackProvider}`);
-        const fallbackStream = this.providers.get(this.fallbackProvider)?.generateStreamingResponse(messages, config);
+        // Create fallback config with appropriate model for the fallback provider
+        const fallbackConfig = { ...configOverride };
+        if (this.fallbackProvider === 'mistral') {
+          fallbackConfig.model = config.getModels().mistral.chat;
+        } else if (this.fallbackProvider === 'groq') {
+          fallbackConfig.model = config.getModels().groq.chat;
+        }
+        
+        const fallbackStream = this.providers.get(this.fallbackProvider)?.generateStreamingResponse(messages, fallbackConfig);
         if (fallbackStream) {
           for await (const text of fallbackStream) {
             yield text;
           }
           const totalDuration = Date.now() - startTime;
           console.log(`[${new Date().toISOString()}] SUCCESS: Completed streaming response with fallback provider ${this.fallbackProvider} in ${totalDuration}ms total`);
+        } else {
+          throw new Error(`Fallback provider ${this.fallbackProvider} not available`);
         }
       } catch (fallbackError) {
         const totalDuration = Date.now() - startTime;
@@ -319,7 +246,7 @@ export class LLMProviderManager {
 export function createLLMProvider(type: 'mistral' | 'groq' | 'mock', config?: Partial<LLMConfig>): LLMProvider {
   switch (type) {
     case 'mistral':
-      return new MistralProvider(config);
+      return new MistralProviderImpl(config);
     case 'groq':
       return new GroqProviderImpl(config);
     case 'mock':

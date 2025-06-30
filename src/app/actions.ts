@@ -207,8 +207,24 @@ export async function continueConversation(
       ];
 
       const llmManager = serviceFactory.getLLMManager();
+      
+      // Set the current provider based on the model selection
+      const selectedProvider = options.model?.includes('mistral') ? 'mistral' : 'groq';
+      const fallbackProvider = selectedProvider === 'mistral' ? 'groq' : 'mistral';
+      
+      console.log(`[ACTIONS] Setting current provider to: ${selectedProvider} based on model: ${options.model}`);
+      console.log(`[ACTIONS] Setting fallback provider to: ${fallbackProvider}`);
+      
+      llmManager.setCurrentProvider(selectedProvider);
+      llmManager.setFallbackProvider(fallbackProvider);
+      
+      // Use the appropriate model for the current provider
+      const currentModel = selectedProvider === 'mistral' 
+        ? config.getModels().mistral.chat 
+        : config.getModels().groq.chat;
+      
       const llmConfigOverride = {
-        model: options.model,
+        model: currentModel,
         maxTokens: options.maxTokens || chatConfig.maxTokens,
         temperature: options.temperature !== undefined ? options.temperature : chatConfig.temperature,
       };
@@ -216,6 +232,7 @@ export async function continueConversation(
       try {
         console.log('[ACTIONS] Starting streaming response with timeout...');
         console.log('[ACTIONS] LLM Config:', llmConfigOverride);
+        console.log('[ACTIONS] Current provider:', llmManager.getProviderStatus().current);
         const startTime = Date.now();
         
         // Create the streaming response
@@ -259,8 +276,13 @@ export async function continueConversation(
 
           const fallbackProvider = llmManager.getFallbackProvider();
           if (fallbackProvider) {
+            // Use the appropriate model for the fallback provider
+            const fallbackModel = llmManager.getProviderStatus().fallback === 'mistral' 
+              ? config.getModels().mistral.chat 
+              : config.getModels().groq.chat;
+            
             const fallbackResponse = await fallbackProvider.generateResponse(messages, {
-              model: options.model === 'groq' ? undefined : (options.model || config.getModels().groq.chat),
+              model: fallbackModel,
               maxTokens: options.maxTokens || chatConfig.maxTokens,
               temperature: options.temperature !== undefined ? options.temperature : chatConfig.temperature,
             });

@@ -1,10 +1,10 @@
 import { config } from './config';
 import { 
   LLMProviderManager, 
-  createLLMProvider, 
-  MistralProvider, 
-  GroqProviderImpl 
+  createLLMProvider
 } from './llm-provider';
+import { MistralProviderImpl } from './mistral-provider';
+import { GroqProviderImpl } from './groq-provider';
 import { 
   EmbeddingProviderManager, 
   createEmbeddingProvider 
@@ -51,12 +51,17 @@ export class ServiceFactory {
 
     if (config.getApiKeys().mistral) {
       const mistralConfig = config.getMistralConfig();
-      const mistralProvider = new MistralProvider({
+      console.log(`🤖 Registering Mistral provider with model: ${mistralConfig.chatModel}`);
+      console.log(`🤖 Mistral config:`, mistralConfig);
+      const mistralProvider = new MistralProviderImpl({
         model: mistralConfig.chatModel,
         maxTokens: config.getChatConfig().maxTokens,
         temperature: config.getChatConfig().temperature,
       });
       this.llmManager.registerProvider('mistral', mistralProvider);
+      console.log(`✅ Mistral provider registered successfully`);
+    } else {
+      console.log(`⚠️ Mistral API key not found, skipping Mistral provider registration`);
     }
 
     if (config.getApiKeys().groq) {
