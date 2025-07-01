@@ -115,7 +115,7 @@ export class VectorDB {
   }
 
   async search(query: string, k: number = 3, clientIdentifier?: string): Promise<Document[]> {
-    console.log(`🔍 Starting priority-based semantic search...`);
+    console.log(`🔍 Starting topic-based semantic search...`);
     console.log(`❓ Query: "${query}"`);
     console.log(`📊 Requesting top ${k} results`);
     
@@ -145,24 +145,24 @@ export class VectorDB {
       return this.fallbackTextSearch(documents, query, k);
     }
 
-    // Try priority-based semantic search first with timeout
+    // Try topic-based semantic search first with timeout
     try {
-      console.log(`🧠 Attempting priority-based semantic search with embeddings...`);
+      console.log(`🧠 Attempting topic-based semantic search with embeddings...`);
       const timeoutPromise = new Promise<never>((_, reject) => {
         setTimeout(() => {
           reject(new Error('Semantic search timed out, falling back to text search'));
         }, 15000); // 15 second timeout for entire search
       });
 
-      const searchPromise = this.priorityBasedSearch(documentsWithEmbeddings, query, k);
+      const searchPromise = this.topicBasedSearch(documentsWithEmbeddings, query, k);
       return await Promise.race([searchPromise, timeoutPromise]);
     } catch (error) {
-      console.warn(`❌ Priority-based search failed, falling back to text search:`, error);
+      console.warn(`❌ Topic-based search failed, falling back to text search:`, error);
       return this.fallbackTextSearch(documents, query, k);
     }
   }
 
-  private async priorityBasedSearch(documentsWithEmbeddings: StoredDocument[], query: string, k: number): Promise<Document[]> {
+  private async topicBasedSearch(documentsWithEmbeddings: StoredDocument[], query: string, k: number): Promise<Document[]> {
     console.log(`🧠 Generating embedding for query: "${query}"`);
     const queryEmbedding = await this.getQueryEmbedding(query);
     console.log(`✅ Query embedding generated, length: ${queryEmbedding.length}`);
@@ -179,30 +179,183 @@ export class VectorDB {
       })
       .sort((a, b) => b.similarity - a.similarity); // Sort by similarity (highest first)
 
-    // Separate documents by priority
-    const mainPages = scoredDocuments.filter(item => !this.isBlogPost(item.document));
-    const blogPosts = scoredDocuments.filter(item => this.isBlogPost(item.document));
+    // Determine the topic of the query
+    const queryTopic = this.detectQueryTopic(query);
+    console.log(`🎯 Detected query topic: ${queryTopic}`);
 
-    console.log(`📊 Document breakdown:`);
-    console.log(`   - Main pages: ${mainPages.length}`);
-    console.log(`   - Blog posts: ${blogPosts.length}`);
+    // Get topic-specific results
+    const results = this.getTopicSpecificResults(scoredDocuments, queryTopic, k);
 
-    // Priority-based selection strategy
-    const results = this.selectPriorityResults(mainPages, blogPosts, k);
-
-    console.log(`🏆 Final priority-based results:`);
+    console.log(`🏆 Final topic-based results:`);
     results.forEach((item, index) => {
       const type = this.isBlogPost(item.document) ? '📝 Blog' : '🌐 Page';
-      console.log(`  ${index + 1}. ${type} "${item.document.metadata?.title || 'No title'}" (${item.similarity.toFixed(4)})`);
+      const topic = this.getDocumentTopic(item.document);
+      console.log(`  ${index + 1}. ${type} [${topic}] "${item.document.metadata?.title || 'No title'}" (${item.similarity.toFixed(4)})`);
     });
 
-    console.log(`✅ Found ${results.length} relevant documents using priority-based search`);
+    console.log(`✅ Found ${results.length} relevant documents using topic-based search`);
     
     // Return documents without embeddings
     return results.map(item => ({
       pageContent: item.document.pageContent,
       metadata: item.document.metadata
     }));
+  }
+
+  private detectQueryTopic(query: string): 'surrogacy' | 'egg-donor' | 'intended-parents' | 'general' {
+    const queryLower = query.toLowerCase();
+    
+    // Surrogacy keywords
+    const surrogacyKeywords = [
+      'surrogacy', 'surrogate', 'surrogate mother', 'gestational carrier',
+      'become a surrogate', 'surrogate pregnancy', 'surrogate process',
+      'surrogate requirements', 'surrogate compensation', 'surrogate journey'
+    ];
+    
+    // Egg donor keywords
+    const eggDonorKeywords = [
+      'egg donor', 'egg donation', 'donate eggs', 'egg donor process',
+      'become an egg donor', 'egg donor requirements', 'egg donor compensation',
+      'egg retrieval', 'donor eggs', 'egg donation process'
+    ];
+    
+    // Intended parents keywords
+    const intendedParentsKeywords = [
+      'intended parents', 'surrogacy parents', 'find a surrogate',
+      'surrogate mother', 'surrogacy journey', 'surrogacy cost',
+      'surrogacy process', 'surrogacy agency', 'surrogacy program',
+      'parent', 'parents', 'family building', 'fertility'
+    ];
+    
+    // Check for surrogacy keywords
+    if (surrogacyKeywords.some(keyword => queryLower.includes(keyword))) {
+      return 'surrogacy';
+    }
+    
+    // Check for egg donor keywords
+    if (eggDonorKeywords.some(keyword => queryLower.includes(keyword))) {
+      return 'egg-donor';
+    }
+    
+    // Check for intended parents keywords
+    if (intendedParentsKeywords.some(keyword => queryLower.includes(keyword))) {
+      return 'intended-parents';
+    }
+    
+    return 'general';
+  }
+
+  private getDocumentTopic(document: StoredDocument): string {
+    const url = document.metadata?.url as string;
+    const title = document.metadata?.title as string;
+    
+    if (!url) return 'general';
+    
+    // Check URL patterns for topic classification
+    if (url.includes('/surrogacy/') || url.includes('/surrogate/')) {
+      return 'surrogacy';
+    }
+    
+    if (url.includes('/egg-donor/') || url.includes('/egg-donation/')) {
+      return 'egg-donor';
+    }
+    
+    if (url.includes('/parents/') || url.includes('/intended-parents/')) {
+      return 'intended-parents';
+    }
+    
+    // Check title patterns as fallback
+    if (title) {
+      const titleLower = title.toLowerCase();
+      if (titleLower.includes('surrogacy') || titleLower.includes('surrogates')) {
+        return 'surrogacy';
+      }
+      if (titleLower.includes('egg donor') || titleLower.includes('egg donation')) {
+        return 'egg-donor';
+      }
+      if (titleLower.includes('parent') || titleLower.includes('family')) {
+        return 'intended-parents';
+      }
+    }
+    
+    return 'general';
+  }
+
+  private getTopicSpecificResults(scoredDocuments: any[], queryTopic: string, k: number): any[] {
+    console.log(`🎯 Getting topic-specific results for: ${queryTopic}`);
+    
+    if (queryTopic === 'general') {
+      console.log(`🌐 Using general priority-based search for general query`);
+      return this.selectPriorityResults(
+        scoredDocuments.filter(item => !this.isBlogPost(item.document)),
+        scoredDocuments.filter(item => this.isBlogPost(item.document)),
+        k
+      );
+    }
+    
+    // Filter documents by topic
+    const topicDocuments = scoredDocuments.filter(item => 
+      this.getDocumentTopic(item.document) === queryTopic
+    );
+    
+    const otherDocuments = scoredDocuments.filter(item => 
+      this.getDocumentTopic(item.document) !== queryTopic
+    );
+    
+    console.log(`📊 Topic breakdown:`);
+    console.log(`   - ${queryTopic} documents: ${topicDocuments.length}`);
+    console.log(`   - Other documents: ${otherDocuments.length}`);
+    
+    // Separate topic documents by type
+    const topicMainPages = topicDocuments.filter(item => !this.isBlogPost(item.document));
+    const topicBlogPosts = topicDocuments.filter(item => this.isBlogPost(item.document));
+    
+    console.log(`   - ${queryTopic} main pages: ${topicMainPages.length}`);
+    console.log(`   - ${queryTopic} blog posts: ${topicBlogPosts.length}`);
+    
+    // Strategy: Fill with topic-specific main pages first, then topic-specific blog posts,
+    // then other main pages, then other blog posts
+    const results: any[] = [];
+    
+    // 1. Add topic-specific main pages (priority 1)
+    const topicMainPagesToAdd = topicMainPages.slice(0, Math.ceil(k * 0.6));
+    results.push(...topicMainPagesToAdd);
+    console.log(`✅ Added ${topicMainPagesToAdd.length} ${queryTopic} main pages`);
+    
+    // 2. Add topic-specific blog posts (priority 2)
+    const remainingSlots = k - results.length;
+    if (remainingSlots > 0 && topicBlogPosts.length > 0) {
+      const topicBlogPostsToAdd = topicBlogPosts.slice(0, remainingSlots);
+      results.push(...topicBlogPostsToAdd);
+      console.log(`📝 Added ${topicBlogPostsToAdd.length} ${queryTopic} blog posts`);
+    }
+    
+    // 3. If we still need more content, add other main pages (priority 3)
+    const stillRemainingSlots = k - results.length;
+    if (stillRemainingSlots > 0) {
+      const otherMainPages = otherDocuments.filter(item => !this.isBlogPost(item.document));
+      const otherMainPagesToAdd = otherMainPages.slice(0, stillRemainingSlots);
+      results.push(...otherMainPagesToAdd);
+      console.log(`➕ Added ${otherMainPagesToAdd.length} other main pages`);
+    }
+    
+    // 4. If we still need more content, add other blog posts (priority 4)
+    const finalRemainingSlots = k - results.length;
+    if (finalRemainingSlots > 0) {
+      const otherBlogPosts = otherDocuments.filter(item => this.isBlogPost(item.document));
+      const otherBlogPostsToAdd = otherBlogPosts.slice(0, finalRemainingSlots);
+      results.push(...otherBlogPostsToAdd);
+      console.log(`📝 Added ${otherBlogPostsToAdd.length} other blog posts`);
+    }
+    
+    console.log(`📊 Final topic-based result breakdown:`);
+    console.log(`   - ${queryTopic} main pages: ${results.filter(r => this.getDocumentTopic(r.document) === queryTopic && !this.isBlogPost(r.document)).length}`);
+    console.log(`   - ${queryTopic} blog posts: ${results.filter(r => this.getDocumentTopic(r.document) === queryTopic && this.isBlogPost(r.document)).length}`);
+    console.log(`   - Other main pages: ${results.filter(r => this.getDocumentTopic(r.document) !== queryTopic && !this.isBlogPost(r.document)).length}`);
+    console.log(`   - Other blog posts: ${results.filter(r => this.getDocumentTopic(r.document) !== queryTopic && this.isBlogPost(r.document)).length}`);
+    console.log(`   - Total: ${results.length}`);
+    
+    return results;
   }
 
   private isBlogPost(document: StoredDocument): boolean {
