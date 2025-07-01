@@ -1,0 +1,44 @@
+{
+  "scrapedAt": "2025-06-30T17:02:55.400Z",
+  "totalPages": 480,
+  "successfulPages": 215,
+  "failedPages": 265,
+  "totalFAQItems": 549,
+  "categories": {
+    "Pricing & Costs": 41,
+    "Medical & Health": 55,
+    "Insurance & Coverage": 28,
+    "General": 284,
+    "Legal & Contracts": 24,
+    "Compensation & Benefits": 35,
+    "Process & Timeline": 23,
+    "Requirements & Eligibility": 59
+  },
+  "sampleItems": [
+    {
+      "question": "Do You Know a Lactating Woman? Here’s How to Join or Refer Them to Our the Paid Breast Milk Donation...",
+      "category": "Pricing & Costs",
+      "source": "Join or Refer a Lactating Woman to Our Milk Bank Challenge"
+    },
+    {
+      "question": "What is the Difference Between Medical and Social Surrogacy?...",
+      "category": "Medical & Health",
+      "source": "Understanding Social Surrogacy: Breaking Down The Difference Between Medical Need and Social Surrogacy | ConceiveAbilities"
+    },
+    {
+      "question": "What is the All-In Program?...",
+      "category": "Pricing & Costs",
+      "source": "Elevate Your Surrogacy Journey: Discover the Enhanced All-In Program at ConceiveAbilities | ConceiveAbilities"
+    },
+    {
+      "question": "What is the cost of my surrogate’s medical coverage?...",
+      "category": "Pricing & Costs",
+      "source": "Health Insurance FAQs - What You Need to Know | ConceiveAbilities"
+    },
+    {
+      "question": "Does a surrogate need her own health insurance?...",
+      "category": "Insurance & Coverage",
+      "source": "Health Insurance FAQs - What You Need to Know | ConceiveAbilities"
+    }
+  ]
+}

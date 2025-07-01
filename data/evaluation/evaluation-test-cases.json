@@ -1,0 +1,714 @@
+{
+  "testSuite": {
+    "name": "ConceiveAbilities FAQ Evaluation Test Cases",
+    "description": "Comprehensive test cases for evaluating chatbot performance across all FAQ categories",
+    "version": "1.0",
+    "totalTestCases": 80,
+    "datasetInfo": {
+      "totalFAQItems": 549,
+      "categories": {
+        "General": 284,
+        "Medical & Health": 55,
+        "Requirements & Eligibility": 59,
+        "Pricing & Costs": 41,
+        "Compensation & Benefits": 35,
+        "Insurance & Coverage": 28,
+        "Legal & Contracts": 24,
+        "Process & Timeline": 23
+      }
+    }
+  },
+  "testCases": [
+    {
+      "id": "TC001",
+      "category": "Pricing & Costs",
+      "difficulty": "Easy",
+      "question": "What is the cost of the All-In Program?",
+      "expectedKeywords": ["$197,500", "fixed price", "comprehensive", "risk-free"],
+      "expectedSources": ["All-In Program", "pricing"]
+    },
+    {
+      "id": "TC002",
+      "category": "Pricing & Costs",
+      "difficulty": "Easy",
+      "question": "What is included in the All-In Program?",
+      "expectedKeywords": ["recruiting", "screening", "matching", "medical coverage", "legal", "escrow", "compensation", "travel"],
+      "expectedSources": ["All-In Program"]
+    },
+    {
+      "id": "TC003",
+      "category": "Insurance & Coverage",
+      "difficulty": "Medium",
+      "question": "Does a surrogate need her own health insurance?",
+      "expectedKeywords": ["required", "maintain", "own health insurance", "contract", "review policy"],
+      "expectedSources": ["Health Insurance FAQs"]
+    },
+    {
+      "id": "TC004",
+      "category": "Insurance & Coverage",
+      "difficulty": "Medium",
+      "question": "What medical coverage is included for surrogates?",
+      "expectedKeywords": ["direct medical coverage", "fully included", "All-In Program", "medical needs"],
+      "expectedSources": ["Health Insurance FAQs", "All-In Program"]
+    },
+    {
+      "id": "TC005",
+      "category": "Medical & Health",
+      "difficulty": "Easy",
+      "question": "What is the difference between medical and social surrogacy?",
+      "expectedKeywords": ["medical need", "social surrogacy", "genetic parentage", "legal considerations"],
+      "expectedSources": ["Understanding Social Surrogacy"]
+    },
+    {
+      "id": "TC006",
+      "category": "Medical & Health",
+      "difficulty": "Hard",
+      "question": "Can I be a surrogate if I've never been pregnant?",
+      "expectedKeywords": ["no", "require", "given birth", "medical experience", "uncomplicated pregnancy"],
+      "expectedSources": ["FAQ: What disqualifies a surrogate mother"]
+    },
+    {
+      "id": "TC007",
+      "category": "Legal & Contracts",
+      "difficulty": "Medium",
+      "question": "What is a Gestational Carrier Agreement?",
+      "expectedKeywords": ["legal contract", "surrogate", "intended parents", "rights", "responsibilities"],
+      "expectedSources": ["The Protection, Rights, and Legal Coverage of Surrogate Mothers"]
+    },
+    {
+      "id": "TC008",
+      "category": "Legal & Contracts",
+      "difficulty": "Hard",
+      "question": "What is the difference between pre-birth and post-birth legal processes?",
+      "expectedKeywords": ["pre-birth", "post-birth", "legal parentage", "birth certificate", "judge"],
+      "expectedSources": ["What is Legal Parentage"]
+    },
+    {
+      "id": "TC009",
+      "category": "Compensation & Benefits",
+      "difficulty": "Easy",
+      "question": "What compensation do surrogates receive?",
+      "expectedKeywords": ["compensation", "payments", "before pregnancy", "postpartum", "gift cards"],
+      "expectedSources": ["All-In Program", "Milk Donation Challenge"]
+    },
+    {
+      "id": "TC010",
+      "category": "Compensation & Benefits",
+      "difficulty": "Medium",
+      "question": "Can I be a surrogate if I'm receiving government assistance?",
+      "expectedKeywords": ["depends", "assistance programs", "supplemented childcare", "compensation", "ineligible"],
+      "expectedSources": ["FAQ: What disqualifies a surrogate mother"]
+    },
+    {
+      "id": "TC011",
+      "category": "Process & Timeline",
+      "difficulty": "Medium",
+      "question": "How does the Matching Matters process work?",
+      "expectedKeywords": ["onboarding", "expectations", "values", "relationship compatibility", "medical criteria"],
+      "expectedSources": ["Our Surrogate Matching Process"]
+    },
+    {
+      "id": "TC012",
+      "category": "Requirements & Eligibility",
+      "difficulty": "Easy",
+      "question": "What are the basic requirements to become a surrogate?",
+      "expectedKeywords": ["previous pregnancy", "healthy pregnancy", "medical clearance", "psychological testing"],
+      "expectedSources": ["FAQ: What disqualifies a surrogate mother", "Understanding Surrogacy Success Rates"]
+    },
+    {
+      "id": "TC013",
+      "category": "General",
+      "difficulty": "Easy",
+      "question": "What is surrogacy?",
+      "expectedKeywords": ["gestational surrogacy", "IVF", "genetically related", "intended parents"],
+      "expectedSources": ["Understanding Social Surrogacy", "The Protection, Rights, and Legal Coverage of Surrogate Mothers"]
+    },
+    {
+      "id": "TC014",
+      "category": "Medical & Health",
+      "difficulty": "Medium",
+      "question": "What medical testing do surrogates undergo?",
+      "expectedKeywords": ["medical clearance", "battery of testing", "medically", "genetically", "psychologically"],
+      "expectedSources": ["Understanding Surrogacy Success Rates"]
+    },
+    {
+      "id": "TC015",
+      "category": "Insurance & Coverage",
+      "difficulty": "Medium",
+      "question": "Is life insurance included for surrogates?",
+      "expectedKeywords": ["life insurance", "coverage", "$500,000", "maximum amount", "no additional cost"],
+      "expectedSources": ["Health Insurance FAQs"]
+    },
+    {
+      "id": "TC016",
+      "category": "Pricing & Costs",
+      "difficulty": "Hard",
+      "question": "What are the exclusions from medical coverage?",
+      "expectedKeywords": ["IVF-ET process", "fertility clinic", "fetal care", "out of network", "second opinions", "holistic treatments"],
+      "expectedSources": ["Health Insurance FAQs"]
+    },
+    {
+      "id": "TC017",
+      "category": "General",
+      "difficulty": "Easy",
+      "question": "How long does the surrogacy process take?",
+      "expectedKeywords": ["year or more", "surrogacy engagement", "timeline", "process"],
+      "expectedSources": ["FAQ: What disqualifies a surrogate mother"]
+    },
+    {
+      "id": "TC018",
+      "category": "Medical & Health",
+      "difficulty": "Medium",
+      "question": "What is the Webster technique for pregnant women?",
+      "expectedKeywords": ["chiropractic technique", "pelvic anatomy", "pregnant women", "ligaments", "piriformis muscles", "round ligament pain"],
+      "expectedSources": ["Pregnancy and Chiropractic Care"]
+    },
+    {
+      "id": "TC019",
+      "category": "Medical & Health",
+      "difficulty": "Medium",
+      "question": "How can acupuncture help during pregnancy?",
+      "expectedKeywords": ["morning sickness", "depression", "anxiety", "non-medicated", "hormones", "labor", "hypertension"],
+      "expectedSources": ["Acupuncture and Pregnancy"]
+    },
+    {
+      "id": "TC020",
+      "category": "General",
+      "difficulty": "Easy",
+      "question": "What is breast milk donation for surrogates?",
+      "expectedKeywords": ["pump breast milk", "surrobabe", "surrogacy agreement", "milk bank", "lactation"],
+      "expectedSources": ["The Pros and Cons of Pumping as a Surrogate"]
+    },
+    {
+      "id": "TC021",
+      "category": "Insurance & Coverage",
+      "difficulty": "Hard",
+      "question": "Do states mandate fertility treatment coverage?",
+      "expectedKeywords": ["20 states", "fertility insurance coverage", "IVF coverage", "fertility preservation", "iatrogenic infertility"],
+      "expectedSources": ["Health Insurance FAQs"]
+    },
+    {
+      "id": "TC022",
+      "category": "Legal & Contracts",
+      "difficulty": "Hard",
+      "question": "What are the legal risks of surrogacy?",
+      "expectedKeywords": ["pre-birth", "post-birth", "gestational carrier", "genetic relationship", "gestational carrier agreement", "legal parentage"],
+      "expectedSources": ["What is Legal Parentage"]
+    },
+    {
+      "id": "TC023",
+      "category": "Compensation & Benefits",
+      "difficulty": "Medium",
+      "question": "What is the milk donation challenge?",
+      "expectedKeywords": ["$5 reward", "$250 gift card", "breast milk donation", "milk bank", "proof of donation"],
+      "expectedSources": ["Join or Refer a Lactating Woman to Our Milk Bank Challenge"]
+    },
+    {
+      "id": "TC024",
+      "category": "Medical & Health",
+      "difficulty": "Medium",
+      "question": "What is functional medicine?",
+      "expectedKeywords": ["Western physiology", "clinical nutrition", "physiological processes", "fertility", "ovary", "endometrial lining"],
+      "expectedSources": ["Acupuncture and Pregnancy"]
+    },
+    {
+      "id": "TC025",
+      "category": "General",
+      "difficulty": "Easy",
+      "question": "Can I be a surrogate if I'm not married?",
+      "expectedKeywords": ["yes", "not a requirement", "support system", "emotional support", "logistics"],
+      "expectedSources": ["FAQ: What disqualifies a surrogate mother"]
+    },
+    {
+      "id": "TC026",
+      "category": "Insurance & Coverage",
+      "difficulty": "Medium",
+      "question": "When does surrogate medical coverage begin?",
+      "expectedKeywords": ["beginning of surrogacy process", "postpartum recovery", "fourth trimester", "out-of-pocket costs"],
+      "expectedSources": ["Health Insurance FAQs"]
+    },
+    {
+      "id": "TC027",
+      "category": "Medical & Health",
+      "difficulty": "Hard",
+      "question": "What is a naturopathic doctor?",
+      "expectedKeywords": ["nature", "laws of nature", "physiology", "ecosystem", "organ systems", "environment", "trauma"],
+      "expectedSources": ["Pregnancy and Chiropractic Care"]
+    },
+    {
+      "id": "TC028",
+      "category": "Process & Timeline",
+      "difficulty": "Medium",
+      "question": "How long should surrogates supply breast milk?",
+      "expectedKeywords": ["shared decision", "intended parents", "personal decision", "fed is best", "healthcare professional"],
+      "expectedSources": ["How Long Should You Supply Breast Milk to Intended Parents"]
+    },
+    {
+      "id": "TC029",
+      "category": "Legal & Contracts",
+      "difficulty": "Medium",
+      "question": "What is the legal gold standard for surrogate rights?",
+      "expectedKeywords": ["Gestational Surrogates' Bill of Rights", "New York", "health and welfare", "independent legal counsel", "health insurance", "life insurance"],
+      "expectedSources": ["The Protection, Rights, and Legal Coverage of Surrogate Mothers"]
+    },
+    {
+      "id": "TC030",
+      "category": "Medical & Health",
+      "difficulty": "Hard",
+      "question": "What is the difference between traditional and gestational surrogacy?",
+      "expectedKeywords": ["traditional surrogacy", "genetic surrogacy", "surrogate's egg", "illegal", "gestational surrogacy", "IVF", "genetically related"],
+      "expectedSources": ["The Protection, Rights, and Legal Coverage of Surrogate Mothers"]
+    },
+    {
+      "id": "TC031",
+      "category": "Insurance & Coverage",
+      "difficulty": "Medium",
+      "question": "Can my health insurance cover surrogacy costs?",
+      "expectedKeywords": ["no", "not a member", "baby's medical care", "gestational carrier", "All-In Program"],
+      "expectedSources": ["Health Insurance FAQs"]
+    },
+    {
+      "id": "TC032",
+      "category": "Compensation & Benefits",
+      "difficulty": "Medium",
+      "question": "What is included in surrogate compensation?",
+      "expectedKeywords": ["compensation", "payments", "before pregnancy", "postpartum", "time and effort"],
+      "expectedSources": ["All-In Program"]
+    },
+    {
+      "id": "TC033",
+      "category": "Medical & Health",
+      "difficulty": "Medium",
+      "question": "What is the Webster technique?",
+      "expectedKeywords": ["chiropractic technique", "pelvic anatomy", "pregnant women", "ligaments", "tailbone", "uterus", "piriformis muscles"],
+      "expectedSources": ["Pregnancy and Chiropractic Care"]
+    },
+    {
+      "id": "TC034",
+      "category": "General",
+      "difficulty": "Easy",
+      "question": "What is the Matching Matters process?",
+      "expectedKeywords": ["architect", "onboarding", "expectations", "values", "relationship compatibility", "medical criteria"],
+      "expectedSources": ["Our Surrogate Matching Process"]
+    },
+    {
+      "id": "TC035",
+      "category": "Insurance & Coverage",
+      "difficulty": "Hard",
+      "question": "What are the exclusions from medical coverage?",
+      "expectedKeywords": ["IVF-ET process", "fertility clinic", "fetal care", "out of network", "second opinions", "holistic treatments", "optional testing"],
+      "expectedSources": ["Health Insurance FAQs"]
+    },
+    {
+      "id": "TC036",
+      "category": "Medical & Health",
+      "difficulty": "Medium",
+      "question": "What is acupuncture and how does it help during pregnancy?",
+      "expectedKeywords": ["Traditional Chinese Medicine", "thin needles", "acupuncture points", "biochemistry", "endocrine", "hormonal"],
+      "expectedSources": ["Acupuncture and Pregnancy"]
+    },
+    {
+      "id": "TC037",
+      "category": "Legal & Contracts",
+      "difficulty": "Hard",
+      "question": "What is the legal difference between traditional and gestational surrogacy?",
+      "expectedKeywords": ["traditional surrogacy", "genetic surrogacy", "surrogate's egg", "illegal", "gestational surrogacy", "IVF", "genetically related", "legal contract"],
+      "expectedSources": ["The Protection, Rights, and Legal Coverage of Surrogate Mothers"]
+    },
+    {
+      "id": "TC038",
+      "category": "Compensation & Benefits",
+      "difficulty": "Medium",
+      "question": "What is the fourth trimester and how is it covered?",
+      "expectedKeywords": ["fourth trimester", "postpartum", "recovery", "All-In Program", "hormones", "estrogen"],
+      "expectedSources": ["Acupuncture and Pregnancy", "All-In Program"]
+    },
+    {
+      "id": "TC039",
+      "category": "Medical & Health",
+      "difficulty": "Medium",
+      "question": "What is the role of a surrogate in surrogacy success?",
+      "expectedKeywords": ["unique women", "humbling", "medical clearances", "testing", "medically", "genetically", "psychologically"],
+      "expectedSources": ["Understanding Surrogacy Success Rates"]
+    },
+    {
+      "id": "TC040",
+      "category": "Insurance & Coverage",
+      "difficulty": "Medium",
+      "question": "Do I need to buy additional insurance for complications?",
+      "expectedKeywords": ["no", "additional policies", "complications", "bed rest", "All-In Program", "full coverage"],
+      "expectedSources": ["Health Insurance FAQs"]
+    },
+    {
+      "id": "TC041",
+      "category": "General",
+      "difficulty": "Easy",
+      "question": "What is the milk donation challenge reward?",
+      "expectedKeywords": ["$5 reward", "$250 gift card", "breast milk donation", "proof of donation"],
+      "expectedSources": ["Join or Refer a Lactating Woman to Our Milk Bank Challenge"]
+    },
+    {
+      "id": "TC042",
+      "category": "Medical & Health",
+      "difficulty": "Hard",
+      "question": "What is the happy baby acupuncture point?",
+      "expectedKeywords": ["happy baby point", "inside calf muscle", "blood flow", "uterus", "oxygen", "nutrient flow"],
+      "expectedSources": ["Acupuncture and Pregnancy"]
+    },
+    {
+      "id": "TC043",
+      "category": "Legal & Contracts",
+      "difficulty": "Medium",
+      "question": "Can intended parents choose not to take the baby?",
+      "expectedKeywords": ["no", "gestational carrier agreement", "legal responsibility", "medical responsibility", "surrogate protection"],
+      "expectedSources": ["The Protection, Rights, and Legal Coverage of Surrogate Mothers"]
+    },
+    {
+      "id": "TC044",
+      "category": "Process & Timeline",
+      "difficulty": "Medium",
+      "question": "How does ConceiveAbilities ensure surrogate medical coverage?",
+      "expectedKeywords": ["deep expertise", "30 years experience", "comprehensive medical coverage", "medical expenses", "postpartum recovery"],
+      "expectedSources": ["Health Insurance FAQs"]
+    },
+    {
+      "id": "TC045",
+      "category": "Compensation & Benefits",
+      "difficulty": "Medium",
+      "question": "What is the surrogate sisterhood support group?",
+      "expectedKeywords": ["Surrogate Sisterhood", "support group", "emotional support", "community"],
+      "expectedSources": ["FAQ: What disqualifies a surrogate mother"]
+    },
+    {
+      "id": "TC046",
+      "category": "Medical & Health",
+      "difficulty": "Hard",
+      "question": "What is the role of chiropractic care for surrogates?",
+      "expectedKeywords": ["changing bodies", "energy", "nervous system", "stress", "brain and body", "comfortable"],
+      "expectedSources": ["Pregnancy and Chiropractic Care"]
+    },
+    {
+      "id": "TC047",
+      "category": "Insurance & Coverage",
+      "difficulty": "Medium",
+      "question": "What is TRICARE coverage for military families?",
+      "expectedKeywords": ["TRICARE", "military families", "prenatal care", "postpartum care", "pediatric visits", "immunizations"],
+      "expectedSources": ["Support Guide for the Military Wife"]
+    },
+    {
+      "id": "TC048",
+      "category": "General",
+      "difficulty": "Easy",
+      "question": "What is the surrogate matching process?",
+      "expectedKeywords": ["Matching Matters", "relationship compatibility", "medical criteria", "thorough vetting", "compatibility"],
+      "expectedSources": ["Our Surrogate Matching Process"]
+    },
+    {
+      "id": "TC049",
+      "category": "Medical & Health",
+      "difficulty": "Medium",
+      "question": "What is the importance of maternal health during pregnancy?",
+      "expectedKeywords": ["mother's health", "nutritional status", "fourth trimester", "hormones", "estrogen"],
+      "expectedSources": ["Acupuncture and Pregnancy"]
+    },
+    {
+      "id": "TC050",
+      "category": "Requirements & Eligibility",
+      "difficulty": "Medium",
+      "question": "What disqualifies someone from being a surrogate?",
+      "expectedKeywords": ["no previous pregnancy", "medical complications", "psychological issues", "age", "health requirements"],
+      "expectedSources": ["FAQ: What disqualifies a surrogate mother", "Understanding Surrogacy Success Rates"]
+    },
+    {
+      "id": "TC051",
+      "category": "General",
+      "difficulty": "Easy",
+      "question": "How do I parent alone during my spouse's military deployment?",
+      "expectedKeywords": ["community", "babysitter", "family visits", "routine", "communication", "mental health"],
+      "expectedSources": ["Support Guide for the Military Wife"]
+    },
+    {
+      "id": "TC052",
+      "category": "General",
+      "difficulty": "Medium",
+      "question": "How can I help my child cope with a parent's deployment?",
+      "expectedKeywords": ["military counseling", "voice feelings", "community activities", "consistent routine", "long-distance contact"],
+      "expectedSources": ["Support Guide for the Military Wife"]
+    },
+    {
+      "id": "TC053",
+      "category": "General",
+      "difficulty": "Medium",
+      "question": "How can we maintain a strong family bond when my spouse is deployed?",
+      "expectedKeywords": ["communication", "expectations", "phone", "texts", "social media", "care packages"],
+      "expectedSources": ["Support Guide for the Military Wife"]
+    },
+    {
+      "id": "TC054",
+      "category": "General",
+      "difficulty": "Medium",
+      "question": "How can I help my child adjust to new schools after military relocation?",
+      "expectedKeywords": ["school liaison officer", "PTA", "volunteer", "Facebook groups", "new friends"],
+      "expectedSources": ["Support Guide for the Military Wife"]
+    },
+    {
+      "id": "TC055",
+      "category": "General",
+      "difficulty": "Medium",
+      "question": "How do I maintain my own career with frequent military moves?",
+      "expectedKeywords": ["remote work", "flexible jobs", "future opportunities", "professional development"],
+      "expectedSources": ["Support Guide for the Military Wife"]
+    },
+    {
+      "id": "TC056",
+      "category": "General",
+      "difficulty": "Easy",
+      "question": "Where can I connect with other military spouses?",
+      "expectedKeywords": ["MeetUp", "Facebook groups", "Military Spouse Advocacy Network", "base families"],
+      "expectedSources": ["Support Guide for the Military Wife"]
+    },
+    {
+      "id": "TC057",
+      "category": "General",
+      "difficulty": "Easy",
+      "question": "How do I stay connected with friends and family who are far away?",
+      "expectedKeywords": ["Facetime", "Zoom", "texting", "care packages", "WhatsApp", "social media"],
+      "expectedSources": ["Support Guide for the Military Wife"]
+    },
+    {
+      "id": "TC058",
+      "category": "General",
+      "difficulty": "Easy",
+      "question": "Where can I find local community events for military families?",
+      "expectedKeywords": ["Facebook groups", "newspaper", "news stations", "Google search"],
+      "expectedSources": ["Support Guide for the Military Wife"]
+    },
+    {
+      "id": "TC059",
+      "category": "Medical & Health",
+      "difficulty": "Medium",
+      "question": "How does our family access healthcare services after relocating?",
+      "expectedKeywords": ["TRICARE", "military treatment facility", "MTF", "network provider", "non-network provider"],
+      "expectedSources": ["Support Guide for the Military Wife"]
+    },
+    {
+      "id": "TC060",
+      "category": "Insurance & Coverage",
+      "difficulty": "Medium",
+      "question": "What are TRICARE's coverage options for maternity care and pediatric visits?",
+      "expectedKeywords": ["prenatal care", "postpartum care", "pediatric visits", "immunizations", "vision screenings"],
+      "expectedSources": ["Support Guide for the Military Wife"]
+    },
+    {
+      "id": "TC061",
+      "category": "General",
+      "difficulty": "Easy",
+      "question": "What are the best career fields for military spouses?",
+      "expectedKeywords": ["remote work", "flexible work", "relocation", "deployment"],
+      "expectedSources": ["Support Guide for the Military Wife"]
+    },
+    {
+      "id": "TC062",
+      "category": "General",
+      "difficulty": "Medium",
+      "question": "How can I continue my education or professional training online?",
+      "expectedKeywords": ["online education", "transfer credits", "professors", "school administration"],
+      "expectedSources": ["Support Guide for the Military Wife"]
+    },
+    {
+      "id": "TC063",
+      "category": "General",
+      "difficulty": "Medium",
+      "question": "Are there specific employment programs to help military wives find jobs?",
+      "expectedKeywords": ["Hire Heroes USA", "flexible jobs", "veterans", "military spouses"],
+      "expectedSources": ["Support Guide for the Military Wife"]
+    },
+    {
+      "id": "TC064",
+      "category": "General",
+      "difficulty": "Easy",
+      "question": "Why did you answer the call to become a nurse?",
+      "expectedKeywords": ["nursing", "healthcare", "helping others", "patient care", "medical field"],
+      "expectedSources": ["Happy Nurse Appreciation Week"]
+    },
+    {
+      "id": "TC065",
+      "category": "General",
+      "difficulty": "Medium",
+      "question": "How Long Should You Supply Breast Milk to Intended Parents?",
+      "expectedKeywords": ["shared decision", "intended parents", "personal decision", "milk supply", "healthcare professional"],
+      "expectedSources": ["How Long Should You Supply Breast Milk to Intended Parents"]
+    },
+    {
+      "id": "TC066",
+      "category": "General",
+      "difficulty": "Easy",
+      "question": "So, When Is The Right Time?",
+      "expectedKeywords": ["personal decision", "fed is best", "breast milk", "formula", "healthcare professional"],
+      "expectedSources": ["How Long Should You Supply Breast Milk to Intended Parents"]
+    },
+    {
+      "id": "TC067",
+      "category": "Medical & Health",
+      "difficulty": "Medium",
+      "question": "How Does Matching Matters™ Work?",
+      "expectedKeywords": ["architect", "onboarding", "expectations", "values", "relationship compatibility", "medical criteria"],
+      "expectedSources": ["Our Surrogate Matching Process"]
+    },
+    {
+      "id": "TC068",
+      "category": "General",
+      "difficulty": "Medium",
+      "question": "Why Does Matching Matter™?",
+      "expectedKeywords": ["scrutinized", "innovated", "tested", "high-quality", "compatible matches", "success"],
+      "expectedSources": ["Our Surrogate Matching Process"]
+    },
+    {
+      "id": "TC069",
+      "category": "Legal & Contracts",
+      "difficulty": "Hard",
+      "question": "What does pre-birth mean?",
+      "expectedKeywords": ["pre-birth", "state law", "judge", "legal parents", "birth certificate", "vital records"],
+      "expectedSources": ["What is Legal Parentage"]
+    },
+    {
+      "id": "TC070",
+      "category": "Medical & Health",
+      "difficulty": "Hard",
+      "question": "What are the legal risks?",
+      "expectedKeywords": ["pre-birth", "post-birth", "gestational carrier", "genetic relationship", "gestational carrier agreement"],
+      "expectedSources": ["What is Legal Parentage"]
+    },
+    {
+      "id": "TC071",
+      "category": "Legal & Contracts",
+      "difficulty": "Medium",
+      "question": "What is the Legal Gold Standard for Surrogate Rights?",
+      "expectedKeywords": ["Gestational Surrogates' Bill of Rights", "New York", "health and welfare", "independent legal counsel"],
+      "expectedSources": ["The Protection, Rights, and Legal Coverage of Surrogate Mothers"]
+    },
+    {
+      "id": "TC072",
+      "category": "Medical & Health",
+      "difficulty": "Medium",
+      "question": "Can intended parents choose not to take the baby?",
+      "expectedKeywords": ["no", "gestational carrier agreement", "legal responsibility", "medical responsibility"],
+      "expectedSources": ["The Protection, Rights, and Legal Coverage of Surrogate Mothers"]
+    },
+    {
+      "id": "TC073",
+      "category": "Legal & Contracts",
+      "difficulty": "Hard",
+      "question": "What is the Legal Difference in Types of Surrogacy?",
+      "expectedKeywords": ["traditional surrogacy", "genetic surrogacy", "surrogate's egg", "illegal", "gestational surrogacy", "IVF"],
+      "expectedSources": ["The Protection, Rights, and Legal Coverage of Surrogate Mothers"]
+    },
+    {
+      "id": "TC074",
+      "category": "General",
+      "difficulty": "Easy",
+      "question": "What is surrogate milk donation?",
+      "expectedKeywords": ["pump breast milk", "surrobabe", "surrogacy agreement", "milk bank", "lactation"],
+      "expectedSources": ["The Pros and Cons of Pumping as a Surrogate"]
+    },
+    {
+      "id": "TC075",
+      "category": "Medical & Health",
+      "difficulty": "Medium",
+      "question": "What is a naturopathic doctor?",
+      "expectedKeywords": ["nature", "laws of nature", "physiology", "ecosystem", "organ systems", "environment", "trauma"],
+      "expectedSources": ["Pregnancy and Chiropractic Care"]
+    },
+    {
+      "id": "TC076",
+      "category": "Medical & Health",
+      "difficulty": "Medium",
+      "question": "What are some of the main benefits of someone going to a chiropractor?",
+      "expectedKeywords": ["pain relief", "body alignment", "digestion", "constipation", "nervous system", "brain and body"],
+      "expectedSources": ["Pregnancy and Chiropractic Care"]
+    },
+    {
+      "id": "TC077",
+      "category": "Medical & Health",
+      "difficulty": "Hard",
+      "question": "What is the Webster technique?",
+      "expectedKeywords": ["chiropractic technique", "pelvic anatomy", "pregnant women", "ligaments", "tailbone", "uterus", "piriformis muscles"],
+      "expectedSources": ["Pregnancy and Chiropractic Care"]
+    },
+    {
+      "id": "TC078",
+      "category": "Medical & Health",
+      "difficulty": "Medium",
+      "question": "How does a chiropractor help the surrogate and her family?",
+      "expectedKeywords": ["changing bodies", "energy", "nervous system", "stress", "brain and body", "comfortable"],
+      "expectedSources": ["Pregnancy and Chiropractic Care"]
+    },
+    {
+      "id": "TC079",
+      "category": "Medical & Health",
+      "difficulty": "Medium",
+      "question": "Does a chiropractor have any benefit for intended parents as well?",
+      "expectedKeywords": ["infant", "pooping", "feeding", "sleeping", "head shape", "palate", "skull structure"],
+      "expectedSources": ["Pregnancy and Chiropractic Care"]
+    },
+    {
+      "id": "TC080",
+      "category": "Compensation & Benefits",
+      "difficulty": "Medium",
+      "question": "What is your advice for women who are considering becoming a surrogate?",
+      "expectedKeywords": ["love being pregnant", "investigate", "talk to other surrogates", "community", "risks", "benefits"],
+      "expectedSources": ["Pregnancy and Chiropractic Care"]
+    }
+  ],
+  "evaluationMetrics": {
+    "accuracy": {
+      "description": "How accurately the chatbot answers the question",
+      "scale": "1-5",
+      "criteria": {
+        "5": "Completely accurate with all key information correct",
+        "4": "Mostly accurate with minor inaccuracies",
+        "3": "Partially accurate with some correct information",
+        "2": "Mostly inaccurate with few correct points",
+        "1": "Completely inaccurate or irrelevant"
+      }
+    },
+    "completeness": {
+      "description": "How complete the answer is compared to expected information",
+      "scale": "1-5",
+      "criteria": {
+        "5": "Covers all expected information comprehensively",
+        "4": "Covers most expected information with minor gaps",
+        "3": "Covers some expected information with notable gaps",
+        "2": "Covers little expected information",
+        "1": "Covers none of the expected information"
+      }
+    },
+    "sourceAccuracy": {
+      "description": "How accurately the chatbot references sources",
+      "scale": "1-5",
+      "criteria": {
+        "5": "All sources correctly referenced and relevant",
+        "4": "Most sources correctly referenced",
+        "3": "Some sources correctly referenced",
+        "2": "Few sources correctly referenced",
+        "1": "No sources or completely incorrect sources"
+      }
+    },
+    "helpfulness": {
+      "description": "How helpful the answer is to the user",
+      "scale": "1-5",
+      "criteria": {
+        "5": "Extremely helpful, addresses user's needs completely",
+        "4": "Very helpful, addresses most user needs",
+        "3": "Somewhat helpful, addresses some user needs",
+        "2": "Not very helpful, addresses few user needs",
+        "1": "Not helpful at all"
+      }
+    }
+  },
+  "testInstructions": {
+    "setup": "1. Load the chatbot with the FAQ data\n2. Ensure semantic search is working\n3. Test each question individually",
+    "execution": "1. Ask each test question\n2. Evaluate the response using the provided metrics\n3. Record scores and notes\n4. Check source accuracy",
+    "reporting": "1. Calculate average scores per category\n2. Identify areas for improvement\n3. Document any issues with source handling\n4. Provide recommendations for optimization"
+  }
+}

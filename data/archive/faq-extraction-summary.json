@@ -1,0 +1,31 @@
+{
+  "extractedAt": "2025-06-30T16:38:51.979Z",
+  "sourceFile": "scraped-content-progress-90.json",
+  "totalChunks": 90,
+  "totalFAQItems": 3,
+  "highConfidenceItems": 3,
+  "mediumConfidenceItems": 0,
+  "lowConfidenceItems": 0,
+  "categories": {
+    "General": 1,
+    "Pricing & Costs": 1,
+    "Process & Timeline": 1
+  },
+  "sampleItems": [
+    {
+      "question": "How Long Should You Supply Breast Milk to Intended Parents?...",
+      "confidence": 1,
+      "category": "General"
+    },
+    {
+      "question": "When talking about surrogacy laws in New York, it is impossible to not mention Andy Cohen and his ow...",
+      "confidence": 1,
+      "category": "Pricing & Costs"
+    },
+    {
+      "question": "Why Matching Matters™ Finding the most compatible surrogacy match is integral for a successful surro...",
+      "confidence": 1,
+      "category": "Process & Timeline"
+    }
+  ]
+}
