@@ -115,7 +115,7 @@ export class VectorDB {
   }
 
   async search(query: string, k: number = 3, clientIdentifier?: string): Promise<Document[]> {
-    console.log(`🔍 Starting semantic search...`);
+    console.log(`🔍 Starting priority-based semantic search...`);
     console.log(`❓ Query: "${query}"`);
     console.log(`📊 Requesting top ${k} results`);
     
@@ -145,24 +145,24 @@ export class VectorDB {
       return this.fallbackTextSearch(documents, query, k);
     }
 
-    // Try semantic search first with timeout
+    // Try priority-based semantic search first with timeout
     try {
-      console.log(`🧠 Attempting semantic search with embeddings...`);
+      console.log(`🧠 Attempting priority-based semantic search with embeddings...`);
       const timeoutPromise = new Promise<never>((_, reject) => {
         setTimeout(() => {
           reject(new Error('Semantic search timed out, falling back to text search'));
         }, 15000); // 15 second timeout for entire search
       });
 
-      const searchPromise = this.semanticSearch(documentsWithEmbeddings, query, k);
+      const searchPromise = this.priorityBasedSearch(documentsWithEmbeddings, query, k);
       return await Promise.race([searchPromise, timeoutPromise]);
     } catch (error) {
-      console.warn(`❌ Semantic search failed, falling back to text search:`, error);
+      console.warn(`❌ Priority-based search failed, falling back to text search:`, error);
       return this.fallbackTextSearch(documents, query, k);
     }
   }
 
-  private async semanticSearch(documentsWithEmbeddings: StoredDocument[], query: string, k: number): Promise<Document[]> {
+  private async priorityBasedSearch(documentsWithEmbeddings: StoredDocument[], query: string, k: number): Promise<Document[]> {
     console.log(`🧠 Generating embedding for query: "${query}"`);
     const queryEmbedding = await this.getQueryEmbedding(query);
     console.log(`✅ Query embedding generated, length: ${queryEmbedding.length}`);
@@ -179,19 +179,115 @@ export class VectorDB {
       })
       .sort((a, b) => b.similarity - a.similarity); // Sort by similarity (highest first)
 
-    console.log(`🏆 Top ${k} results by similarity:`);
-    scoredDocuments.slice(0, k).forEach((item, index) => {
-      console.log(`  ${index + 1}. "${item.document.metadata?.title || 'No title'}" (${item.similarity.toFixed(4)})`);
+    // Separate documents by priority
+    const mainPages = scoredDocuments.filter(item => !this.isBlogPost(item.document));
+    const blogPosts = scoredDocuments.filter(item => this.isBlogPost(item.document));
+
+    console.log(`📊 Document breakdown:`);
+    console.log(`   - Main pages: ${mainPages.length}`);
+    console.log(`   - Blog posts: ${blogPosts.length}`);
+
+    // Priority-based selection strategy
+    const results = this.selectPriorityResults(mainPages, blogPosts, k);
+
+    console.log(`🏆 Final priority-based results:`);
+    results.forEach((item, index) => {
+      const type = this.isBlogPost(item.document) ? '📝 Blog' : '🌐 Page';
+      console.log(`  ${index + 1}. ${type} "${item.document.metadata?.title || 'No title'}" (${item.similarity.toFixed(4)})`);
     });
 
-    const results = scoredDocuments.slice(0, k);
-    console.log(`✅ Found ${results.length} relevant documents using semantic search`);
+    console.log(`✅ Found ${results.length} relevant documents using priority-based search`);
     
     // Return documents without embeddings
     return results.map(item => ({
       pageContent: item.document.pageContent,
       metadata: item.document.metadata
     }));
+  }
+
+  private isBlogPost(document: StoredDocument): boolean {
+    const url = document.metadata?.url as string;
+    const title = document.metadata?.title as string;
+    
+    // Check if it's a blog post based on URL or title
+    const isBlogByUrl = Boolean(url && (
+      url.includes('/blog/') || 
+      url.includes('/about/blog') ||
+      url.includes('/news/') ||
+      url.includes('/articles/')
+    ));
+    
+    const isBlogByTitle = Boolean(title && (
+      title.toLowerCase().includes('blog') ||
+      title.toLowerCase().includes('article') ||
+      title.toLowerCase().includes('news')
+    ));
+    
+    return isBlogByUrl || isBlogByTitle;
+  }
+
+  private selectPriorityResults(mainPages: any[], blogPosts: any[], k: number): any[] {
+    const results: any[] = [];
+    
+    // Strategy: Fill with main pages first, then supplement with blog posts if needed
+    const mainPageThreshold = Math.min(k, Math.ceil(k * 0.7)); // 70% of results should be main pages
+    const minMainPages = Math.max(1, Math.floor(k * 0.5)); // At least 50% should be main pages
+    
+    console.log(`🎯 Priority strategy: Target ${mainPageThreshold} main pages, minimum ${minMainPages}`);
+    
+    // Add main pages first (up to threshold)
+    const mainPagesToAdd = mainPages.slice(0, mainPageThreshold);
+    results.push(...mainPagesToAdd);
+    
+    console.log(`✅ Added ${mainPagesToAdd.length} main pages`);
+    
+    // If we don't have enough main pages, add more
+    if (results.length < minMainPages && mainPages.length > results.length) {
+      const additionalMainPages = mainPages.slice(results.length, minMainPages);
+      results.push(...additionalMainPages);
+      console.log(`➕ Added ${additionalMainPages.length} more main pages to meet minimum`);
+    }
+    
+    // Fill remaining slots with blog posts if we have space and good blog content
+    const remainingSlots = k - results.length;
+    if (remainingSlots > 0 && blogPosts.length > 0) {
+      // Only add blog posts with high similarity (above 0.7 threshold)
+      const highQualityBlogPosts = blogPosts.filter(item => item.similarity > 0.7);
+      const blogPostsToAdd = highQualityBlogPosts.slice(0, remainingSlots);
+      
+      if (blogPostsToAdd.length > 0) {
+        results.push(...blogPostsToAdd);
+        console.log(`📝 Added ${blogPostsToAdd.length} high-quality blog posts (similarity > 0.7)`);
+      } else {
+        console.log(`⚠️  No high-quality blog posts found (similarity > 0.7 threshold)`);
+      }
+    }
+    
+    // If we still don't have enough results, add more main pages
+    if (results.length < k && mainPages.length > results.length) {
+      const remainingMainPages = mainPages.slice(results.length, k);
+      results.push(...remainingMainPages);
+      console.log(`➕ Added ${remainingMainPages.length} more main pages to fill remaining slots`);
+    }
+    
+    // If we still don't have enough, add any remaining blog posts
+    if (results.length < k && blogPosts.length > 0) {
+      const usedBlogIds = new Set(results.filter(r => this.isBlogPost(r.document)).map(r => r.document.metadata?.id));
+      const unusedBlogPosts = blogPosts.filter(item => !usedBlogIds.has(item.document.metadata?.id));
+      const remainingBlogPosts = unusedBlogPosts.slice(0, k - results.length);
+      
+      if (remainingBlogPosts.length > 0) {
+        results.push(...remainingBlogPosts);
+        console.log(`📝 Added ${remainingBlogPosts.length} additional blog posts to complete results`);
+      }
+    }
+    
+    console.log(`📊 Final result breakdown:`);
+    console.log(`   - Main pages: ${results.filter(r => !this.isBlogPost(r.document)).length}`);
+    console.log(`   - Blog posts: ${results.filter(r => this.isBlogPost(r.document)).length}`);
+    console.log(`   - Total: ${results.length}`);
+    
+    return results;
   }
 
   private fallbackTextSearch(documents: StoredDocument[], query: string, k: number): Document[] {
