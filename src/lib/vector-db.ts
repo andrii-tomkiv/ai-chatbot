@@ -28,12 +28,21 @@ export class VectorDB {
     this.storePath = storePath;
     this.dataPath = path.join(storePath, 'documents.json');
     console.log(`📁 Data file path: ${this.dataPath}`);
-    
-    if (!fs.existsSync(storePath)) {
-      fs.mkdirSync(storePath, { recursive: true });
-      console.log(`📁 Created directory: ${storePath}`);
+  
+    // Only try to create the directory in development (local) environments
+    if (process.env.NODE_ENV === 'development') {
+      if (!fs.existsSync(storePath)) {
+        try {
+          fs.mkdirSync(storePath, { recursive: true });
+          console.log(`📁 Created directory: ${storePath}`);
+        } catch (error) {
+          console.warn(`⚠️  Could not create directory ${storePath}:`, error);
+        }
+      } else {
+        console.log(`📁 Directory already exists: ${storePath}`);
+      }
     } else {
-      console.log(`📁 Directory already exists: ${storePath}`);
+      console.log(`🌐 Production environment - skipping directory creation`);
     }
   }
 
