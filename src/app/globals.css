@@ -26,7 +26,6 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-/* Custom slider styles with CONAB theme colors */
 .slider {
   -webkit-appearance: none;
   appearance: none;
@@ -35,9 +34,9 @@ body {
   outline: none;
   position: relative;
   z-index: 1;
+  top: 2px;
 }
 
-/* Webkit (Chrome, Safari, Edge) */
 .slider::-webkit-slider-track {
   background: #004a63 !important;
   height: 8px;
@@ -57,7 +56,7 @@ body {
   border: 2px solid #be1e68;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   transition: all 0.2s ease;
-  margin-top: -6px; /* Center the thumb on the 8px track */
+  margin-top: -6px;
 }
 
 .slider::-webkit-slider-thumb:hover {
@@ -73,7 +72,6 @@ body {
   transform: scale(1.05);
 }
 
-/* Firefox */
 .slider::-moz-range-track {
   background: #004a63 !important;
   height: 8px;
@@ -92,7 +90,7 @@ body {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   transition: all 0.2s ease;
   top: 50%;
-  margin-top: -10px; /* Center the thumb on the 8px track */
+  margin-top: -10px;
   position: relative;
 }
 
@@ -109,7 +107,6 @@ body {
   transform: scale(1.05);
 }
 
-/* Focus states for accessibility */
 .slider:focus {
   outline: none;
 }

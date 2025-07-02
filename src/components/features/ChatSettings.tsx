@@ -89,7 +89,7 @@ export default function ChatSettings({
       {/* Settings Toggle Button */}
       <button
         onClick={onToggle}
-        className="flex items-center gap-2 px-3 py-2 text-sm text-white hover:text-white/80 hover:bg-white/10 rounded-lg transition-colors"
+        className="flex items-center gap-2 px-4 py-2 text-sm bg-white/20 text-white rounded-xl hover:bg-white/30 transition-all duration-200 hover:scale-105 backdrop-blur-sm"
         title="Chat Settings"
       >
         <Settings className="w-4 h-4" />
@@ -98,34 +98,34 @@ export default function ChatSettings({
 
       {/* Settings Panel */}
       {isOpen && (
-        <div className="absolute top-full right-0 mt-2 w-80 sm:w-96 bg-conab-light-background border border-conab-middle-blue rounded-lg shadow-lg p-4 z-50">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-conab-dark-blue">Chat Settings</h3>
+        <div className="fixed top-20 right-4 w-80 sm:w-96 max-h-[calc(100vh-6rem)] bg-white/95 backdrop-blur-xl border border-white/50 rounded-3xl shadow-2xl p-6 overflow-y-auto">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-xl font-bold text-gray-800">Chat Settings</h3>
             <button
               onClick={onToggle}
-              className="text-conab-middle-blue hover:text-conab-action p-1 rounded-full hover:bg-conab-middle-blue/10 transition-colors"
+              className="w-8 h-8 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-105"
               title="Close settings"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
           </div>
 
           {/* Model Selection */}
-          <div className="mb-6">
-            <div className="flex items-center gap-2 mb-3">
-              <Cpu className="w-4 h-4 text-conab-middle-blue" />
-              <label className="text-sm font-medium text-conab-dark-blue">AI Model</label>
+          <div className="mb-8">
+            <div className="flex items-center gap-2 mb-4">
+              <Cpu className="w-5 h-5 text-conab-action" />
+              <label className="text-sm font-semibold text-gray-700 uppercase tracking-wide">AI Model</label>
             </div>
-            <div className="space-y-2">
+            <div className="space-y-3">
               {modelOptions.map((option) => (
                 <label
                   key={option.id}
-                  className={`flex items-center p-3 border rounded-lg cursor-pointer transition-colors ${
+                  className={`flex items-center p-4 border-2 rounded-2xl cursor-pointer transition-all duration-200 hover:scale-105 ${
                     localSettings.model === option.id
-                      ? 'border-conab-action bg-conab-action/10'
-                      : 'border-conab-middle-blue/30 hover:border-conab-middle-blue/50 hover:bg-conab-middle-blue/5'
+                      ? 'border-conab-action bg-gradient-to-r from-conab-action/10 to-conab-action-lighten/10 shadow-lg'
+                      : 'border-gray-200 hover:border-conab-action/30 hover:bg-gray-50/50'
                   }`}
                 >
                   <input
@@ -137,13 +137,13 @@ export default function ChatSettings({
                     className="sr-only"
                   />
                   <div className="flex-1">
-                    <div className="font-medium text-conab-dark-blue">{option.name}</div>
-                    <div className="text-sm text-conab-middle-blue">{option.description}</div>
-                    <div className="text-xs text-conab-middle-blue/70 mt-1">Model: {option.model}</div>
+                    <div className="font-bold text-gray-800">{option.name}</div>
+                    <div className="text-sm text-gray-600 mt-1">{option.description}</div>
+                    <div className="text-xs text-gray-500 mt-2 font-mono">{option.model}</div>
                   </div>
                   {localSettings.model === option.id && (
-                    <div className="w-4 h-4 bg-conab-action rounded-full flex items-center justify-center">
-                      <div className="w-2 h-2 bg-white rounded-full"></div>
+                    <div className="w-6 h-6 bg-gradient-to-br from-conab-action to-conab-action-lighten rounded-full flex items-center justify-center shadow-lg">
+                      <div className="w-2.5 h-2.5 bg-white rounded-full"></div>
                     </div>
                   )}
                 </label>
@@ -152,22 +152,22 @@ export default function ChatSettings({
           </div>
 
           {/* Temperature Control */}
-          <div className="mb-6">
-            <div className="flex items-center justify-between mb-3">
+          <div className="mb-8">
+            <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
-                <Thermometer className="w-4 h-4 text-conab-middle-blue" />
-                <label className="text-sm font-medium text-conab-dark-blue">Temperature</label>
+                <Thermometer className="w-5 h-5 text-conab-action" />
+                <label className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Temperature</label>
               </div>
-              <span className="text-sm text-conab-middle-blue">{localSettings.temperature}</span>
+              <span className="text-lg font-bold text-conab-action">{localSettings.temperature}</span>
             </div>
             
             {/* Temperature Slider */}
-            <div className="relative w-full h-8 flex items-center">
+            <div className="relative w-full h-10 flex items-center mb-4">
               {/* Track background */}
-              <div className="absolute left-0 right-0 h-2 rounded-lg bg-conab-middle-blue/20" />
+              <div className="absolute left-0 right-0 h-3 rounded-full bg-gray-200" />
               {/* Filled bar */}
               <div
-                className="absolute h-2 rounded-lg bg-conab-middle-blue"
+                className="absolute h-3 rounded-full bg-gradient-to-r from-conab-action to-conab-action-lighten"
                 style={{ width: `${(localSettings.temperature / maxTemperature) * 100}%` }}
               />
               <input
@@ -177,50 +177,46 @@ export default function ChatSettings({
                 step="0.1"
                 value={localSettings.temperature}
                 onChange={(e) => handleTemperatureChange(parseFloat(e.target.value))}
-                className="w-full h-2 appearance-none cursor-pointer slider bg-transparent relative z-10"
+                className="w-full h-3 appearance-none cursor-pointer slider bg-transparent relative z-10"
               />
             </div>
             
             {/* Temperature Description */}
-            <p className="text-xs text-conab-middle-blue/70 mt-2">
+            <p className="text-sm text-gray-600 mb-3">
               {getTemperatureDescription(localSettings.temperature)}
-            </p>
-            <p className="text-xs text-conab-middle-blue/50 mt-1">
-              Range: 0.0 - {maxTemperature} ({localSettings.model === 'mistral' ? 'Mistral' : 'Groq'} limit)
             </p>
 
             {/* Temperature Presets */}
-            <div className="mt-3 space-y-1">
+            <div className="grid grid-cols-2 gap-2">
               {temperaturePresets.map((preset) => (
                 <button
                   key={preset.value}
                   onClick={() => handleTemperatureChange(preset.value)}
-                  className={`block w-full text-left px-2 py-1 text-xs rounded transition-colors ${
+                  className={`p-3 text-left rounded-xl transition-all duration-200 hover:scale-105 ${
                     Math.abs(localSettings.temperature - preset.value) < 0.05
-                      ? 'bg-conab-action/20 text-conab-action'
-                      : 'text-conab-middle-blue hover:bg-conab-middle-blue/10'
+                      ? 'bg-gradient-to-r from-conab-action/20 to-conab-action-lighten/20 border-2 border-conab-action text-conab-action shadow-lg'
+                      : 'bg-gray-50 hover:bg-gray-100 text-gray-700 border-2 border-transparent'
                   }`}
                 >
-                  <span className="font-medium">{preset.label}</span>
-                  <span className="text-conab-middle-blue/70 ml-2">({preset.value})</span>
-                  <div className="text-conab-middle-blue/60">{preset.description}</div>
+                  <div className="font-semibold text-sm">{preset.label}</div>
+                  <div className="text-xs text-gray-500 mt-1">{preset.description}</div>
                 </button>
               ))}
             </div>
           </div>
 
           {/* Max Tokens Control */}
-          <div className="mb-4">
-            <div className="flex items-center justify-between mb-3">
-              <label className="text-sm font-medium text-conab-dark-blue">Max Response Length</label>
-              <span className="text-sm text-conab-middle-blue">{localSettings.maxTokens} tokens</span>
+          <div className="mb-6">
+            <div className="flex items-center justify-between mb-4">
+              <label className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Max Response Length</label>
+              <span className="text-lg font-bold text-conab-action">{localSettings.maxTokens} tokens</span>
             </div>
-            <div className="relative w-full h-8 flex items-center">
+            <div className="relative w-full h-10 flex items-center">
               {/* Track background */}
-              <div className="absolute left-0 right-0 h-2 rounded-lg bg-conab-middle-blue/20" />
+              <div className="absolute left-0 right-0 h-3 rounded-full bg-gray-200" />
               {/* Filled bar */}
               <div
-                className="absolute h-2 rounded-lg bg-conab-middle-blue"
+                className="absolute h-3 rounded-full bg-gradient-to-r from-conab-action to-conab-action-lighten"
                 style={{ width: `${((localSettings.maxTokens - 100) / (2000 - 100)) * 100}%` }}
               />
               <input
@@ -230,23 +226,25 @@ export default function ChatSettings({
                 step="100"
                 value={localSettings.maxTokens}
                 onChange={(e) => handleMaxTokensChange(parseInt(e.target.value))}
-                className="w-full h-2 appearance-none cursor-pointer slider bg-transparent relative z-10"
+                className="w-full h-3 appearance-none cursor-pointer slider bg-transparent relative z-10"
               />
             </div>
-            <div className="flex justify-between text-xs text-conab-middle-blue/70 mt-1">
+            <div className="flex justify-between text-xs text-gray-500 mt-2">
               <span>Short</span>
               <span>Long</span>
             </div>
           </div>
 
           {/* Info Section */}
-          <div className="flex items-start gap-2 p-3 bg-conab-middle-blue/5 rounded-lg border border-conab-middle-blue/20">
-            <Info className="w-4 h-4 text-conab-middle-blue mt-0.5 flex-shrink-0" />
-            <div className="text-xs text-conab-middle-blue">
-              <p className="font-medium mb-1 text-conab-dark-blue">Current Settings:</p>
-              <p>Model: {selectedModel?.name} ({selectedModel?.model})</p>
-              <p>Temperature: {localSettings.temperature} ({getTemperatureDescription(localSettings.temperature).toLowerCase()})</p>
-              <p>Max Tokens: {localSettings.maxTokens}</p>
+          <div className="flex items-start gap-3 p-4 bg-gradient-to-r from-conab-action/5 to-conab-action-lighten/5 rounded-2xl border border-conab-action/20">
+            <Info className="w-5 h-5 text-conab-action mt-0.5 flex-shrink-0" />
+            <div className="text-sm text-gray-700">
+              <p className="font-bold mb-2 text-gray-800">Current Settings:</p>
+              <div className="space-y-1">
+                <p><span className="font-medium">Model:</span> {selectedModel?.name}</p>
+                <p><span className="font-medium">Temperature:</span> {localSettings.temperature} ({getTemperatureDescription(localSettings.temperature).toLowerCase()})</p>
+                <p><span className="font-medium">Max Tokens:</span> {localSettings.maxTokens}</p>
+              </div>
             </div>
           </div>
         </div>
@@ -255,7 +253,7 @@ export default function ChatSettings({
       {/* Backdrop */}
       {isOpen && (
         <div
-          className="fixed inset-0 z-40"
+          className="fixed inset-0"
           onClick={onToggle}
         />
       )}

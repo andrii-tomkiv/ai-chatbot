@@ -318,12 +318,12 @@ export default function ChatBox() {
   };
 
   return (
-    <div className="flex flex-col h-full max-w-2xl mx-auto bg-conab-light-background rounded-lg shadow-lg border border-conab-middle-blue">
+    <div className="flex flex-col h-full w-full max-w-4xl bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 overflow-hidden">
       {notification && (
-        <div className={`p-3 text-sm font-medium ${
+        <div className={`p-4 text-sm font-medium backdrop-blur-sm ${
           notification.type === 'success' 
-            ? 'bg-green-100 text-green-800 border-b border-green-200' 
-            : 'bg-red-100 text-red-800 border-b border-red-200'
+            ? 'bg-green-100/80 text-green-800 border-b border-green-200/50' 
+            : 'bg-red-100/80 text-red-800 border-b border-red-200/50'
         }`}>
           {notification.message}
         </div>
@@ -343,7 +343,7 @@ export default function ChatBox() {
         }
       />
 
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-gradient-to-b from-transparent to-conab-light-background/20">
         {conversation.length === 0 ? (
           <WelcomeScreen onQuestionClick={handleSuggestedQuestion} />
         ) : (
