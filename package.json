@@ -12,13 +12,15 @@
     "generate-embeddings": "tsx src/scripts/generateEmbeddings.ts",
     "test-sitemap": "tsx src/scripts/test-sitemap.ts",
     "test-groq": "tsx src/scripts/test-groq.ts",
-    "evaluate": "tsx scripts/evaluate-chatbot.ts"
+    "evaluate": "tsx scripts/evaluate-chatbot.ts",
+    "migrate-to-supabase": "tsx src/scripts/migrate-to-supabase.ts"
   },
   "dependencies": {
     "@ai-sdk/groq": "^1.2.9",
     "@ai-sdk/mistral": "^1.2.8",
     "@langchain/mistralai": "^0.2.1",
     "@mistralai/mistralai": "^1.7.2",
+    "@supabase/supabase-js": "^2.50.3",
     "ai": "^4.3.16",
     "axios": "^1.10.0",
     "cheerio": "^1.1.0",
@@ -38,9 +40,9 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.3.4",
+    "hnswlib-node": "^3.0.0",
     "tailwindcss": "^4",
     "tsx": "^4.20.3",
-    "typescript": "^5",
-    "hnswlib-node": "^3.0.0"
+    "typescript": "^5"
   }
 }

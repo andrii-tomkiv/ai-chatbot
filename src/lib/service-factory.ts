@@ -9,13 +9,13 @@ import {
   EmbeddingProviderManager, 
   createEmbeddingProvider 
 } from './embedding-provider';
-import { VectorDB } from './vector-db';
+import { VectorDBSupabase } from './vector-db-supabase';
 
 export class ServiceFactory {
   private static instance: ServiceFactory;
   private llmManager!: LLMProviderManager;
   private embeddingManager!: EmbeddingProviderManager;
-  private vectorDB!: VectorDB;
+  private vectorDB!: VectorDBSupabase;
 
   private constructor() {
     this.initializeServices();
@@ -104,8 +104,9 @@ export class ServiceFactory {
   }
 
   private initializeVectorDB(): void {
-    const vectorDbConfig = config.getVectorDbConfig();
-    this.vectorDB = new VectorDB(vectorDbConfig.storePath);
+    console.log('🗄️ Initializing Supabase VectorDB...');
+    this.vectorDB = new VectorDBSupabase();
+    console.log('✅ Supabase VectorDB initialized');
   }
 
   getLLMManager(): LLMProviderManager {
@@ -116,7 +117,7 @@ export class ServiceFactory {
     return this.embeddingManager;
   }
 
-  getVectorDB(): VectorDB {
+  getVectorDB(): VectorDBSupabase {
     return this.vectorDB;
   }
 
@@ -162,7 +163,8 @@ export class ServiceFactory {
     }
 
     try {
-      await this.vectorDB.search('test', 1);
+      const count = await this.vectorDB.getDocumentCount();
+      console.log(`📊 VectorDB health check: ${count} documents found`);
       results.vectorDb = true;
     } catch (error) {
       errors.push(`VectorDB health check failed: ${error}`);
