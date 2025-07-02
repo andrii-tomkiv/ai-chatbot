@@ -66,9 +66,9 @@ export default function ChatInput({
           onChange={onInputChange}
           onKeyDown={onKeyDown}
           placeholder={isBlocked ? "You are currently blocked from sending messages" : "Ask me anything about surrogacy, egg donation, or intended parenting..."}
-          className="flex-1 px-0 py-0 border-none bg-transparent focus:outline-none resize-none text-gray-800 placeholder-gray-500 disabled:opacity-50"
+          className="flex-1 px-0 py-2 border-none bg-transparent focus:outline-none resize-none text-gray-800 placeholder-gray-500 disabled:opacity-50 text-base leading-relaxed"
           rows={1}
-          style={{ minHeight: '24px', maxHeight: '120px' }}
+          style={{ minHeight: '48px', maxHeight: '200px' }}
           disabled={isDisabled}
         />
         <div className="flex items-center space-x-2">
