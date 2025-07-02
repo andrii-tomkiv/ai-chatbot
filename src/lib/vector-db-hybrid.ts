@@ -300,8 +300,8 @@ export class VectorDB {
   }
 
   private getDocumentTopic(document: StoredDocument): string {
-    const url = String(document.metadata?.url || '');
-    const title = String(document.metadata?.title || '');
+    const url = document.metadata?.url || '';
+    const title = document.metadata?.title || '';
     const content = document.pageContent || '';
     
     const lowerUrl = url.toLowerCase();
@@ -357,8 +357,8 @@ export class VectorDB {
   }
 
   private isBlogPost(document: StoredDocument): boolean {
-    const url = String(document.metadata?.url || '');
-    const title = String(document.metadata?.title || '');
+    const url = document.metadata?.url || '';
+    const title = document.metadata?.title || '';
     
     // Check if it's a blog post based on URL patterns
     const blogPatterns = [
@@ -420,8 +420,8 @@ export class VectorDB {
     
     const scoredDocuments = documents.map(doc => {
       const content = doc.pageContent.toLowerCase();
-      const title = String(doc.metadata?.title || '').toLowerCase();
-      const url = String(doc.metadata?.url || '').toLowerCase();
+      const title = (doc.metadata?.title || '').toLowerCase();
+      const url = (doc.metadata?.url || '').toLowerCase();
       
       let score = 0;
       
@@ -457,7 +457,8 @@ export class VectorDB {
   }
 
   private async getQueryEmbedding(query: string): Promise<number[]> {
-    return await serviceFactory.generateEmbedding(query);
+    const embeddingProvider = serviceFactory.getEmbeddingProvider();
+    return await embeddingProvider.embedText(query);
   }
 
   private cosineSimilarity(vecA: number[], vecB: number[]): number {
