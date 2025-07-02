@@ -164,20 +164,20 @@ export default function ChatBox() {
           },
         ]);
       }
-    } catch (error) {
-      console.error('Error sending message:', error);
+    } catch (err) {
+      console.error('Error sending message:', err);
       
       // Check if it's a rate limit or block error
-      if (error instanceof Error) {
-        if (error.message.includes('Rate limit exceeded')) {
+      if (err instanceof Error) {
+        if (err.message.includes('Rate limit exceeded')) {
           setRateLimitInfo({
             remaining: 0,
             resetTime: Date.now() + 60000
           });
           error('Rate limit exceeded. Please wait before trying again.');
-        } else if (error.message.includes('blocked') || error.message.includes('Too many invalid messages')) {
+        } else if (err.message.includes('blocked') || err.message.includes('Too many invalid messages')) {
           setIsBlocked(true);
-          setBlockMessage(error.message);
+          setBlockMessage(err.message);
           error('You have been temporarily blocked. Please wait before trying again.');
         } else {
           error('An error occurred while sending your message. Please try again.');
@@ -255,8 +255,8 @@ export default function ChatBox() {
           },
         ]);
       }
-    } catch (error) {
-      console.error('Error regenerating response:', error);
+    } catch (err) {
+      console.error('Error regenerating response:', err);
       error('An error occurred while regenerating the response. Please try again.');
       setConversation(prev => [
         ...prev,

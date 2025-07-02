@@ -173,7 +173,12 @@ export async function continueConversation(
       
       const maxResults = options.maxResults || vectorDbConfig.maxResults;
       const vectorDB = serviceFactory.getVectorDB();
-      const relevantDocs = await vectorDB.search(latestMessage.content, maxResults, identifier);
+      
+      // Generate embedding for the query text
+      const queryEmbedding = await serviceFactory.generateEmbedding(latestMessage.content);
+      
+      // Search with the embedding (no topic filter for now)
+      const relevantDocs = await vectorDB.search(queryEmbedding);
       
       // Extract unique sources from the search results
       sources = relevantDocs
@@ -190,7 +195,7 @@ export async function continueConversation(
       console.log('[ACTIONS] Number of relevant docs:', relevantDocs.length);
       
       const context = relevantDocs
-        .map(doc => `Content: ${doc.pageContent}\nSource: ${doc.metadata.url}`)
+        .map(doc => `Content: ${doc.content}\nSource: ${doc.metadata.url}`)
         .join('\n\n');
 
       console.log('[ACTIONS] Context length:', context.length);
