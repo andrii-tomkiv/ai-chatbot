@@ -16,25 +16,21 @@ interface WelcomeScreenProps {
 export default function WelcomeScreen({ onQuestionClick }: WelcomeScreenProps) {
   return (
     <div className="flex flex-col items-center justify-center min-h-[400px] text-center">
-      {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 left-20 w-32 h-32 bg-gradient-to-br from-conab-action/10 to-conab-action-lighten/10 rounded-full blur-xl"></div>
-        <div className="absolute bottom-20 right-20 w-24 h-24 bg-gradient-to-br from-conab-middle-blue/10 to-conab-header/10 rounded-full blur-xl"></div>
+        <div className="absolute top-20 left-20 w-32 h-32 bg-gradient-to-br from-conab-action/10 to-conab-action-lighten/10 rounded-full blur-xl"/>
+        <div className="absolute bottom-20 right-20 w-24 h-24 bg-gradient-to-br from-conab-middle-blue/10 to-conab-header/10 rounded-full blur-xl"/>
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-40 h-40 bg-gradient-to-br from-conab-action/5 to-conab-middle-blue/5 rounded-full blur-2xl"></div>
       </div>
       
-      {/* Main content */}
       <div className="relative z-10 max-w-2xl mx-auto">
-        {/* Icon */}
-        <div className="mb-8">
-          <div className="w-20 h-20 bg-gradient-to-br from-conab-action to-conab-action-lighten rounded-3xl flex items-center justify-center mx-auto shadow-2xl">
-            <svg className="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 20 20">
+        <div className="mb-6">
+          <div className="w-16 h-16 bg-gradient-to-br from-conab-action to-conab-action-lighten rounded-3xl flex items-center justify-center mx-auto shadow-2xl">
+            <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
               <path fillRule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clipRule="evenodd" />
             </svg>
           </div>
         </div>
         
-        {/* Welcome text */}
         <div className="mb-12">
           <h1 className="text-3xl font-bold text-gray-800 mb-4 bg-gradient-to-r from-conab-header to-conab-action bg-clip-text text-transparent">
             Welcome to ConceiveAbilities
@@ -47,7 +43,6 @@ export default function WelcomeScreen({ onQuestionClick }: WelcomeScreenProps) {
           </p>
         </div>
         
-        {/* Suggested questions */}
         <div className="space-y-4">
           <p className="text-sm font-semibold text-gray-700 mb-6 uppercase tracking-wide">
             Try asking me about:
