@@ -3,16 +3,6 @@ import * as path from 'path';
 import { serviceFactory } from './service-factory';
 import { embeddingRateLimiter } from './rate-limiter';
 
-// Import Vercel KV for production storage
-let kv: any = null;
-try {
-  if (process.env.KV_URL) {
-    kv = require('@vercel/kv').kv;
-  }
-} catch (error) {
-  console.log('⚠️  Vercel KV not available, using file storage only');
-}
-
 export interface Document {
   pageContent: string;
   metadata: Record<string, string | number | boolean>;
@@ -32,19 +22,15 @@ export interface StoredDocument extends Document {
 export class VectorDB {
   private storePath: string;
   private dataPath: string;
-  private useKV: boolean;
 
   constructor(storePath: string = './data/vector-store') {
     console.log(`🔧 Initializing VectorDB with store path: ${storePath}`);
     this.storePath = storePath;
     this.dataPath = path.join(storePath, 'documents.json');
-    this.useKV = !!(kv && process.env.KV_URL);
-    
     console.log(`📁 Data file path: ${this.dataPath}`);
-    console.log(`🌐 Using KV storage: ${this.useKV}`);
   
     // Only try to create the directory in development (local) environments
-    if (process.env.NODE_ENV === 'development' && !this.useKV) {
+    if (process.env.NODE_ENV === 'development') {
       if (!fs.existsSync(storePath)) {
         try {
           fs.mkdirSync(storePath, { recursive: true });
@@ -56,40 +42,11 @@ export class VectorDB {
         console.log(`📁 Directory already exists: ${storePath}`);
       }
     } else {
-      console.log(`🌐 Production environment - using KV storage`);
+      console.log(`🌐 Production environment - skipping directory creation`);
     }
   }
 
-  private async loadDocuments(): Promise<StoredDocument[]> {
-    console.log(`📂 Attempting to load documents...`);
-    
-    if (this.useKV) {
-      return this.loadDocumentsFromKV();
-    } else {
-      return this.loadDocumentsFromFile();
-    }
-  }
-
-  private async loadDocumentsFromKV(): Promise<StoredDocument[]> {
-    try {
-      console.log(`🔑 Loading documents from Vercel KV...`);
-      const data = await kv.get('vector-documents');
-      if (data) {
-        const documents = data.documents || [];
-        console.log(`📊 Loaded ${documents.length} documents from KV`);
-        console.log(`📋 Sample document titles:`, documents.slice(0, 3).map((d: StoredDocument) => d.metadata?.title || 'No title'));
-        return documents;
-      } else {
-        console.log(`⚠️  No documents found in KV`);
-        return [];
-      }
-    } catch (error) {
-      console.error('❌ Error loading documents from KV:', error);
-      return [];
-    }
-  }
-
-  private loadDocumentsFromFile(): StoredDocument[] {
+  private loadDocuments(): StoredDocument[] {
     console.log(`📂 Attempting to load documents from: ${this.dataPath}`);
     try {
       if (fs.existsSync(this.dataPath)) {
@@ -109,35 +66,7 @@ export class VectorDB {
     }
   }
 
-  private async saveDocuments(documents: StoredDocument[]) {
-    console.log(`💾 Saving ${documents.length} documents...`);
-    
-    if (this.useKV) {
-      await this.saveDocumentsToKV(documents);
-    } else {
-      this.saveDocumentsToFile(documents);
-    }
-  }
-
-  private async saveDocumentsToKV(documents: StoredDocument[]) {
-    try {
-      const data = {
-        documents: documents,
-        lastUpdated: new Date().toISOString(),
-        totalDocuments: documents.length,
-        version: '1.0'
-      };
-      
-      await kv.set('vector-documents', data);
-      console.log(`✅ Successfully saved documents to KV`);
-      console.log(`📊 Document stats: ${documents.length} total, ${documents.filter(d => d.embedding.length > 0).length} with embeddings`);
-    } catch (error) {
-      console.error('❌ Error saving documents to KV:', error);
-      throw error;
-    }
-  }
-
-  private saveDocumentsToFile(documents: StoredDocument[]) {
+  private saveDocuments(documents: StoredDocument[]) {
     console.log(`💾 Saving ${documents.length} documents to disk...`);
     try {
       const data = {
@@ -182,15 +111,15 @@ export class VectorDB {
 
     // Load existing documents and add new ones
     console.log(`🔄 Loading existing documents...`);
-    const existingDocuments = await this.loadDocuments();
+    const existingDocuments = this.loadDocuments();
     console.log(`📚 Found ${existingDocuments.length} existing documents`);
     
     const allDocuments = [...existingDocuments, ...documents];
     console.log(`📊 Total documents after merge: ${allDocuments.length}`);
     
-    // Save to storage
-    console.log(`💾 Saving all documents...`);
-    await this.saveDocuments(allDocuments);
+    // Save to disk
+    console.log(`💾 Saving all documents to disk...`);
+    this.saveDocuments(allDocuments);
     console.log(`🎉 Successfully added ${documents.length} new documents to vector store`);
   }
 
@@ -204,13 +133,13 @@ export class VectorDB {
       const rateLimitResult = embeddingRateLimiter.isAllowed(clientIdentifier);
       if (!rateLimitResult.allowed) {
         console.log(`🚫 Rate limit exceeded for ${clientIdentifier}, falling back to text search`);
-        const documents = await this.loadDocuments();
+        const documents = this.loadDocuments();
         return this.fallbackTextSearch(documents, query, k);
       }
     }
     
-    const documents = await this.loadDocuments();
-    console.log(`📚 Loaded ${documents.length} documents from storage`);
+    const documents = this.loadDocuments();
+    console.log(`📚 Loaded ${documents.length} documents from disk`);
     
     if (documents.length === 0) {
       console.log('⚠️  No documents available for search');
@@ -269,9 +198,13 @@ export class VectorDB {
     console.log(`🏆 Final topic-based results:`);
     results.forEach((item, index) => {
       const type = this.isBlogPost(item.document) ? '📝 Blog' : '🌐 Page';
-      console.log(`  ${index + 1}. ${type}: "${item.document.metadata?.title || 'No title'}" (similarity: ${item.similarity.toFixed(3)})`);
+      const topic = this.getDocumentTopic(item.document);
+      console.log(`  ${index + 1}. ${type} [${topic}] "${item.document.metadata?.title || 'No title'}" (${item.similarity.toFixed(4)})`);
     });
 
+    console.log(`✅ Found ${results.length} relevant documents using topic-based search`);
+    
+    // Return documents without embeddings
     return results.map(item => ({
       pageContent: item.document.pageContent,
       metadata: item.document.metadata
@@ -279,241 +212,357 @@ export class VectorDB {
   }
 
   private detectQueryTopic(query: string): 'surrogacy' | 'egg-donor' | 'intended-parents' | 'general' {
-    const lowerQuery = query.toLowerCase();
+    const queryLower = query.toLowerCase();
     
-    // Surrogacy-related keywords
-    const surrogacyKeywords = ['surrogate', 'surrogacy', 'gestational', 'carrier', 'pregnancy', 'birth'];
-    const surrogacyMatch = surrogacyKeywords.some(keyword => lowerQuery.includes(keyword));
+    // Surrogacy keywords
+    const surrogacyKeywords = [
+      'surrogacy', 'surrogate', 'surrogate mother', 'gestational carrier',
+      'become a surrogate', 'surrogate pregnancy', 'surrogate process',
+      'surrogate requirements', 'surrogate compensation', 'surrogate journey'
+    ];
     
-    // Egg donor-related keywords
-    const eggDonorKeywords = ['egg donor', 'egg donation', 'donor eggs', 'egg retrieval', 'ovulation'];
-    const eggDonorMatch = eggDonorKeywords.some(keyword => lowerQuery.includes(keyword));
+    // Egg donor keywords
+    const eggDonorKeywords = [
+      'egg donor', 'egg donation', 'donate eggs', 'egg donor process',
+      'become an egg donor', 'egg donor requirements', 'egg donor compensation',
+      'egg retrieval', 'donor eggs', 'egg donation process'
+    ];
     
-    // Intended parents-related keywords
-    const intendedParentsKeywords = ['intended parent', 'intended parents', 'parent', 'family', 'adoption', 'legal'];
-    const intendedParentsMatch = intendedParentsKeywords.some(keyword => lowerQuery.includes(keyword));
+    // Intended parents keywords
+    const intendedParentsKeywords = [
+      'intended parents', 'surrogacy parents', 'find a surrogate',
+      'surrogate mother', 'surrogacy journey', 'surrogacy cost',
+      'surrogacy process', 'surrogacy agency', 'surrogacy program',
+      'parent', 'parents', 'family building', 'fertility'
+    ];
     
-    if (surrogacyMatch) return 'surrogacy';
-    if (eggDonorMatch) return 'egg-donor';
-    if (intendedParentsMatch) return 'intended-parents';
-    return 'general';
-  }
-
-  private getDocumentTopic(document: StoredDocument): string {
-    const url = String(document.metadata?.url || '');
-    const title = String(document.metadata?.title || '');
-    const content = document.pageContent || '';
-    
-    const lowerUrl = url.toLowerCase();
-    const lowerTitle = title.toLowerCase();
-    const lowerContent = content.toLowerCase();
-    
-    // Check for surrogacy-related content
-    if (lowerUrl.includes('surrogacy') || lowerTitle.includes('surrogacy') || lowerContent.includes('surrogacy')) {
+    // Check for surrogacy keywords
+    if (surrogacyKeywords.some(keyword => queryLower.includes(keyword))) {
       return 'surrogacy';
     }
     
-    // Check for egg donor-related content
-    if (lowerUrl.includes('egg-donor') || lowerTitle.includes('egg donor') || lowerContent.includes('egg donor')) {
+    // Check for egg donor keywords
+    if (eggDonorKeywords.some(keyword => queryLower.includes(keyword))) {
       return 'egg-donor';
     }
     
-    // Check for intended parents-related content
-    if (lowerUrl.includes('intended-parents') || lowerTitle.includes('intended parent') || lowerContent.includes('intended parent')) {
+    // Check for intended parents keywords
+    if (intendedParentsKeywords.some(keyword => queryLower.includes(keyword))) {
       return 'intended-parents';
     }
     
     return 'general';
   }
 
-  private getTopicSpecificResults(scoredDocuments: any[], queryTopic: string, k: number): any[] {
-    console.log(`🎯 Filtering results for topic: ${queryTopic}`);
+  private getDocumentTopic(document: StoredDocument): string {
+    const url = document.metadata?.url as string;
+    const title = document.metadata?.title as string;
     
-    // Separate documents by type and topic
-    const mainPages = scoredDocuments.filter(item => !this.isBlogPost(item.document));
-    const blogPosts = scoredDocuments.filter(item => this.isBlogPost(item.document));
+    if (!url) return 'general';
     
-    const topicMainPages = mainPages.filter(item => this.getDocumentTopic(item.document) === queryTopic);
-    const topicBlogPosts = blogPosts.filter(item => this.getDocumentTopic(item.document) === queryTopic);
-    
-    console.log(`📊 Topic-specific documents: ${topicMainPages.length} main pages, ${topicBlogPosts.length} blog posts`);
-    
-    // If we have enough topic-specific results, use them
-    if (topicMainPages.length + topicBlogPosts.length >= k) {
-      console.log(`✅ Using topic-specific results`);
-      return this.selectPriorityResults(topicMainPages, topicBlogPosts, k);
+    // Check URL patterns for topic classification
+    if (url.includes('/surrogacy/') || url.includes('/surrogate/')) {
+      return 'surrogacy';
     }
     
-    // Otherwise, use general results but prioritize topic-specific ones
-    console.log(`⚠️  Not enough topic-specific results, using mixed approach`);
-    const generalMainPages = mainPages.filter(item => this.getDocumentTopic(item.document) !== queryTopic);
-    const generalBlogPosts = blogPosts.filter(item => this.getDocumentTopic(item.document) !== queryTopic);
+    if (url.includes('/egg-donor/') || url.includes('/egg-donation/')) {
+      return 'egg-donor';
+    }
     
-    // Combine topic-specific and general results, prioritizing topic-specific
-    const allMainPages = [...topicMainPages, ...generalMainPages];
-    const allBlogPosts = [...topicBlogPosts, ...generalBlogPosts];
+    if (url.includes('/parents/') || url.includes('/intended-parents/')) {
+      return 'intended-parents';
+    }
     
-    return this.selectPriorityResults(allMainPages, allBlogPosts, k);
+    // Check title patterns as fallback
+    if (title) {
+      const titleLower = title.toLowerCase();
+      if (titleLower.includes('surrogacy') || titleLower.includes('surrogates')) {
+        return 'surrogacy';
+      }
+      if (titleLower.includes('egg donor') || titleLower.includes('egg donation')) {
+        return 'egg-donor';
+      }
+      if (titleLower.includes('parent') || titleLower.includes('family')) {
+        return 'intended-parents';
+      }
+    }
+    
+    return 'general';
+  }
+
+  private getTopicSpecificResults(scoredDocuments: any[], queryTopic: string, k: number): any[] {
+    console.log(`🎯 Getting topic-specific results for: ${queryTopic}`);
+    
+    if (queryTopic === 'general') {
+      console.log(`🌐 Using general priority-based search for general query`);
+      return this.selectPriorityResults(
+        scoredDocuments.filter(item => !this.isBlogPost(item.document)),
+        scoredDocuments.filter(item => this.isBlogPost(item.document)),
+        k
+      );
+    }
+    
+    // Filter documents by topic
+    const topicDocuments = scoredDocuments.filter(item => 
+      this.getDocumentTopic(item.document) === queryTopic
+    );
+    
+    const otherDocuments = scoredDocuments.filter(item => 
+      this.getDocumentTopic(item.document) !== queryTopic
+    );
+    
+    console.log(`📊 Topic breakdown:`);
+    console.log(`   - ${queryTopic} documents: ${topicDocuments.length}`);
+    console.log(`   - Other documents: ${otherDocuments.length}`);
+    
+    // Separate topic documents by type
+    const topicMainPages = topicDocuments.filter(item => !this.isBlogPost(item.document));
+    const topicBlogPosts = topicDocuments.filter(item => this.isBlogPost(item.document));
+    
+    console.log(`   - ${queryTopic} main pages: ${topicMainPages.length}`);
+    console.log(`   - ${queryTopic} blog posts: ${topicBlogPosts.length}`);
+    
+    // Strategy: Fill with topic-specific main pages first, then topic-specific blog posts,
+    // then other main pages, then other blog posts
+    const results: any[] = [];
+    
+    // 1. Add topic-specific main pages (priority 1)
+    const topicMainPagesToAdd = topicMainPages.slice(0, Math.ceil(k * 0.6));
+    results.push(...topicMainPagesToAdd);
+    console.log(`✅ Added ${topicMainPagesToAdd.length} ${queryTopic} main pages`);
+    
+    // 2. Add topic-specific blog posts (priority 2)
+    const remainingSlots = k - results.length;
+    if (remainingSlots > 0 && topicBlogPosts.length > 0) {
+      const topicBlogPostsToAdd = topicBlogPosts.slice(0, remainingSlots);
+      results.push(...topicBlogPostsToAdd);
+      console.log(`📝 Added ${topicBlogPostsToAdd.length} ${queryTopic} blog posts`);
+    }
+    
+    // 3. If we still need more content, add other main pages (priority 3)
+    const stillRemainingSlots = k - results.length;
+    if (stillRemainingSlots > 0) {
+      const otherMainPages = otherDocuments.filter(item => !this.isBlogPost(item.document));
+      const otherMainPagesToAdd = otherMainPages.slice(0, stillRemainingSlots);
+      results.push(...otherMainPagesToAdd);
+      console.log(`➕ Added ${otherMainPagesToAdd.length} other main pages`);
+    }
+    
+    // 4. If we still need more content, add other blog posts (priority 4)
+    const finalRemainingSlots = k - results.length;
+    if (finalRemainingSlots > 0) {
+      const otherBlogPosts = otherDocuments.filter(item => this.isBlogPost(item.document));
+      const otherBlogPostsToAdd = otherBlogPosts.slice(0, finalRemainingSlots);
+      results.push(...otherBlogPostsToAdd);
+      console.log(`📝 Added ${otherBlogPostsToAdd.length} other blog posts`);
+    }
+    
+    console.log(`📊 Final topic-based result breakdown:`);
+    console.log(`   - ${queryTopic} main pages: ${results.filter(r => this.getDocumentTopic(r.document) === queryTopic && !this.isBlogPost(r.document)).length}`);
+    console.log(`   - ${queryTopic} blog posts: ${results.filter(r => this.getDocumentTopic(r.document) === queryTopic && this.isBlogPost(r.document)).length}`);
+    console.log(`   - Other main pages: ${results.filter(r => this.getDocumentTopic(r.document) !== queryTopic && !this.isBlogPost(r.document)).length}`);
+    console.log(`   - Other blog posts: ${results.filter(r => this.getDocumentTopic(r.document) !== queryTopic && this.isBlogPost(r.document)).length}`);
+    console.log(`   - Total: ${results.length}`);
+    
+    return results;
   }
 
   private isBlogPost(document: StoredDocument): boolean {
-    const url = String(document.metadata?.url || '');
-    const title = String(document.metadata?.title || '');
+    const url = document.metadata?.url as string;
+    const title = document.metadata?.title as string;
     
-    // Check if it's a blog post based on URL patterns
-    const blogPatterns = [
-      '/blog/',
-      '/news/',
-      '/articles/',
-      '/post/',
-      '/story/',
-      'blog.',
-      'news.'
-    ];
+    // Check if it's a blog post based on URL or title
+    const isBlogByUrl = Boolean(url && (
+      url.includes('/blog/') || 
+      url.includes('/about/blog') ||
+      url.includes('/news/') ||
+      url.includes('/articles/')
+    ));
     
-    return blogPatterns.some(pattern => url.toLowerCase().includes(pattern)) ||
-           title.toLowerCase().includes('blog') ||
-           title.toLowerCase().includes('news');
+    const isBlogByTitle = Boolean(title && (
+      title.toLowerCase().includes('blog') ||
+      title.toLowerCase().includes('article') ||
+      title.toLowerCase().includes('news')
+    ));
+    
+    return isBlogByUrl || isBlogByTitle;
   }
 
   private selectPriorityResults(mainPages: any[], blogPosts: any[], k: number): any[] {
-    console.log(`🎯 Selecting priority results from ${mainPages.length} main pages and ${blogPosts.length} blog posts`);
-    
     const results: any[] = [];
     
-    // Prioritize main pages (higher authority, more comprehensive)
-    const mainPageCount = Math.min(Math.ceil(k * 0.7), mainPages.length); // 70% main pages
-    const blogPostCount = Math.min(k - mainPageCount, blogPosts.length); // Remaining for blog posts
+    // Strategy: Fill with main pages first, then supplement with blog posts if needed
+    const mainPageThreshold = Math.min(k, Math.ceil(k * 0.7)); // 70% of results should be main pages
+    const minMainPages = Math.max(1, Math.floor(k * 0.5)); // At least 50% should be main pages
     
-    console.log(`📊 Target: ${mainPageCount} main pages, ${blogPostCount} blog posts`);
+    console.log(`🎯 Priority strategy: Target ${mainPageThreshold} main pages, minimum ${minMainPages}`);
     
-    // Add main pages first
-    results.push(...mainPages.slice(0, mainPageCount));
+    // Add main pages first (up to threshold)
+    const mainPagesToAdd = mainPages.slice(0, mainPageThreshold);
+    results.push(...mainPagesToAdd);
     
-    // Add blog posts if we have space
-    if (blogPostCount > 0) {
-      results.push(...blogPosts.slice(0, blogPostCount));
+    console.log(`✅ Added ${mainPagesToAdd.length} main pages`);
+    
+    // If we don't have enough main pages, add more
+    if (results.length < minMainPages && mainPages.length > results.length) {
+      const additionalMainPages = mainPages.slice(results.length, minMainPages);
+      results.push(...additionalMainPages);
+      console.log(`➕ Added ${additionalMainPages.length} more main pages to meet minimum`);
     }
     
-    // If we still have space, add more main pages
-    if (results.length < k && mainPages.length > mainPageCount) {
-      const remaining = k - results.length;
-      results.push(...mainPages.slice(mainPageCount, mainPageCount + remaining));
+    // Fill remaining slots with blog posts if we have space and good blog content
+    const remainingSlots = k - results.length;
+    if (remainingSlots > 0 && blogPosts.length > 0) {
+      // Only add blog posts with high similarity (above 0.7 threshold)
+      const highQualityBlogPosts = blogPosts.filter(item => item.similarity > 0.7);
+      const blogPostsToAdd = highQualityBlogPosts.slice(0, remainingSlots);
+      
+      if (blogPostsToAdd.length > 0) {
+        results.push(...blogPostsToAdd);
+        console.log(`📝 Added ${blogPostsToAdd.length} high-quality blog posts (similarity > 0.7)`);
+      } else {
+        console.log(`⚠️  No high-quality blog posts found (similarity > 0.7 threshold)`);
+      }
     }
     
-    // If we still have space, add more blog posts
-    if (results.length < k && blogPosts.length > blogPostCount) {
-      const remaining = k - results.length;
-      results.push(...blogPosts.slice(blogPostCount, blogPostCount + remaining));
+    // If we still don't have enough results, add more main pages
+    if (results.length < k && mainPages.length > results.length) {
+      const remainingMainPages = mainPages.slice(results.length, k);
+      results.push(...remainingMainPages);
+      console.log(`➕ Added ${remainingMainPages.length} more main pages to fill remaining slots`);
     }
     
-    console.log(`✅ Selected ${results.length} results (${results.filter(r => !this.isBlogPost(r.document)).length} main pages, ${results.filter(r => this.isBlogPost(r.document)).length} blog posts)`);
+    // If we still don't have enough, add any remaining blog posts
+    if (results.length < k && blogPosts.length > 0) {
+      const usedBlogIds = new Set(results.filter(r => this.isBlogPost(r.document)).map(r => r.document.metadata?.id));
+      const unusedBlogPosts = blogPosts.filter(item => !usedBlogIds.has(item.document.metadata?.id));
+      const remainingBlogPosts = unusedBlogPosts.slice(0, k - results.length);
+      
+      if (remainingBlogPosts.length > 0) {
+        results.push(...remainingBlogPosts);
+        console.log(`📝 Added ${remainingBlogPosts.length} additional blog posts to complete results`);
+      }
+    }
+    
+    console.log(`📊 Final result breakdown:`);
+    console.log(`   - Main pages: ${results.filter(r => !this.isBlogPost(r.document)).length}`);
+    console.log(`   - Blog posts: ${results.filter(r => this.isBlogPost(r.document)).length}`);
+    console.log(`   - Total: ${results.length}`);
     
     return results;
   }
 
   private fallbackTextSearch(documents: StoredDocument[], query: string, k: number): Document[] {
-    console.log(`🔍 Falling back to text-based search for: "${query}"`);
-    
-    const queryWords = query.toLowerCase().split(/\s+/).filter(word => word.length > 2);
-    console.log(`🔤 Query words: ${queryWords.join(', ')}`);
-    
-    const scoredDocuments = documents.map(doc => {
-      const content = doc.pageContent.toLowerCase();
-      const title = String(doc.metadata?.title || '').toLowerCase();
-      const url = String(doc.metadata?.url || '').toLowerCase();
-      
-      let score = 0;
-      
-      // Score based on word matches
-      queryWords.forEach(word => {
-        // Title matches are worth more
-        if (title.includes(word)) score += 10;
-        // URL matches are worth more
-        if (url.includes(word)) score += 8;
-        // Content matches
-        const contentMatches = (content.match(new RegExp(word, 'g')) || []).length;
-        score += contentMatches * 2;
-      });
-      
-      return { document: doc, score };
-    });
-    
-    // Sort by score and return top k
-    const results = scoredDocuments
-      .filter(item => item.score > 0)
-      .sort((a, b) => b.score - a.score)
+    console.log(`🔤 Using fallback text-based search for: "${query}"`);
+    const queryLower = query.toLowerCase();
+    const results = documents
+      .filter(doc => 
+        doc.pageContent.toLowerCase().includes(queryLower) ||
+        (typeof doc.metadata.url === 'string' && doc.metadata.url.toLowerCase().includes(queryLower)) ||
+        (typeof doc.metadata.title === 'string' && doc.metadata.title.toLowerCase().includes(queryLower))
+      )
       .slice(0, k);
-    
-    console.log(`📊 Text search results: ${results.length} documents found`);
-    results.forEach((item, index) => {
-      console.log(`  ${index + 1}. "${item.document.metadata?.title || 'No title'}" (score: ${item.score})`);
-    });
-    
-    return results.map(item => ({
-      pageContent: item.document.pageContent,
-      metadata: item.document.metadata
+
+    console.log(`📋 Text search results:`, results.map(r => r.metadata?.title || 'No title'));
+    return results.map(doc => ({
+      pageContent: doc.pageContent,
+      metadata: doc.metadata
     }));
   }
 
   private async getQueryEmbedding(query: string): Promise<number[]> {
-    return await serviceFactory.generateEmbedding(query);
+    console.log(`🧠 Generating embedding for query: "${query}"`);
+    try {
+      // Use the service factory to get embeddings
+      const embedding = await serviceFactory.generateEmbedding(query);
+      console.log(`✅ Embedding generated successfully, length: ${embedding.length}`);
+      return embedding;
+    } catch (error) {
+      console.error('❌ Error generating query embedding:', error);
+      throw error;
+    }
   }
 
   private cosineSimilarity(vecA: number[], vecB: number[]): number {
     if (vecA.length !== vecB.length) {
-      console.warn(`⚠️  Vector length mismatch: ${vecA.length} vs ${vecB.length}`);
+      console.log(`⚠️  Vector length mismatch: ${vecA.length} vs ${vecB.length}`);
       return 0;
     }
-    
+
     let dotProduct = 0;
     let normA = 0;
     let normB = 0;
-    
+
     for (let i = 0; i < vecA.length; i++) {
       dotProduct += vecA[i] * vecB[i];
       normA += vecA[i] * vecA[i];
       normB += vecB[i] * vecB[i];
     }
-    
-    if (normA === 0 || normB === 0) return 0;
-    
-    return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB));
+
+    if (normA === 0 || normB === 0) {
+      console.log(`⚠️  Zero norm detected: normA=${normA}, normB=${normB}`);
+      return 0;
+    }
+
+    const similarity = dotProduct / (Math.sqrt(normA) * Math.sqrt(normB));
+    return similarity;
   }
 
   async getStats() {
-    const documents = await this.loadDocuments();
-    const documentsWithEmbeddings = documents.filter(doc => doc.embedding.length > 0);
+    console.log(`📊 Getting vector store statistics...`);
+    const documents = this.loadDocuments();
     
-    return {
-      totalDocuments: documents.length,
-      documentsWithEmbeddings: documentsWithEmbeddings.length,
-      storageType: this.useKV ? 'KV' : 'File',
-      lastUpdated: documents.length > 0 ? documents[0].metadata?.lastUpdated : null
+    const stats = { 
+      documentCount: documents.length,
+      storePath: this.storePath,
+      dataPath: this.dataPath,
+      totalEmbeddings: documents.filter(d => d.embedding.length > 0).length
     };
+
+    console.log(`📈 Stats:`, stats);
+    return stats;
   }
 
   async clear() {
-    console.log(`🗑️  Clearing all documents...`);
-    if (this.useKV) {
-      await kv.del('vector-documents');
-      console.log(`✅ Cleared KV storage`);
-    } else {
-      if (fs.existsSync(this.dataPath)) {
-        fs.unlinkSync(this.dataPath);
-        console.log(`✅ Deleted file: ${this.dataPath}`);
+    console.log(`🗑️  Clearing vector store...`);
+    try {
+      if (fs.existsSync(this.storePath)) {
+        fs.rmSync(this.storePath, { recursive: true, force: true });
+        console.log(`✅ Cleared vector store: ${this.storePath}`);
+      } else {
+        console.log(`⚠️  Store path doesn't exist: ${this.storePath}`);
       }
+    } catch (error) {
+      console.error('❌ Error clearing vector store:', error);
     }
   }
 
   async exportSample() {
-    const documents = await this.loadDocuments();
-    const sample = documents.slice(0, 5);
+    console.log(`📋 Exporting sample documents...`);
+    const documents = this.loadDocuments();
     
-    return {
-      sample,
-      total: documents.length,
-      storageType: this.useKV ? 'KV' : 'File'
-    };
+    if (documents.length === 0) {
+      console.log('⚠️  No documents to export');
+      return;
+    }
+
+    const sample = documents.slice(0, 3).map(doc => ({
+      title: doc.metadata.title,
+      url: doc.metadata.url,
+      content: doc.pageContent.substring(0, 200) + '...',
+      embeddingLength: doc.embedding.length
+    }));
+
+    console.log('📋 Sample documents:');
+    sample.forEach((doc, index) => {
+      console.log(`\n${index + 1}. ${doc.title}`);
+      console.log(`   URL: ${doc.url}`);
+      console.log(`   Content: ${doc.content}`);
+      console.log(`   Embedding: ${doc.embeddingLength} dimensions`);
+    });
   }
-} 
+}
+
+// Export singleton instance
+console.log(`🚀 Creating VectorDB singleton instance...`);
+export const vectorDB = new VectorDB(); 
