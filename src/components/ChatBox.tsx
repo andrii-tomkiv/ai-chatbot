@@ -9,6 +9,7 @@ import WelcomeScreen from './features/WelcomeScreen';
 import ChatMessages from './features/ChatMessages';
 import ChatInput from './features/ChatInput';
 import ChatSettings, { ChatSettings as ChatSettingsType } from './features/ChatSettings';
+import { ToastContainer, useToast } from './Toast';
 import { config } from '@/lib/config';
 
 export const maxDuration = 30;
@@ -19,7 +20,6 @@ export default function ChatBox() {
   const [isStreaming, setIsStreaming] = useState(false);
   const [rateLimitInfo, setRateLimitInfo] = useState<{ remaining: number; resetTime: number } | null>(null);
   const [hasLoadedHistory, setHasLoadedHistory] = useState(false);
-  const [notification, setNotification] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
   const [regeneratingMessageId, setRegeneratingMessageId] = useState<string | null>(null);
   const [openDropdownIndex, setOpenDropdownIndex] = useState<number | null>(null);
   const [isBlocked, setIsBlocked] = useState(false);
@@ -30,6 +30,7 @@ export default function ChatBox() {
     model: 'mistral',
     maxTokens: 1000
   });
+  const { toasts, removeToast, success, error } = useToast();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const conversationRef = useRef<Message[]>([]);
 
@@ -69,14 +70,7 @@ export default function ChatBox() {
     }
   }, [conversation, hasLoadedHistory]);
 
-  useEffect(() => {
-    if (notification) {
-      const timer = setTimeout(() => {
-        setNotification(null);
-      }, 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [notification]);
+
 
   // Auto-clear blocked state when rate limit resets
   useEffect(() => {
@@ -180,10 +174,16 @@ export default function ChatBox() {
             remaining: 0,
             resetTime: Date.now() + 60000
           });
+          error('Rate limit exceeded. Please wait before trying again.');
         } else if (error.message.includes('blocked') || error.message.includes('Too many invalid messages')) {
           setIsBlocked(true);
           setBlockMessage(error.message);
+          error('You have been temporarily blocked. Please wait before trying again.');
+        } else {
+          error('An error occurred while sending your message. Please try again.');
         }
+      } else {
+        error('An unexpected error occurred. Please try again.');
       }
       
       setConversation(prev => [
@@ -257,6 +257,7 @@ export default function ChatBox() {
       }
     } catch (error) {
       console.error('Error regenerating response:', error);
+      error('An error occurred while regenerating the response. Please try again.');
       setConversation(prev => [
         ...prev,
         { 
@@ -307,10 +308,7 @@ export default function ChatBox() {
 
   const handleSettingsChange = (newSettings: ChatSettingsType) => {
     setChatSettings(newSettings);
-    setNotification({
-      message: `Settings updated: ${newSettings.model} model, temperature ${newSettings.temperature}`,
-      type: 'success'
-    });
+    success(`Settings updated: ${newSettings.model} model, temperature ${newSettings.temperature}`);
   };
 
   const toggleSettings = () => {
@@ -319,16 +317,6 @@ export default function ChatBox() {
 
   return (
     <div className="flex flex-col h-full w-full max-w-4xl bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 overflow-hidden">
-      {notification && (
-        <div className={`p-4 text-sm font-medium backdrop-blur-sm ${
-          notification.type === 'success' 
-            ? 'bg-green-100/80 text-green-800 border-b border-green-200/50' 
-            : 'bg-red-100/80 text-red-800 border-b border-red-200/50'
-        }`}>
-          {notification.message}
-        </div>
-      )}
-      
       <ChatHeader 
         onClearConversation={clearConversation}
         currentModel={chatSettings.model}
@@ -371,6 +359,8 @@ export default function ChatBox() {
         onSendMessage={() => sendMessage(input)}
         onVoiceTranscript={handleVoiceTranscript}
       />
+
+      <ToastContainer toasts={toasts} onRemove={removeToast} />
     </div>
   );
 } 
