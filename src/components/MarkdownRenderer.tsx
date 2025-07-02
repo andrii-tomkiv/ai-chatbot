@@ -17,7 +17,7 @@ export default function MarkdownRenderer({ content, className = '' }: MarkdownRe
           a: ({ ...props }) => (
             <a
               {...props}
-              className="inline-flex items-center px-3 py-1.5 bg-gradient-to-r from-conab-action to-conab-action-lighten text-white text-sm rounded-xl hover:from-conab-action-lighten hover:to-conab-action transition-all duration-200 font-medium no-underline shadow-sm hover:shadow-md"
+              className="mb-2 inline-flex items-center px-3 py-1.5 bg-gradient-to-r from-conab-action to-conab-action-lighten text-white text-sm rounded-xl hover:from-conab-action-lighten hover:to-conab-action transition-all duration-200 font-medium no-underline shadow-sm hover:shadow-md"
               target="_blank"
               rel="noopener noreferrer"
             >
