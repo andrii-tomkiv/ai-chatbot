@@ -11,6 +11,7 @@ import ChatInput from './features/ChatInput';
 import ChatSettings, { ChatSettings as ChatSettingsType } from './features/ChatSettings';
 import { ToastContainer, useToast } from './Toast';
 import { config } from '@/lib/config';
+import { useRateLimit } from '@/lib/use-rate-limit';
 
 export const maxDuration = 30;
 
@@ -18,12 +19,9 @@ export default function ChatBox() {
   const [conversation, setConversation] = useState<Message[]>([]);
   const [input, setInput] = useState<string>('');
   const [isStreaming, setIsStreaming] = useState(false);
-  const [rateLimitInfo, setRateLimitInfo] = useState<{ remaining: number; resetTime: number } | null>(null);
   const [hasLoadedHistory, setHasLoadedHistory] = useState(false);
   const [regeneratingMessageId, setRegeneratingMessageId] = useState<string | null>(null);
   const [openDropdownIndex, setOpenDropdownIndex] = useState<number | null>(null);
-  const [isBlocked, setIsBlocked] = useState(false);
-  const [blockMessage, setBlockMessage] = useState<string | null>(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [chatSettings, setChatSettings] = useState<ChatSettingsType>({
     temperature: 0.7,
@@ -33,8 +31,17 @@ export default function ChatBox() {
   const { toasts, removeToast, success, error } = useToast();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const conversationRef = useRef<Message[]>([]);
+  
+  const { 
+    status: rateLimitStatus, 
+    loading: rateLimitLoading, 
+    error: rateLimitError, 
+    canSendMessage, 
+    checkRateLimit, 
+    formatTimeRemaining,
+    forceRateLimitStatus
+  } = useRateLimit();
 
-  // Load settings from localStorage
   useEffect(() => {
     const savedSettings = localStorage.getItem('chatSettings');
     if (savedSettings) {
@@ -47,7 +54,6 @@ export default function ChatBox() {
     }
   }, []);
 
-  // Save settings to localStorage when they change
   useEffect(() => {
     localStorage.setItem('chatSettings', JSON.stringify(chatSettings));
   }, [chatSettings]);
@@ -70,23 +76,6 @@ export default function ChatBox() {
     }
   }, [conversation, hasLoadedHistory]);
 
-
-
-  // Auto-clear blocked state when rate limit resets
-  useEffect(() => {
-    if (rateLimitInfo && rateLimitInfo.remaining === 0) {
-      const timeUntilReset = rateLimitInfo.resetTime - Date.now();
-      if (timeUntilReset > 0) {
-        const timer = setTimeout(() => {
-          setRateLimitInfo(null);
-          setIsBlocked(false);
-          setBlockMessage(null);
-        }, timeUntilReset);
-        return () => clearTimeout(timer);
-      }
-    }
-  }, [rateLimitInfo]);
-
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (openDropdownIndex !== null) {
@@ -102,6 +91,17 @@ export default function ChatBox() {
 
   const sendMessage = useCallback(async (messageContent: string) => {
     if (!messageContent.trim()) return;
+    
+    if (!canSendMessage) {
+      if (rateLimitStatus?.isBlocked) {
+        const timeRemaining = formatTimeRemaining(rateLimitStatus.timeUntilUnblock);
+        error(`You are temporarily blocked. Please wait ${timeRemaining} before trying again.`);
+      } else {
+        const timeRemaining = formatTimeRemaining(rateLimitStatus?.timeUntilReset || 0);
+        error(`Rate limit exceeded. Please wait ${timeRemaining} before trying again.`);
+      }
+      return;
+    }
     
     const userMessage: Message = {
       role: 'user',
@@ -133,25 +133,18 @@ export default function ChatBox() {
       for await (const delta of readStreamableValue(newMessage)) {
         textContent = `${textContent}${delta}`;
 
-        if (textContent.includes('Rate limit exceeded')) {
-          setRateLimitInfo({
-            remaining: 0,
-            resetTime: Date.now() + 60000
-          });
-        }
-
-        // Check for blocked messages
-        if (textContent.includes('You are blocked for') || textContent.includes('Too many invalid messages')) {
-          setIsBlocked(true);
-          setBlockMessage(textContent);
-          // Extract block duration if available
-          const blockMatch = textContent.match(/blocked for (\d+) minutes/);
-          if (blockMatch) {
-            const blockMinutes = parseInt(blockMatch[1]);
-            setTimeout(() => {
-              setIsBlocked(false);
-              setBlockMessage(null);
-            }, blockMinutes * 60 * 1000);
+        if (textContent.includes('Rate limit exceeded') || 
+            textContent.includes('You are blocked for') || 
+            textContent.includes('Too many invalid messages')) {
+          
+          if (textContent.includes('Rate limit exceeded')) {
+            const secondsMatch = textContent.match(/wait (\d+) seconds? before/);
+            const seconds = secondsMatch ? parseInt(secondsMatch[1]) : 60;
+            forceRateLimitStatus(true, false, seconds);
+          } else if (textContent.includes('You are blocked for') || textContent.includes('Too many invalid messages')) {
+            const minutesMatch = textContent.match(/blocked for (\d+) minutes?/);
+            const minutes = minutesMatch ? parseInt(minutesMatch[1]) : 10;
+            forceRateLimitStatus(false, true, undefined, minutes);
           }
         }
 
@@ -167,18 +160,12 @@ export default function ChatBox() {
     } catch (err) {
       console.error('Error sending message:', err);
       
-      // Check if it's a rate limit or block error
       if (err instanceof Error) {
-        if (err.message.includes('Rate limit exceeded')) {
-          setRateLimitInfo({
-            remaining: 0,
-            resetTime: Date.now() + 60000
-          });
+        if (err.message.includes('Rate limit exceeded') || 
+            err.message.includes('blocked') || 
+            err.message.includes('Too many invalid messages')) {
+          checkRateLimit();
           error('Rate limit exceeded. Please wait before trying again.');
-        } else if (err.message.includes('blocked') || err.message.includes('Too many invalid messages')) {
-          setIsBlocked(true);
-          setBlockMessage(err.message);
-          error('You have been temporarily blocked. Please wait before trying again.');
         } else {
           error('An error occurred while sending your message. Please try again.');
         }
@@ -197,7 +184,7 @@ export default function ChatBox() {
     } finally {
       setIsStreaming(false);
     }
-  }, [chatSettings.model, chatSettings.temperature, chatSettings.maxTokens]);
+  }, [chatSettings.model, chatSettings.temperature, chatSettings.maxTokens, canSendMessage, rateLimitStatus, checkRateLimit, formatTimeRemaining, forceRateLimitStatus, error]);
 
   const regenerateResponse = useCallback(async (messageIndex: number, strategy: 'quick' | 'detailed' | 'concise' = 'quick') => {
     if (messageIndex < 0 || messageIndex >= conversation.length) return;
@@ -208,7 +195,6 @@ export default function ChatBox() {
     const userMessageIndex = messageIndex - 1;
     if (userMessageIndex < 0 || conversation[userMessageIndex].role !== 'user') return;
 
-    // For regeneration: send up to user message, then user message, then system instruction
     const conversationUpToUser = conversation.slice(0, messageIndex); // up to the user message
     const userMessage = conversation[userMessageIndex];
     const systemRegenerate: Message = {
@@ -288,7 +274,7 @@ export default function ChatBox() {
   const handleKeyDown = (event: React.KeyboardEvent) => {
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();
-      if (input.trim() && !isStreaming) {
+      if (input.trim() && !isStreaming && canSendMessage) {
         sendMessage(input);
       }
     }
@@ -351,9 +337,10 @@ export default function ChatBox() {
       <ChatInput
         input={input}
         isStreaming={isStreaming}
-        rateLimitInfo={rateLimitInfo}
-        isBlocked={isBlocked}
-        blockMessage={blockMessage}
+        rateLimitStatus={rateLimitStatus}
+        rateLimitLoading={rateLimitLoading}
+        canSendMessage={canSendMessage}
+        formatTimeRemaining={formatTimeRemaining}
         onInputChange={handleInputChange}
         onKeyDown={handleKeyDown}
         onSendMessage={() => sendMessage(input)}

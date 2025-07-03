@@ -1,14 +1,16 @@
 import React, { useRef } from 'react';
 import VoiceInput from '../VoiceInput';
+import { RateLimitStatus } from "../../lib/use-rate-limit";
 
 interface ChatInputProps {
   input: string;
   isStreaming: boolean;
-  rateLimitInfo: { remaining: number; resetTime: number } | null;
-  isBlocked: boolean;
-  blockMessage: string | null;
+  rateLimitStatus: RateLimitStatus | null;
+  rateLimitLoading: boolean;
+  canSendMessage: boolean | undefined;
+  formatTimeRemaining: (milliseconds: number) => string;
   onInputChange: (event: React.ChangeEvent<HTMLTextAreaElement>) => void;
-  onKeyDown: (event: React.KeyboardEvent) => void;
+  onKeyDown: (event: React.KeyboardEvent<HTMLTextAreaElement>) => void;
   onSendMessage: () => void;
   onVoiceTranscript: (transcript: string) => void;
 }
@@ -16,9 +18,10 @@ interface ChatInputProps {
 export default function ChatInput({
   input,
   isStreaming,
-  rateLimitInfo,
-  isBlocked,
-  blockMessage,
+  rateLimitStatus,
+  rateLimitLoading,
+  canSendMessage,
+  formatTimeRemaining,
   onInputChange,
   onKeyDown,
   onSendMessage,
@@ -26,47 +29,74 @@ export default function ChatInput({
 }: ChatInputProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  // Check if input should be disabled
-  const isDisabled = Boolean(isStreaming || isBlocked || (rateLimitInfo && rateLimitInfo.remaining === 0));
+  const isDisabled = Boolean(
+    isStreaming ||                                        
+    canSendMessage === false ||                         
+    (rateLimitStatus && rateLimitStatus.allowed === false) || 
+    (rateLimitStatus && rateLimitStatus.isBlocked === true)   
+  );
   
-  // Get remaining time for rate limit
   const getRemainingTime = () => {
-    if (!rateLimitInfo) return 0;
-    return Math.ceil((rateLimitInfo.resetTime - Date.now()) / 1000);
+    if (!rateLimitStatus) return 0;
+    return formatTimeRemaining(rateLimitStatus.timeUntilReset);
+  };
+
+  const getBlockedTime = () => {
+    if (!rateLimitStatus) return 0;
+    return formatTimeRemaining(rateLimitStatus.timeUntilUnblock);
   };
 
   return (
     <div className="p-6 border-t border-white/20 bg-gradient-to-r from-white/90 to-conab-light-background/90 backdrop-blur-sm">
-      {/* Rate limit warning */}
-      {rateLimitInfo && rateLimitInfo.remaining <= 2 && rateLimitInfo.remaining > 0 && (
+      {rateLimitStatus && rateLimitStatus.remaining <= 2 && rateLimitStatus.remaining > 0 && rateLimitStatus.allowed && (
         <div className="mb-4 p-3 bg-yellow-100/80 border border-yellow-300/50 rounded-xl text-yellow-800 text-sm backdrop-blur-sm">
-          ⚠️ Rate limit warning: {rateLimitInfo.remaining} requests remaining. 
-          Reset in {getRemainingTime()}s
+          ⚠️ Rate limit warning: {rateLimitStatus.remaining} requests remaining. 
+          Reset in {getRemainingTime()}
         </div>
       )}
       
-      {/* Rate limit exceeded */}
-      {rateLimitInfo && rateLimitInfo.remaining === 0 && (
-        <div className="mb-4 p-3 bg-red-100/80 border border-red-300/50 rounded-xl text-red-800 text-sm backdrop-blur-sm">
-          🚫 Rate limit exceeded. Please wait {getRemainingTime()} seconds before trying again.
+      {rateLimitStatus && !rateLimitStatus.allowed && !rateLimitStatus.isBlocked && (
+        <div className="mb-4 p-4 bg-red-100/90 border-2 border-red-400/60 rounded-xl text-red-900 text-base font-medium backdrop-blur-sm shadow-lg">
+          🚫 <strong>Rate limit exceeded!</strong> Please wait {getRemainingTime()} before trying again.
         </div>
       )}
       
-      {/* Blocked message */}
-      {isBlocked && blockMessage && (
-        <div className="mb-4 p-3 bg-red-100/80 border border-red-300/50 rounded-xl text-red-800 text-sm backdrop-blur-sm">
-          🚫 {blockMessage}
+      {rateLimitStatus && rateLimitStatus.isBlocked && (
+        <div className="mb-4 p-4 bg-red-100/90 border-2 border-red-500/60 rounded-xl text-red-900 text-base font-medium backdrop-blur-sm shadow-lg">
+          🚫 <strong>You are blocked!</strong> Blocked for {getBlockedTime()} due to invalid messages. Please wait before trying again.
         </div>
       )}
       
-      <div className="flex items-end space-x-3 bg-white/60 backdrop-blur-sm rounded-2xl p-4 border border-white/30 shadow-lg">
+      {rateLimitLoading && (
+        <div className="mb-4 p-3 bg-blue-100/80 border border-blue-300/50 rounded-xl text-blue-800 text-sm backdrop-blur-sm">
+          ⏳ Checking rate limit status...
+        </div>
+      )}
+      
+      <div className={`flex items-end space-x-3 backdrop-blur-sm rounded-2xl p-4 border shadow-lg ${
+        isDisabled 
+          ? 'bg-gray-200/60 border-gray-300/50 opacity-75' 
+          : 'bg-white/60 border-white/30'
+      }`}>
         <textarea
           ref={textareaRef}
           value={input}
           onChange={onInputChange}
           onKeyDown={onKeyDown}
-          placeholder={isBlocked ? "You are currently blocked from sending messages" : "Ask me anything about surrogacy, egg donation, or intended parenting..."}
-          className="flex-1 px-0 py-2 border-none bg-transparent focus:outline-none resize-none text-gray-800 placeholder-gray-500 disabled:opacity-50 text-base leading-relaxed"
+          placeholder={
+            rateLimitStatus && rateLimitStatus.isBlocked 
+              ? "🚫 You are currently blocked from sending messages" 
+              : rateLimitStatus && !rateLimitStatus.allowed
+              ? "⏱️ Rate limit exceeded - please wait"
+              : isDisabled
+              ? "Please wait..."
+              : "Ask me anything about surrogacy, egg donation, or intended parenting..."
+          }
+          className={`flex-1 px-0 py-2 border-none bg-transparent focus:outline-none resize-none text-base leading-relaxed ${
+            isDisabled 
+              ? 'text-gray-500 placeholder-gray-400 cursor-not-allowed'
+              : 'text-gray-800 placeholder-gray-500'
+          }`}
           rows={1}
           style={{ minHeight: '48px', maxHeight: '200px' }}
           disabled={isDisabled}
@@ -76,13 +106,28 @@ export default function ChatInput({
           <button
             onClick={onSendMessage}
             disabled={isDisabled || !input.trim()}
-            className="w-12 h-12 bg-gradient-to-br from-conab-action to-conab-action-lighten text-white rounded-xl hover:from-conab-action-lighten hover:to-conab-action focus:outline-none focus:ring-2 focus:ring-conab-action/50 transition-all duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center justify-center shadow-lg"
+            className={`w-12 h-12 rounded-xl focus:outline-none transition-all duration-200 flex items-center justify-center shadow-lg ${
+              isDisabled || !input.trim()
+                ? 'bg-gray-400 text-gray-200 cursor-not-allowed opacity-60'
+                : 'bg-gradient-to-br from-conab-action to-conab-action-lighten text-white hover:from-conab-action-lighten hover:to-conab-action focus:ring-2 focus:ring-conab-action/50 hover:scale-105'
+            }`}
+            title={
+              rateLimitStatus && rateLimitStatus.isBlocked
+                ? "Blocked - cannot send messages"
+                : rateLimitStatus && !rateLimitStatus.allowed
+                ? "Rate limit exceeded"
+                : isDisabled
+                ? "Please wait..."
+                : !input.trim()
+                ? "Enter a message to send"
+                : "Send message"
+            }
           >
             {isStreaming ? (
               <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-            ) : isBlocked ? (
+            ) : rateLimitStatus && rateLimitStatus.isBlocked ? (
               <span className="text-xs">🚫</span>
-            ) : rateLimitInfo && rateLimitInfo.remaining === 0 ? (
+            ) : rateLimitStatus && !rateLimitStatus.allowed ? (
               <span className="text-xs">⏱️</span>
             ) : (
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -94,4 +139,4 @@ export default function ChatInput({
       </div>
     </div>
   );
-} 
+}
