@@ -1,6 +1,6 @@
 import { streamText } from 'ai';
 import { mistral } from '@ai-sdk/mistral';
-import { config } from './config';
+import { config } from '../../utils/config/config';
 import { GroqProviderImpl } from './groq-provider';
 import { MistralProviderImpl } from './mistral-provider';
 

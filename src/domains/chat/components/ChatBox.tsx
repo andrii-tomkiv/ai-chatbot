@@ -1,17 +1,17 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Message, continueConversation } from '@/app/actions';
 import { readStreamableValue } from 'ai/rsc';
-import { saveChatHistory, loadChatHistory, clearChatHistory } from './features/ChatHistory';
-import ChatHeader from './features/ChatHeader';
-import WelcomeScreen from './features/WelcomeScreen';
-import ChatMessages from './features/ChatMessages';
-import ChatInput from './features/ChatInput';
-import ChatSettings, { ChatSettings as ChatSettingsType } from './features/ChatSettings';
-import { ToastContainer, useToast } from './Toast';
-import { config } from '@/lib/config';
-import { useRateLimit } from '@/lib/use-rate-limit';
+import { saveChatHistory, loadChatHistory, clearChatHistory } from './ChatHistory';
+import ChatHeader from './ChatHeader';
+import WelcomeScreen from './WelcomeScreen';
+import ChatMessages from './ChatMessages';
+import ChatInput from './ChatInput';
+import ChatSettings, { ChatSettings as ChatSettingsType } from './ChatSettings';
+import { ToastContainer, useToast } from '@/shared/ui/components/Toast';
+import { config } from '@/shared/utils/config/config';
+import { useRateLimit } from '../hooks/use-rate-limit';
 
 export const maxDuration = 30;
 

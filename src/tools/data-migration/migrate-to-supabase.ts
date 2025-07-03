@@ -1,16 +1,36 @@
-import { config } from 'dotenv';
-config();
+#!/usr/bin/env node
+
+// Load environment variables first
+import 'dotenv/config';
+
+// Function to display the banner
+function displayBanner() {
+  console.log(`
+     /$$$$$$   /$$$$$$  /$$   /$$  /$$$$$$  /$$$$$$$  
+    /$$__  $$ /$$__  $$| $$$ | $$ /$$__  $$| $$__  $$ 
+   | $$  \\__/| $$  \\ $$| $$$$| $$| $$  \\ $$| $$  \\ $$ 
+   | $$      | $$  | $$| $$ $$ $$| $$$$$$$$| $$$$$$$ 
+   | $$      | $$  | $$| $$  $$$$| $$__  $$| $$__  $$
+   | $$    $$| $$  | $$| $$\\  $$$| $$  | $$| $$  \\ $$
+   |  $$$$$$/|  $$$$$$/| $$ \\  $$| $$  | $$| $$$$$$$/
+    \\______/  \\______/ |__/  \\__/|__/  |__/|_______/ 
+                                                      
+   🚀 Conab AI Chatbot - Supabase Migration Tool
+   =============================================
+  `);
+}
+
+// Import Node.js modules
+import fs from 'fs';
+import path from 'path';
+import type { EmbeddingDocument } from '@/shared/infrastructure/database/supabase';
+// Import after env is loaded
+const { VectorDBSupabase } = require('@/shared/infrastructure/vector-store/vector-db-supabase');
 
 console.log('SUPABASE_URL:', process.env.SUPABASE_URL);
 console.log('SUPABASE_ANON_KEY:', process.env.SUPABASE_ANON_KEY);
 console.log('NEXT_PUBLIC_SUPABASE_URL:', process.env.NEXT_PUBLIC_SUPABASE_URL);
 console.log('NEXT_PUBLIC_SUPABASE_ANON_KEY:', process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
-
-import fs from 'fs';
-import path from 'path';
-import type { EmbeddingDocument } from '../lib/supabase';
-// Import after env is loaded
-const { VectorDBSupabase } = require('../lib/vector-db-supabase');
 
 async function migrateToSupabase() {
   try {

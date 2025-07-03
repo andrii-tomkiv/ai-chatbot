@@ -1,4 +1,4 @@
-import { FacebookScraper } from './scrapeFacebookContent';
+import { FacebookScraper } from '../content-processing/scrapeFacebookContent';
 
 async function testFacebookScraping() {
   console.log('🧪 Testing Facebook scraping...');

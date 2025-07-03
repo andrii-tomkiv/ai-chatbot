@@ -1,6 +1,6 @@
-import { supabase, EmbeddingDocument, EMBEDDINGS_TABLE } from './supabase';
-import { config } from './config';
-import { createEmbeddingProvider } from './embedding-provider';
+import { supabase, EmbeddingDocument, EMBEDDINGS_TABLE } from '../database/supabase';
+import { config } from '../../utils/config/config';
+import { createEmbeddingProvider } from '../ai-providers/embedding-provider';
 
 export class VectorDBSupabase {
   private maxResults: number;

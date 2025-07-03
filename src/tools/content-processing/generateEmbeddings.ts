@@ -1,8 +1,8 @@
-import 'dotenv/config';
+import { config } from 'dotenv';
 import * as fs from 'fs';
 import * as path from 'path';
-import { vectorDB } from '@/lib/vector-db';
-import { MistralEmbeddingProvider } from '@/lib/embedding-provider';
+import { vectorDB } from '@/shared/infrastructure/vector-store/vector-db';
+import { MistralEmbeddingProvider } from '@/shared/infrastructure/ai-providers/embedding-provider';
 
 interface ScrapedChunk {
   id: string;

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { headers } from "next/headers";
-import { chatRateLimiter } from "@/lib/rate-limiter";
+import { chatRateLimiter } from "@/domains/moderation/services/rate-limiter";
 
 // Helper function to get request info for rate limiting
 async function getRequestInfo() {

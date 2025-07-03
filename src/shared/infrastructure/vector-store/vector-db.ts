@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { serviceFactory } from './service-factory';
-import { embeddingRateLimiter } from './rate-limiter';
+import { serviceFactory } from '../../utils/helpers/service-factory';
+import { embeddingRateLimiter } from '../../../domains/moderation/services/rate-limiter';
 
 export interface Document {
   pageContent: string;

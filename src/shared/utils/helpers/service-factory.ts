@@ -1,15 +1,15 @@
-import { config } from './config';
+import { config } from '../config/config';
 import { 
   LLMProviderManager, 
   createLLMProvider
-} from './llm-provider';
-import { MistralProviderImpl } from './mistral-provider';
-import { GroqProviderImpl } from './groq-provider';
+} from '../../infrastructure/ai-providers/llm-provider';
+import { MistralProviderImpl } from '../../infrastructure/ai-providers/mistral-provider';
+import { GroqProviderImpl } from '../../infrastructure/ai-providers/groq-provider';
 import { 
   EmbeddingProviderManager, 
   createEmbeddingProvider 
-} from './embedding-provider';
-import { VectorDBSupabase } from './vector-db-supabase';
+} from '../../infrastructure/ai-providers/embedding-provider';
+import { VectorDBSupabase } from '../../infrastructure/vector-store/vector-db-supabase';
 
 export class ServiceFactory {
   private static instance: ServiceFactory;

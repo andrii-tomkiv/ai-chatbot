@@ -1,12 +1,12 @@
 'use server';
 
 import { createStreamableValue } from 'ai/rsc';
-import { serviceFactory } from '@/lib/service-factory';
-import { buildChatPrompt } from '@/lib/prompts';
-import { Message as LLMMessage } from '@/lib/llm-provider';
-import { config } from '@/lib/config';
+import { serviceFactory } from '@/shared/utils/helpers/service-factory';
+import { buildChatPrompt } from '@/shared/utils/helpers/prompts';
+import { Message as LLMMessage } from '@/shared/infrastructure/ai-providers/llm-provider';
+import { config } from '@/shared/utils/config/config';
 import { headers } from 'next/headers';
-import { chatRateLimiter } from '@/lib/rate-limiter';
+import { chatRateLimiter } from '@/domains/moderation/services/rate-limiter';
 
 export interface Message {
   role: 'user' | 'assistant' | 'system';

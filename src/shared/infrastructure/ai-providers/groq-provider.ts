@@ -1,6 +1,6 @@
 import { streamText } from 'ai';
 import { groq } from '@ai-sdk/groq';
-import { config } from './config';
+import { config } from '../../utils/config/config';
 
 export interface GroqConfig {
   model: string;

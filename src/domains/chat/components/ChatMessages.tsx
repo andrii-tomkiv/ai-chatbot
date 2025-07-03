@@ -1,6 +1,6 @@
 import React from 'react';
 import { Message } from '@/app/actions';
-import MarkdownRenderer from '../MarkdownRenderer';
+import { MarkdownRenderer } from '@/shared/ui/components';
 import MessageRegeneration from './MessageRegeneration';
 
 interface ChatMessagesProps {

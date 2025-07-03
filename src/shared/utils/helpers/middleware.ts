@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { chatRateLimiter, embeddingRateLimiter, generalRateLimiter } from './rate-limiter';
+import { chatRateLimiter, embeddingRateLimiter, generalRateLimiter } from '../../../domains/moderation/services/rate-limiter';
 
 export function getClientIdentifier(request: NextRequest): string {
   // Try to get real IP from various headers

@@ -1,6 +1,6 @@
 import { streamText } from 'ai';
 import { mistral } from '@ai-sdk/mistral';
-import { config } from './config';
+import { config } from '../../utils/config/config';
 
 export interface MistralConfig {
   model: string;

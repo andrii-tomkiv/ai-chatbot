@@ -1,6 +1,8 @@
+'use client';
+
 import React, { useRef } from 'react';
-import VoiceInput from '../VoiceInput';
-import { RateLimitStatus } from "../../lib/use-rate-limit";
+import { VoiceInput } from '@/shared/ui/components';
+import { RateLimitStatus } from "../hooks/use-rate-limit";
 
 interface ChatInputProps {
   input: string;
