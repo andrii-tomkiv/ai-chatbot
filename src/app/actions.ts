@@ -84,9 +84,33 @@ export async function continueConversation(
       // Enhanced spam detection for gibberish messages
       const messageContent = latestMessage.content.trim();
       
-      // Check for gibberish messages
-      if (isGibberishMessage(messageContent)) {
-        // Track spam and check if should block
+      // Check for repeated gibberish patterns FIRST (excluding current message)
+      const recentMessages = history.slice(-5, -1); // Exclude the current message
+      const gibberishMessages = recentMessages.filter(msg => {
+        if (msg.role !== 'user') return false;
+        return isGibberishMessage(msg.content);
+      });
+      
+      // If current message is also gibberish, check if there are previous gibberish messages
+      const currentIsGibberish = isGibberishMessage(messageContent);
+      if (currentIsGibberish) {
+        // If we already have 1+ gibberish messages in PREVIOUS history, this is repeated
+        if (gibberishMessages.length >= 1) {
+          // Track spam and check if should block
+          const spamResult = chatRateLimiter.trackSpam(identifier);
+          if (spamResult.shouldBlock) {
+            const blockMessage = createSpamBlockMessage(spamResult.blockDuration || 600000);
+            stream.update(blockMessage);
+            stream.done();
+            return;
+          }
+          
+          stream.update(RESPONSE_MESSAGES.GIBBERISH_REPEATED);
+          stream.done();
+          return;
+        }
+        
+        // First gibberish message
         const spamResult = chatRateLimiter.trackSpam(identifier);
         if (spamResult.shouldBlock) {
           const blockMessage = createSpamBlockMessage(spamResult.blockDuration || 600000);
@@ -96,28 +120,6 @@ export async function continueConversation(
         }
         
         stream.update(RESPONSE_MESSAGES.GIBBERISH_FIRST);
-        stream.done();
-        return;
-      }
-
-      // Check for repeated gibberish patterns
-      const recentMessages = history.slice(-5);
-      const gibberishMessages = recentMessages.filter(msg => {
-        if (msg.role !== 'user') return false;
-        return isGibberishMessage(msg.content);
-      });
-      
-      if (gibberishMessages.length >= 2) {
-        // Track spam and check if should block
-        const spamResult = chatRateLimiter.trackSpam(identifier);
-        if (spamResult.shouldBlock) {
-          const blockMessage = createSpamBlockMessage(spamResult.blockDuration || 600000);
-          stream.update(blockMessage);
-          stream.done();
-          return;
-        }
-        
-        stream.update(RESPONSE_MESSAGES.GIBBERISH_REPEATED);
         stream.done();
         return;
       }
