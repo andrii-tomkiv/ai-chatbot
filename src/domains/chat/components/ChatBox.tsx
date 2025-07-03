@@ -35,7 +35,6 @@ export default function ChatBox() {
   const { 
     status: rateLimitStatus, 
     loading: rateLimitLoading, 
-    error: rateLimitError, 
     canSendMessage, 
     checkRateLimit, 
     formatTimeRemaining,

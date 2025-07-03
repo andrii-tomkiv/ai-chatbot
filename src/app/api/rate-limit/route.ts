@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
         success: false, 
         error: 'Failed to check rate limit status',
         status: {
-          allowed: true, // Default to allowed if check fails
+          allowed: true,
           remaining: 5,
           resetTime: Date.now() + 60000,
           isBlocked: false,

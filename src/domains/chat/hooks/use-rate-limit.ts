@@ -219,7 +219,7 @@ export function useRateLimit() {
           };
         });
       }
-    }, 10000); // Changed from 1000 to 10000 (10 seconds)
+    }, 10000);
 
     return () => clearInterval(interval);
   }, [status, forcedStatus, checkRateLimit]);
@@ -232,7 +232,6 @@ export function useRateLimit() {
     const remainingSeconds = seconds % 60;
     
     if (minutes > 0) {
-      // If there are minutes, only show seconds if they're not 0
       if (remainingSeconds > 0) {
         return `${minutes}m ${remainingSeconds}s`;
       } else {

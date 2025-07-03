@@ -1,5 +1,3 @@
-import { streamText } from 'ai';
-import { mistral } from '@ai-sdk/mistral';
 import { config } from '../../utils/config/config';
 import { GroqProviderImpl } from './groq-provider';
 import { MistralProviderImpl } from './mistral-provider';
@@ -151,24 +149,7 @@ export class LLMProviderManager {
     return this.providers.get(this.fallbackProvider);
   }
 
-  private getProviderForModel(model?: string): string {
-    if (!model) {
-      return this.currentProvider;
-    }
-    
-    // Determine provider based on model name
-    if (model.includes('mistral') || model.includes('small') || model.includes('large') || model.includes('medium')) {
-      return 'mistral';
-    } else if (model.includes('groq') || model.includes('llama') || model.includes('mixtral') || model.includes('gemma')) {
-      return 'groq';
-    }
-    
-    // Default to current provider if model doesn't match known patterns
-    return this.currentProvider;
-  }
-
   async *generateStreamingResponseWithFallback(messages: Message[], configOverride?: Partial<LLMConfig>): AsyncGenerator<string> {
-    // Use the current provider (user's choice) instead of determining from model name
     const providerToUse = this.currentProvider;
     const startTime = Date.now();
     console.log(`[${new Date().toISOString()}] Starting streaming response with provider: ${providerToUse} (user selected: ${providerToUse}, model: ${configOverride?.model})`);
@@ -204,11 +185,9 @@ export class LLMProviderManager {
       const duration = Date.now() - startTime;
       console.warn(`[${new Date().toISOString()}] FAILED: Primary provider (${providerToUse}) failed after ${duration}ms, trying fallback provider:`, error);
       
-      // Use the configured fallback provider
       console.log(`[${new Date().toISOString()}] SWITCHING: Attempting fallback provider: ${this.fallbackProvider}`);
       
       try {
-        // Create fallback config with appropriate model for the fallback provider
         const fallbackConfig = { ...configOverride };
         if (this.fallbackProvider === 'mistral') {
           fallbackConfig.model = config.getModels().mistral.chat;
