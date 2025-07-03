@@ -174,11 +174,8 @@ export async function continueConversation(
       const maxResults = options.maxResults || vectorDbConfig.maxResults;
       const vectorDB = serviceFactory.getVectorDB();
       
-      // Generate embedding for the query text
-      const queryEmbedding = await serviceFactory.generateEmbedding(latestMessage.content);
-      
-      // Search with the embedding (no topic filter for now)
-      const relevantDocs = await vectorDB.search(queryEmbedding);
+      // Search with the query text (VectorDBSupabase handles embedding generation internally)
+      const relevantDocs = await vectorDB.search(latestMessage.content, maxResults, identifier);
       
       // Extract unique sources from the search results
       sources = relevantDocs

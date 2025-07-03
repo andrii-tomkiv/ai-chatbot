@@ -31,15 +31,24 @@ async function testSupabase() {
     const count = await vectorDB.getDocumentCount();
     console.log(`📊 Found ${count} documents in database`);
 
-    // Test search functionality
-    const testEmbedding = new Array(1024).fill(0.1); // Mock embedding
-    const results = await vectorDB.search(testEmbedding);
-    console.log(`🔍 Search test returned ${results.length} results`);
+    // Test search functionality with a proper text query
+    console.log('🔍 Testing topic-based search with surrogacy query...');
+    const surrogacyResults = await vectorDB.search('How do I become a surrogate mother?', 3);
+    console.log(`🎯 Surrogacy query returned ${surrogacyResults.length} results`);
+
+    // Test egg donor query
+    console.log('🔍 Testing topic-based search with egg donor query...');
+    const eggDonorResults = await vectorDB.search('What is the egg donation process?', 3);
+    console.log(`🥚 Egg donor query returned ${eggDonorResults.length} results`);
+
+    // Test general query
+    console.log('🔍 Testing topic-based search with general query...');
+    const generalResults = await vectorDB.search('What services do you offer?', 3);
+    console.log(`🌐 General query returned ${generalResults.length} results`);
 
     console.log('🎉 All Supabase tests passed!');
-
   } catch (error) {
-    console.error('❌ Test failed:', error);
+    console.error('❌ Supabase test failed:', error);
   }
 }
 
