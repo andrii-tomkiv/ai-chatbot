@@ -282,7 +282,7 @@ export async function scrapeSiteContent() {
   console.log('🚀 Starting content scraping...');
   
   // Use sitemap URLs from constants
-  const sitemapUrls = getSitemapUrls('production');
+  const sitemapUrls = getSitemapUrls('staging');
   
   let allUrls: string[] = [];
   
