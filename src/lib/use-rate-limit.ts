@@ -230,7 +230,12 @@ export function useRateLimit() {
     const remainingSeconds = seconds % 60;
     
     if (minutes > 0) {
-      return `${minutes}m ${remainingSeconds}s`;
+      // If there are minutes, only show seconds if they're not 0
+      if (remainingSeconds > 0) {
+        return `${minutes}m ${remainingSeconds}s`;
+      } else {
+        return `${minutes}m`;
+      }
     }
     return `${seconds}s`;
   }, []);

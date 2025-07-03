@@ -121,7 +121,7 @@ export async function continueConversation(
           return;
         }
         
-        stream.update('Please provide a meaningful question or message.');
+        stream.update('Hello! 👋 I\'m your fertility and surrogacy assistant, here to help answer your questions about surrogacy, egg donation, intended parenting, and fertility treatments. \n\nI\'d be happy to help if you could please ask me a specific question about these topics. For example, you might ask about surrogacy costs, the IVF process, legal requirements, or finding the right clinic. \n\nWhat would you like to know? 😊');
         stream.done();
         return;
       }
@@ -143,14 +143,14 @@ export async function continueConversation(
           return;
         }
         
-        stream.update('Too many invalid messages. Please wait before trying again.');
+        stream.update('I notice you\'ve sent several unclear messages. 🤔 \n\nAs your fertility and surrogacy assistant, I\'m here to help with questions about surrogacy, egg donation, IVF, and intended parenting. Please take a moment to ask me a clear question about these topics, and I\'ll be happy to provide you with helpful information! \n\nFor example: "What are the costs involved in surrogacy?" or "How does the egg donation process work?" \n\nThank you for your understanding! 😊');
         stream.done();
         return;
       }
 
       // Content validation
       if (latestMessage.content.length > 1000) {
-        stream.update('Message too long. Please keep messages under 1000 characters.');
+        stream.update('I\'d love to help, but your message is quite long! 📝 \n\nTo provide you with the best assistance regarding surrogacy, egg donation, and fertility topics, please keep your questions under 1000 characters. This helps me give you focused, accurate answers. \n\nFeel free to break longer questions into smaller parts - I\'m here to help! 😊');
         stream.done();
         return;
       }
@@ -162,7 +162,7 @@ export async function continueConversation(
       );
       
       if (similarMessages.length > 1) {
-        stream.update('Please avoid sending the same message repeatedly.');
+        stream.update('I see you\'ve asked the same question again! 🔄 \n\nI\'m happy to help with any fertility, surrogacy, or egg donation questions you might have. If my previous answer wasn\'t what you were looking for, please try rephrasing your question or ask about a different aspect of the topic. \n\nI\'m here to provide you with the most helpful information possible! 😊');
         stream.done();
         return;
       }
