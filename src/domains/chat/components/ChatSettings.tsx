@@ -1,12 +1,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Settings, Thermometer, Cpu, Info } from 'lucide-react';
+import { Settings, Thermometer, Cpu, Info, Search } from 'lucide-react';
 
 export interface ChatSettings {
   temperature: number;
   model: 'mistral' | 'groq';
   maxTokens: number;
+  maxResults: number;
 }
 
 interface ChatSettingsProps {
@@ -65,6 +66,12 @@ export default function ChatSettings({
 
   const handleMaxTokensChange = (value: number) => {
     const newSettings = { ...localSettings, maxTokens: value };
+    setLocalSettings(newSettings);
+    onSettingsChange(newSettings);
+  };
+
+  const handleMaxResultsChange = (value: number) => {
+    const newSettings = { ...localSettings, maxResults: value };
     setLocalSettings(newSettings);
     onSettingsChange(newSettings);
   };
@@ -235,6 +242,42 @@ export default function ChatSettings({
             </div>
           </div>
 
+          {/* Max Results Control */}
+          <div className="mb-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <Search className="w-5 h-5 text-conab-action" />
+                <label className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Search Results</label>
+              </div>
+              <span className="text-lg font-bold text-conab-action">{localSettings.maxResults}</span>
+            </div>
+            <div className="relative w-full h-10 flex items-center">
+              {/* Track background */}
+              <div className="absolute left-0 right-0 h-3 rounded-full bg-gray-200" />
+              {/* Filled bar */}
+              <div
+                className="absolute h-3 rounded-full bg-gradient-to-r from-conab-action to-conab-action-lighten"
+                style={{ width: `${((localSettings.maxResults - 1) / (10 - 1)) * 100}%` }}
+              />
+              <input
+                type="range"
+                min="1"
+                max="10"
+                step="1"
+                value={localSettings.maxResults}
+                onChange={(e) => handleMaxResultsChange(parseInt(e.target.value))}
+                className="w-full h-3 appearance-none cursor-pointer slider bg-transparent relative z-10"
+              />
+            </div>
+            <div className="flex justify-between text-xs text-gray-500 mt-2">
+              <span>Focused (1)</span>
+              <span>Comprehensive (10)</span>
+            </div>
+            <p className="text-sm text-gray-600 mt-2">
+              Number of search results to use for generating responses. More results provide broader context but may be less focused.
+            </p>
+          </div>
+
           {/* Info Section */}
           <div className="flex items-start gap-3 p-4 bg-gradient-to-r from-conab-action/5 to-conab-action-lighten/5 rounded-2xl border border-conab-action/20">
             <Info className="w-5 h-5 text-conab-action mt-0.5 flex-shrink-0" />
@@ -244,6 +287,7 @@ export default function ChatSettings({
                 <p><span className="font-medium">Model:</span> {selectedModel?.name}</p>
                 <p><span className="font-medium">Temperature:</span> {localSettings.temperature} ({getTemperatureDescription(localSettings.temperature).toLowerCase()})</p>
                 <p><span className="font-medium">Max Tokens:</span> {localSettings.maxTokens}</p>
+                <p><span className="font-medium">Search Results:</span> {localSettings.maxResults}</p>
               </div>
             </div>
           </div>

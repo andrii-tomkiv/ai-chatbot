@@ -146,13 +146,11 @@ export async function continueConversation(
       const vectorDbConfig = config.getVectorDbConfig();
       const llmConfig = config.getLLMConfig();
       
-      const maxResults = options.maxResults || vectorDbConfig.maxResults;
+      const maxResults = options.maxResults ?? vectorDbConfig.maxResults;
       const vectorDB = serviceFactory.getVectorDB();
       
-      // Search with the query text (VectorDBSupabase handles embedding generation internally)
       const relevantDocs = await vectorDB.search(latestMessage.content, maxResults, identifier);
       
-      // Extract unique sources from the search results
       sources = relevantDocs
         .map(doc => ({
           url: String(doc.metadata.url || ''),
@@ -160,8 +158,8 @@ export async function continueConversation(
         }))
         .filter((source, index, self) => 
           index === self.findIndex(s => s.url === source.url)
-        ) // Remove duplicates
-        .filter(source => source.url && source.url !== ''); // Remove empty URLs
+        )
+        .filter(source => source.url && source.url !== '');
       
       console.log('[ACTIONS] Extracted sources:', sources);
       console.log('[ACTIONS] Number of relevant docs:', relevantDocs.length);

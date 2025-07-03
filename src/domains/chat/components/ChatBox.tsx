@@ -26,7 +26,8 @@ export default function ChatBox() {
   const [chatSettings, setChatSettings] = useState<ChatSettingsType>({
     temperature: 0.7,
     model: 'mistral',
-    maxTokens: 1000
+    maxTokens: 1000,
+    maxResults: 0
   });
   const { toasts, removeToast, success, error } = useToast();
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -122,9 +123,9 @@ export default function ChatBox() {
         userMessage,
       ], {
         model: modelName,
-        maxResults: config.getVectorDbConfig().maxResults,
         temperature: chatSettings.temperature,
-        maxTokens: chatSettings.maxTokens
+        maxTokens: chatSettings.maxTokens,
+        maxResults: chatSettings.maxResults
       });
 
       let textContent = '';
@@ -183,7 +184,7 @@ export default function ChatBox() {
     } finally {
       setIsStreaming(false);
     }
-  }, [chatSettings.model, chatSettings.temperature, chatSettings.maxTokens, canSendMessage, rateLimitStatus, checkRateLimit, formatTimeRemaining, forceRateLimitStatus, error]);
+  }, [chatSettings.model, chatSettings.temperature, chatSettings.maxTokens, chatSettings.maxResults, canSendMessage, rateLimitStatus, checkRateLimit, formatTimeRemaining, forceRateLimitStatus, error]);
 
   const regenerateResponse = useCallback(async (messageIndex: number, strategy: 'quick' | 'detailed' | 'concise' = 'quick') => {
     if (messageIndex < 0 || messageIndex >= conversation.length) return;
@@ -211,10 +212,10 @@ export default function ChatBox() {
           ? config.getModels().mistral.chat
           : config.getModels().groq.chat;
       const regenerationOptions = {
-        maxResults: config.getVectorDbConfig().maxResults,
         model: modelName,
         temperature: chatSettings.temperature,
         maxTokens: chatSettings.maxTokens,
+        maxResults: chatSettings.maxResults,
                 promptType: strategy === 'detailed' ? 'detailed' :
                    strategy === 'concise' ? 'concise' : undefined
       };
@@ -255,7 +256,7 @@ export default function ChatBox() {
       setIsStreaming(false);
       setRegeneratingMessageId(null);
     }
-  }, [conversation, chatSettings.model, chatSettings.temperature, chatSettings.maxTokens]);
+  }, [conversation, chatSettings.model, chatSettings.temperature, chatSettings.maxTokens, chatSettings.maxResults]);
 
   useEffect(() => {
     scrollToBottom();
@@ -293,7 +294,7 @@ export default function ChatBox() {
 
   const handleSettingsChange = (newSettings: ChatSettingsType) => {
     setChatSettings(newSettings);
-    success(`Settings updated: ${newSettings.model} model, temperature ${newSettings.temperature}`);
+    success(`Settings updated: ${newSettings.model} model, temperature ${newSettings.temperature}, search results ${newSettings.maxResults}`);
   };
 
   const toggleSettings = () => {
