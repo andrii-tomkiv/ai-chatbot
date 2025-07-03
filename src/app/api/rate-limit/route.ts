@@ -1,20 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { headers } from "next/headers";
+import { getRequestInfo } from "@/shared/utils/helpers/request-utils";
 import { chatRateLimiter } from "@/domains/moderation/services/rate-limiter";
-
-// Helper function to get request info for rate limiting
-async function getRequestInfo() {
-  const headersList = await headers();
-  const forwarded = headersList.get('x-forwarded-for');
-  const realIp = headersList.get('x-real-ip');
-  const cfConnectingIp = headersList.get('cf-connecting-ip');
-  const userAgent = headersList.get('user-agent') || 'unknown';
-  
-  let ip = forwarded?.split(',')[0] || realIp || cfConnectingIp || 'unknown';
-  ip = ip.trim();
-  
-  return `${ip}:${userAgent.substring(0, 50)}`;
-}
 
 export async function GET(request: NextRequest) {
   try {

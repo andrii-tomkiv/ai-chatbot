@@ -7,6 +7,20 @@ import { Message as LLMMessage } from '@/shared/infrastructure/ai-providers/llm-
 import { config } from '@/shared/utils/config/config';
 import { headers } from 'next/headers';
 import { chatRateLimiter } from '@/domains/moderation/services/rate-limiter';
+import { 
+  getRequestInfo, 
+  isBotUserAgent 
+} from '@/shared/utils/helpers/request-utils';
+import { 
+  isGibberishMessage, 
+  isMessageTooLong,
+  isDuplicateMessage 
+} from '@/shared/utils/helpers/validation-utils';
+import { 
+  RESPONSE_MESSAGES,
+  createRateLimitMessage,
+  createSpamBlockMessage 
+} from '@/shared/utils/helpers/message-responses';
 
 export interface Message {
   role: 'user' | 'assistant' | 'system';
@@ -28,46 +42,7 @@ export interface ChatOptions {
   maxTokens?: number;
 }
 
-// Helper function to get request info for rate limiting
-async function getRequestInfo() {
-  const headersList = await headers();
-  const forwarded = headersList.get('x-forwarded-for');
-  const realIp = headersList.get('x-real-ip');
-  const cfConnectingIp = headersList.get('cf-connecting-ip');
-  const userAgent = headersList.get('user-agent') || 'unknown';
-  
-  let ip = forwarded?.split(',')[0] || realIp || cfConnectingIp || 'unknown';
-  ip = ip.trim();
-  
-  return `${ip}:${userAgent.substring(0, 50)}`;
-}
 
-// Helper function to detect gibberish messages
-function isGibberishMessage(content: string): boolean {
-  const trimmed = content.trim();
-  
-  // Very short messages
-  if (trimmed.length < 3) return true;
-  
-  // Check for random character patterns
-  const randomPatterns = [
-    /^[a-zA-Z0-9]{2,15}$/, // Random alphanumeric
-    /^[0-9]+[a-zA-Z]+[0-9]+$/, // Number-letter-number pattern
-    /^[a-zA-Z]+[0-9]+[a-zA-Z]+$/, // Letter-number-letter pattern
-    /^[a-zA-Z]{1,3}[0-9]{1,3}[a-zA-Z]{1,3}$/, // Short mixed patterns
-  ];
-  
-  if (randomPatterns.some(pattern => pattern.test(trimmed))) {
-    // Allow some legitimate short words
-    const legitimateShortWords = ['hi', 'hello', 'hey', 'ok', 'yes', 'no', 'why', 'how', 'what', 'when', 'where', 'who'];
-    if (legitimateShortWords.includes(trimmed.toLowerCase())) {
-      return false;
-    }
-    return true;
-  }
-  
-  return false;
-}
 
 export async function continueConversation(
   history: Message[], 
@@ -83,7 +58,7 @@ export async function continueConversation(
       const rateLimitResult = chatRateLimiter.isAllowed(identifier);
       
       if (!rateLimitResult.allowed) {
-        const errorMessage = `Rate limit exceeded. Please wait ${Math.ceil((rateLimitResult.resetTime - Date.now()) / 1000)} seconds before trying again.`;
+        const errorMessage = createRateLimitMessage(rateLimitResult.resetTime);
         stream.update(errorMessage);
         stream.done();
         return;
@@ -92,9 +67,8 @@ export async function continueConversation(
       // Spam detection
       const headersList = await headers();
       const userAgent = headersList.get('user-agent') || '';
-      const botPatterns = [/bot/i, /crawler/i, /spider/i, /scraper/i, /curl/i, /wget/i];
-      if (botPatterns.some(pattern => pattern.test(userAgent))) {
-        stream.update('Access denied.');
+      if (isBotUserAgent(userAgent)) {
+        stream.update(RESPONSE_MESSAGES.BOT_ACCESS_DENIED);
         stream.done();
         return;
       }
@@ -102,7 +76,7 @@ export async function continueConversation(
       const latestMessage = history[history.length - 1];
       
       if (!latestMessage?.content) {
-        stream.update('No message content provided');
+        stream.update(RESPONSE_MESSAGES.NO_CONTENT);
         stream.done();
         return;
       }
@@ -115,13 +89,13 @@ export async function continueConversation(
         // Track spam and check if should block
         const spamResult = chatRateLimiter.trackSpam(identifier);
         if (spamResult.shouldBlock) {
-          const blockMinutes = Math.ceil((spamResult.blockDuration || 600000) / 60000);
-          stream.update(`Too many invalid messages. You are blocked for ${blockMinutes} minutes.`);
+          const blockMessage = createSpamBlockMessage(spamResult.blockDuration || 600000);
+          stream.update(blockMessage);
           stream.done();
           return;
         }
         
-        stream.update('Hello! 👋 I\'m your fertility and surrogacy assistant, here to help answer your questions about surrogacy, egg donation, intended parenting, and fertility treatments. \n\nI\'d be happy to help if you could please ask me a specific question about these topics. For example, you might ask about surrogacy costs, the IVF process, legal requirements, or finding the right clinic. \n\nWhat would you like to know? 😊');
+        stream.update(RESPONSE_MESSAGES.GIBBERISH_FIRST);
         stream.done();
         return;
       }
@@ -137,32 +111,31 @@ export async function continueConversation(
         // Track spam and check if should block
         const spamResult = chatRateLimiter.trackSpam(identifier);
         if (spamResult.shouldBlock) {
-          const blockMinutes = Math.ceil((spamResult.blockDuration || 600000) / 60000);
-          stream.update(`Too many invalid messages. You are blocked for ${blockMinutes} minutes.`);
+          const blockMessage = createSpamBlockMessage(spamResult.blockDuration || 600000);
+          stream.update(blockMessage);
           stream.done();
           return;
         }
         
-        stream.update('I notice you\'ve sent several unclear messages. 🤔 \n\nAs your fertility and surrogacy assistant, I\'m here to help with questions about surrogacy, egg donation, IVF, and intended parenting. Please take a moment to ask me a clear question about these topics, and I\'ll be happy to provide you with helpful information! \n\nFor example: "What are the costs involved in surrogacy?" or "How does the egg donation process work?" \n\nThank you for your understanding! 😊');
+        stream.update(RESPONSE_MESSAGES.GIBBERISH_REPEATED);
         stream.done();
         return;
       }
 
       // Content validation
-      if (latestMessage.content.length > 1000) {
-        stream.update('I\'d love to help, but your message is quite long! 📝 \n\nTo provide you with the best assistance regarding surrogacy, egg donation, and fertility topics, please keep your questions under 1000 characters. This helps me give you focused, accurate answers. \n\nFeel free to break longer questions into smaller parts - I\'m here to help! 😊');
+      if (isMessageTooLong(latestMessage.content)) {
+        stream.update(RESPONSE_MESSAGES.MESSAGE_TOO_LONG);
         stream.done();
         return;
       }
 
       // Check for repetitive content
-      const similarMessages = recentMessages.filter(msg => 
-        msg.role === 'user' && 
-        msg.content.toLowerCase() === latestMessage.content.toLowerCase()
-      );
+      const previousUserMessages = recentMessages
+        .filter(msg => msg.role === 'user')
+        .map(msg => msg.content);
       
-      if (similarMessages.length > 1) {
-        stream.update('I see you\'ve asked the same question again! 🔄 \n\nI\'m happy to help with any fertility, surrogacy, or egg donation questions you might have. If my previous answer wasn\'t what you were looking for, please try rephrasing your question or ask about a different aspect of the topic. \n\nI\'m here to provide you with the most helpful information possible! 😊');
+      if (isDuplicateMessage(latestMessage.content, previousUserMessages)) {
+        stream.update(RESPONSE_MESSAGES.DUPLICATE_MESSAGE);
         stream.done();
         return;
       }
@@ -293,21 +266,21 @@ export async function continueConversation(
               console.log('[ACTIONS] Fallback successful, streaming response');
               stream.update(fallbackResponse.content);
             } else {
-              stream.update('Sorry, I encountered an error. Please try again.');
+              stream.update(RESPONSE_MESSAGES.ERROR_GENERIC);
             }
           } else {
-            stream.update('Sorry, I encountered an error. Please try again.');
+            stream.update(RESPONSE_MESSAGES.ERROR_GENERIC);
           }
         } catch (fallbackError) {
           console.error('[ACTIONS] Fallback also failed:', fallbackError);
-          stream.update('Sorry, I encountered an error. Please try again.');
+          stream.update(RESPONSE_MESSAGES.ERROR_GENERIC);
         }
       }
 
       stream.done();
     } catch (error) {
       console.error('[ACTIONS] Chat error:', error);
-      stream.update('Sorry, I encountered an error. Please try again.');
+      stream.update(RESPONSE_MESSAGES.ERROR_GENERIC);
       stream.done();
     }
   })();
