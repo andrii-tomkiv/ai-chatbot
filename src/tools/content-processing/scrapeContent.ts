@@ -1,7 +1,9 @@
+import 'dotenv/config';
 import * as cheerio from 'cheerio';
 import axios from 'axios';
 import * as fs from 'fs';
 import * as path from 'path';
+import { getSitemapUrls, CONTENT_PROCESSING, generateChunkId } from '../../shared/utils/constants';
 
 interface ContentChunk {
   id: string;
@@ -165,16 +167,7 @@ async function scrapePage(url: string): Promise<ContentChunk[]> {
       let content = '';
       
       // Try to find main content areas
-      const contentSelectors = [
-        'article',
-        '.content',
-        '.main-content',
-        '.post-content',
-        '.entry-content',
-        'main',
-        '.blog-post',
-        '.page-content'
-      ];
+      const contentSelectors = CONTENT_PROCESSING.CONTENT_SELECTORS;
       
       for (const selector of contentSelectors) {
         const element = $(selector);
@@ -201,11 +194,11 @@ async function scrapePage(url: string): Promise<ContentChunk[]> {
       
       // Split content into chunks if it's too long
       const chunks: ContentChunk[] = [];
-      const maxChunkLength = 1000;
+      const maxChunkLength = CONTENT_PROCESSING.MAX_CHUNK_LENGTH;
       
       if (content.length <= maxChunkLength) {
         chunks.push({
-          id: `chunk-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+          id: generateChunkId(),
           content: content,
           url: url,
           metadata: { title, type: 'page' }
@@ -213,7 +206,7 @@ async function scrapePage(url: string): Promise<ContentChunk[]> {
         console.log(`📦 Created 1 chunk (${content.length} chars)`);
       } else {
         // Split into paragraphs and create chunks
-        const paragraphs = content.split('\n').filter(p => p.trim().length > 50);
+        const paragraphs = content.split('\n').filter(p => p.trim().length > CONTENT_PROCESSING.MIN_PARAGRAPH_LENGTH);
         console.log(`📄 Found ${paragraphs.length} paragraphs to process`);
         
         let currentChunk = '';
@@ -222,7 +215,7 @@ async function scrapePage(url: string): Promise<ContentChunk[]> {
         for (const paragraph of paragraphs) {
           if ((currentChunk + paragraph).length > maxChunkLength && currentChunk.length > 0) {
             chunks.push({
-              id: `chunk-${Date.now()}-${chunkIndex}-${Math.random().toString(36).substr(2, 9)}`,
+              id: generateChunkId(chunkIndex),
               content: currentChunk.trim(),
               url: url,
               metadata: { title, type: 'page', chunkIndex }
@@ -238,7 +231,7 @@ async function scrapePage(url: string): Promise<ContentChunk[]> {
         // Add the last chunk
         if (currentChunk.trim()) {
           chunks.push({
-            id: `chunk-${Date.now()}-${chunkIndex}-${Math.random().toString(36).substr(2, 9)}`,
+            id: generateChunkId(chunkIndex),
             content: currentChunk.trim(),
             url: url,
             metadata: { title, type: 'page', chunkIndex }
@@ -255,14 +248,14 @@ async function scrapePage(url: string): Promise<ContentChunk[]> {
         console.log(`🚫 403 Forbidden - Page blocked (Attempt ${attempt + 1}/${strategies.length})`);
         if (attempt < strategies.length - 1) {
           console.log(`🔄 Retrying with different strategy...`);
-          await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds before retry
+          await new Promise(resolve => setTimeout(resolve, CONTENT_PROCESSING.RETRY_DELAY_MS));
         } else {
           console.log(`💔 All strategies failed for: ${url}`);
         }
       } else {
         console.log(`❌ Error scraping ${url} (Attempt ${attempt + 1}/${strategies.length}):`, error.message);
         if (attempt < strategies.length - 1) {
-          await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1 second before retry
+          await new Promise(resolve => setTimeout(resolve, CONTENT_PROCESSING.REQUEST_DELAY_MS));
         }
       }
     }
@@ -274,7 +267,7 @@ async function scrapePage(url: string): Promise<ContentChunk[]> {
 
 // Save chunks to JSON file
 function saveChunksToJson(chunks: ContentChunk[], filename: string) {
-  const dataDir = './data/scraped-content';
+  const dataDir = CONTENT_PROCESSING.PATHS.SCRAPED_CONTENT_DIR;
   if (!fs.existsSync(dataDir)) {
     fs.mkdirSync(dataDir, { recursive: true });
   }
@@ -288,11 +281,8 @@ function saveChunksToJson(chunks: ContentChunk[], filename: string) {
 export async function scrapeSiteContent() {
   console.log('🚀 Starting content scraping...');
   
-  // Use only the provided sitemap URLs
-  const sitemapUrls = [
-    'https://www.conceiveabilities.com/blog-sitemap-xml',
-    'https://www.conceiveabilities.com/marketing-sitemap.xml'
-  ];
+  // Use sitemap URLs from constants
+  const sitemapUrls = getSitemapUrls('production');
   
   let allUrls: string[] = [];
   
@@ -325,26 +315,26 @@ export async function scrapeSiteContent() {
       console.log(`❌ Failed to scrape`);
     }
     
-    // Save progress every 10 URLs
-    if ((i + 1) % 10 === 0) {
-      const progressFilename = `scraped-content-progress-${i + 1}.json`;
+    // Save progress every configured interval
+    if ((i + 1) % CONTENT_PROCESSING.PROGRESS_SAVE_INTERVAL === 0) {
+      const progressFilename = `${CONTENT_PROCESSING.PATHS.PROGRESS_FILE_PREFIX}${i + 1}.json`;
       saveChunksToJson(allChunks, progressFilename);
     }
     
     // Small delay between requests
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise(resolve => setTimeout(resolve, CONTENT_PROCESSING.REQUEST_DELAY_MS));
   }
   
   // Save final results
   const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-  const finalFilename = `scraped-content-${timestamp}.json`;
+  const finalFilename = `${CONTENT_PROCESSING.PATHS.FINAL_FILE_PREFIX}${timestamp}.json`;
   saveChunksToJson(allChunks, finalFilename);
   
   console.log(`\n🎉 Scraping completed!`);
   console.log(`✅ Successful URLs: ${successCount}`);
   console.log(`❌ Failed URLs: ${failCount}`);
   console.log(`📦 Total chunks: ${allChunks.length}`);
-  console.log(`💾 Final file: data/scraped-content/${finalFilename}`);
+  console.log(`💾 Final file: ${CONTENT_PROCESSING.PATHS.SCRAPED_CONTENT_DIR}/${finalFilename}`);
   
   // Show some sample chunks with URLs
   console.log(`\n📋 Sample chunks with URLs:`);

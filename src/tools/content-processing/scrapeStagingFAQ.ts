@@ -1,7 +1,9 @@
+import 'dotenv/config';
 import * as cheerio from 'cheerio';
 import axios from 'axios';
 import * as fs from 'fs';
 import * as path from 'path';
+import { getSitemapUrls } from '../../shared/utils/constants';
 
 interface FAQItem {
   question: string;
@@ -12,10 +14,7 @@ interface FAQItem {
 }
 
 // Staging site sitemaps to scrape
-const STAGING_SITEMAPS = [
-  'https://www.staging.conceiveabilities.com/blog-sitemap-xml',
-  'https://www.staging.conceiveabilities.com/marketing-sitemap.xml'
-];
+const STAGING_SITEMAPS = getSitemapUrls('staging');
 
 // Headers to avoid being blocked
 const HEADERS = {
