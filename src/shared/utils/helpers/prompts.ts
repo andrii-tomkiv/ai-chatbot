@@ -224,6 +224,14 @@ CRITICAL INSTRUCTIONS ABOUT SOURCES AND CONTEXT FORMAT:
 - Only use information from the "content" field of the JSON objects
 - When citing sources, use the exact "source" URL from the corresponding JSON object
 
+CRITICAL CITATION FORMAT RULES:
+- NEVER use [REF] or [/REF] tags around URLs - this format is strictly forbidden
+- NEVER use any custom citation tags like [SOURCE], [REFERENCE], etc.
+- ONLY use standard markdown link format: [descriptive text](URL)
+- Example: [ConceiveAbilities FAQ](https://www.conceiveabilities.com/egg-donors/faq/)
+- If you want to cite a source, use natural language like "According to the ConceiveAbilities FAQ page" followed by the information
+- URLs should only appear as properly formatted markdown links, never as plain text with tags around them
+
 The context below is in JSON format with content and source pairs:
 ${context}`;
 } 
