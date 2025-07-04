@@ -21,6 +21,7 @@ import {
   createRateLimitMessage,
   createSpamBlockMessage 
 } from '@/shared/utils/helpers/message-responses';
+import { log } from 'console';
 
 export interface Message {
   role: 'user' | 'assistant' | 'system';
@@ -42,8 +43,6 @@ export interface ChatOptions {
   maxTokens?: number;
 }
 
-
-
 export async function continueConversation(
   history: Message[], 
   options: ChatOptions = {}
@@ -53,7 +52,6 @@ export async function continueConversation(
 
   (async () => {
     try {
-      // Rate limiting check
       const identifier = await getRequestInfo();
       const rateLimitResult = chatRateLimiter.isAllowed(identifier);
       
@@ -64,7 +62,6 @@ export async function continueConversation(
         return;
       }
 
-      // Spam detection
       const headersList = await headers();
       const userAgent = headersList.get('user-agent') || '';
       if (isBotUserAgent(userAgent)) {
@@ -81,22 +78,17 @@ export async function continueConversation(
         return;
       }
 
-      // Enhanced spam detection for gibberish messages
       const messageContent = latestMessage.content.trim();
       
-      // Check for repeated gibberish patterns FIRST (excluding current message)
-      const recentMessages = history.slice(-5, -1); // Exclude the current message
+      const recentMessages = history.slice(-5, -1);
       const gibberishMessages = recentMessages.filter(msg => {
         if (msg.role !== 'user') return false;
         return isGibberishMessage(msg.content);
       });
       
-      // If current message is also gibberish, check if there are previous gibberish messages
       const currentIsGibberish = isGibberishMessage(messageContent);
       if (currentIsGibberish) {
-        // If we already have 1+ gibberish messages in PREVIOUS history, this is repeated
         if (gibberishMessages.length >= 1) {
-          // Track spam and check if should block
           const spamResult = chatRateLimiter.trackSpam(identifier);
           if (spamResult.shouldBlock) {
             const blockMessage = createSpamBlockMessage(spamResult.blockDuration || 600000);
@@ -110,7 +102,6 @@ export async function continueConversation(
           return;
         }
         
-        // First gibberish message
         const spamResult = chatRateLimiter.trackSpam(identifier);
         if (spamResult.shouldBlock) {
           const blockMessage = createSpamBlockMessage(spamResult.blockDuration || 600000);
@@ -124,14 +115,12 @@ export async function continueConversation(
         return;
       }
 
-      // Content validation
       if (isMessageTooLong(latestMessage.content)) {
         stream.update(RESPONSE_MESSAGES.MESSAGE_TOO_LONG);
         stream.done();
         return;
       }
 
-      // Check for repetitive content
       const previousUserMessages = recentMessages
         .filter(msg => msg.role === 'user')
         .map(msg => msg.content);
@@ -144,7 +133,6 @@ export async function continueConversation(
 
       const chatConfig = config.getChatConfig();
       const vectorDbConfig = config.getVectorDbConfig();
-      const llmConfig = config.getLLMConfig();
       
       const maxResults = options.maxResults ?? vectorDbConfig.maxResults;
       const vectorDB = serviceFactory.getVectorDB();
@@ -161,15 +149,15 @@ export async function continueConversation(
         )
         .filter(source => source.url && source.url !== '');
       
-      console.log('[ACTIONS] Extracted sources:', sources);
-      console.log('[ACTIONS] Number of relevant docs:', relevantDocs.length);
       
-      const context = relevantDocs
-        .map(doc => `Content: ${doc.content}\nSource: ${doc.metadata.url}`)
-        .join('\n\n');
-
-      console.log('[ACTIONS] Context length:', context.length);
-      console.log('[ACTIONS] First 500 chars of context:', context.substring(0, 500));
+      const context = JSON.stringify(
+        relevantDocs.map(doc => ({
+          content: doc.content,
+          source: doc.metadata.url
+        })),
+        null,
+        2
+      );
 
       const systemMessage = buildChatPrompt(context, options.promptType);
 
@@ -183,17 +171,12 @@ export async function continueConversation(
 
       const llmManager = serviceFactory.getLLMManager();
       
-      // Set the current provider based on the model selection
       const selectedProvider = options.model?.includes('mistral') ? 'mistral' : 'groq';
       const fallbackProvider = selectedProvider === 'mistral' ? 'groq' : 'mistral';
-      
-      console.log(`[ACTIONS] Setting current provider to: ${selectedProvider} based on model: ${options.model}`);
-      console.log(`[ACTIONS] Setting fallback provider to: ${fallbackProvider}`);
       
       llmManager.setCurrentProvider(selectedProvider);
       llmManager.setFallbackProvider(fallbackProvider);
       
-      // Use the appropriate model for the current provider
       const currentModel = selectedProvider === 'mistral' 
         ? config.getModels().mistral.chat 
         : config.getModels().groq.chat;
@@ -205,15 +188,10 @@ export async function continueConversation(
       };
       
       try {
-        console.log('[ACTIONS] Starting streaming response with timeout...');
-        console.log('[ACTIONS] LLM Config:', llmConfigOverride);
-        console.log('[ACTIONS] Current provider:', llmManager.getProviderStatus().current);
         const startTime = Date.now();
         
-        // Create the streaming response
         const streamingResponse = llmManager.generateStreamingResponseWithFallback(messages, llmConfigOverride);
         
-        // Track if we've received any content
         let hasContent = false;
         let firstChunkTime = 0;
         
@@ -221,7 +199,6 @@ export async function continueConversation(
           for await (const text of streamingResponse) {
             if (!hasContent) {
               firstChunkTime = Date.now() - startTime;
-              console.log(`[ACTIONS] FIRST CHUNK: Received after ${firstChunkTime}ms`);
               hasContent = true;
             }
             
@@ -233,22 +210,14 @@ export async function continueConversation(
           }
           
           const duration = Date.now() - startTime;
-          console.log(`[ACTIONS] SUCCESS: Completed in ${duration}ms`);
           
         } catch (streamError) {
-          console.log('[ACTIONS] Stream error, switching to fallback:', streamError);
           throw streamError;
         }
         
       } catch (error) {
-        console.error('[ACTIONS] Error in streaming response:', error);
         
-        // Try fallback provider directly
         try {
-          console.log(`[ACTIONS] Attempting direct fallback to ${llmConfig.fallback}...`);
-          
-          console.log('check options temperature',options.temperature);
-
           const fallbackProvider = llmManager.getFallbackProvider();
           if (fallbackProvider) {
             // Use the appropriate model for the fallback provider
@@ -263,7 +232,6 @@ export async function continueConversation(
             });
             
             if (fallbackResponse) {
-              console.log('[ACTIONS] Fallback successful, streaming response');
               stream.update(fallbackResponse.content);
             } else {
               stream.update(RESPONSE_MESSAGES.ERROR_GENERIC);
@@ -279,7 +247,6 @@ export async function continueConversation(
 
       stream.done();
     } catch (error) {
-      console.error('[ACTIONS] Chat error:', error);
       stream.update(RESPONSE_MESSAGES.ERROR_GENERIC);
       stream.done();
     }
