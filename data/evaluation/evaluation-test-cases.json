@@ -658,6 +658,966 @@
       "question": "What is your advice for women who are considering becoming a surrogate?",
       "expectedKeywords": ["love being pregnant", "investigate", "talk to other surrogates", "community", "risks", "benefits"],
       "expectedSources": ["Pregnancy and Chiropractic Care"]
+    },
+    {
+      "id": "TC081",
+      "category": "General",
+      "difficulty": "Easy",
+      "question": "What age requirements exist for becoming a surrogate?",
+      "expectedKeywords": ["21", "39", "age range", "requirements", "medical clearance"],
+      "expectedSources": ["FAQ: What disqualifies a surrogate mother"]
+    },
+    {
+      "id": "TC082",
+      "category": "Medical & Health",
+      "difficulty": "Medium",
+      "question": "What prenatal vitamins should surrogates take?",
+      "expectedKeywords": ["folic acid", "prenatal vitamins", "doctor recommendation", "nutrition", "pregnancy health"],
+      "expectedSources": ["Medical Guidelines"]
+    },
+    {
+      "id": "TC083",
+      "category": "Legal & Contracts",
+      "difficulty": "Hard",
+      "question": "What happens if intended parents divorce during pregnancy?",
+      "expectedKeywords": ["legal contract", "divorce proceedings", "custody", "legal counsel", "surrogacy agreement"],
+      "expectedSources": ["Legal Complications"]
+    },
+    {
+      "id": "TC084",
+      "category": "Pricing & Costs",
+      "difficulty": "Medium",
+      "question": "Are there payment plans available for intended parents?",
+      "expectedKeywords": ["payment plans", "financing", "installments", "costs", "flexible payment"],
+      "expectedSources": ["All-In Program"]
+    },
+    {
+      "id": "TC085",
+      "category": "Insurance & Coverage",
+      "difficulty": "Medium",
+      "question": "What if a surrogate's insurance doesn't cover surrogacy?",
+      "expectedKeywords": ["insurance exclusions", "alternative coverage", "medical expenses", "backup plan"],
+      "expectedSources": ["Health Insurance FAQs"]
+    },
+    {
+      "id": "TC086",
+      "category": "Compensation & Benefits",
+      "difficulty": "Easy",
+      "question": "When do surrogates receive their compensation payments?",
+      "expectedKeywords": ["monthly payments", "schedule", "compensation timeline", "escrow", "payments"],
+      "expectedSources": ["Compensation Guidelines"]
+    },
+    {
+      "id": "TC087",
+      "category": "Requirements & Eligibility",
+      "difficulty": "Medium",
+      "question": "Can smokers become surrogates?",
+      "expectedKeywords": ["no smoking", "tobacco", "health requirements", "disqualified", "medical clearance"],
+      "expectedSources": ["FAQ: What disqualifies a surrogate mother"]
+    },
+    {
+      "id": "TC088",
+      "category": "Process & Timeline",
+      "difficulty": "Medium",
+      "question": "How long does the matching process typically take?",
+      "expectedKeywords": ["matching timeline", "compatibility", "process duration", "selection", "preferences"],
+      "expectedSources": ["Our Surrogate Matching Process"]
+    },
+    {
+      "id": "TC089",
+      "category": "General",
+      "difficulty": "Easy",
+      "question": "Can international intended parents use surrogacy services?",
+      "expectedKeywords": ["international", "citizenship", "legal requirements", "visa", "cross-border"],
+      "expectedSources": ["International Surrogacy"]
+    },
+    {
+      "id": "TC090",
+      "category": "Medical & Health",
+      "difficulty": "Hard",
+      "question": "What happens if there are pregnancy complications?",
+      "expectedKeywords": ["medical complications", "emergency care", "hospital", "specialist", "high-risk pregnancy"],
+      "expectedSources": ["Medical Emergency Protocols"]
+    },
+    {
+      "id": "TC091",
+      "category": "Legal & Contracts",
+      "difficulty": "Medium",
+      "question": "Who makes medical decisions during pregnancy?",
+      "expectedKeywords": ["medical decisions", "surrogate choice", "intended parents", "healthcare", "autonomy"],
+      "expectedSources": ["Medical Decision Making"]
+    },
+    {
+      "id": "TC092",
+      "category": "Pricing & Costs",
+      "difficulty": "Hard",
+      "question": "What additional costs might arise during surrogacy?",
+      "expectedKeywords": ["unexpected costs", "complications", "additional medical", "travel expenses", "legal fees"],
+      "expectedSources": ["Cost Breakdown"]
+    },
+    {
+      "id": "TC093",
+      "category": "Insurance & Coverage",
+      "difficulty": "Easy",
+      "question": "Is mental health counseling covered?",
+      "expectedKeywords": ["counseling", "mental health", "psychological support", "therapy", "emotional support"],
+      "expectedSources": ["Mental Health Support"]
+    },
+    {
+      "id": "TC094",
+      "category": "Compensation & Benefits",
+      "difficulty": "Medium",
+      "question": "Are there bonuses for carrying multiples?",
+      "expectedKeywords": ["twins", "multiples", "additional compensation", "bonus", "extra payment"],
+      "expectedSources": ["Compensation for Multiples"]
+    },
+    {
+      "id": "TC095",
+      "category": "Requirements & Eligibility",
+      "difficulty": "Hard",
+      "question": "What disqualifies someone from being a surrogate?",
+      "expectedKeywords": ["disqualifications", "medical history", "criminal background", "substance abuse", "mental health"],
+      "expectedSources": ["FAQ: What disqualifies a surrogate mother"]
+    },
+    {
+      "id": "TC096",
+      "category": "Process & Timeline",
+      "difficulty": "Easy",
+      "question": "What happens after the baby is born?",
+      "expectedKeywords": ["post-birth", "hospital discharge", "legal parentage", "recovery", "support"],
+      "expectedSources": ["Post-Birth Process"]
+    },
+    {
+      "id": "TC097",
+      "category": "General",
+      "difficulty": "Medium",
+      "question": "Can surrogates choose their intended parents?",
+      "expectedKeywords": ["surrogate choice", "selection process", "preferences", "compatibility", "mutual selection"],
+      "expectedSources": ["Matching Process"]
+    },
+    {
+      "id": "TC098",
+      "category": "Medical & Health",
+      "difficulty": "Medium",
+      "question": "What fertility medications might surrogates take?",
+      "expectedKeywords": ["fertility medications", "hormone injections", "medical protocol", "IVF preparation", "medication schedule"],
+      "expectedSources": ["Medical Protocols"]
+    },
+    {
+      "id": "TC099",
+      "category": "Legal & Contracts",
+      "difficulty": "Hard",
+      "question": "What if a surrogate wants to keep the baby?",
+      "expectedKeywords": ["gestational carrier", "no genetic relationship", "legal contract", "intended parents", "legal rights"],
+      "expectedSources": ["Legal Rights and Responsibilities"]
+    },
+    {
+      "id": "TC100",
+      "category": "Pricing & Costs",
+      "difficulty": "Easy",
+      "question": "What does the All-In Program include exactly?",
+      "expectedKeywords": ["comprehensive", "medical", "legal", "compensation", "escrow", "insurance", "travel"],
+      "expectedSources": ["All-In Program"]
+    },
+    {
+      "id": "TC101",
+      "category": "Insurance & Coverage",
+      "difficulty": "Medium",
+      "question": "What happens if the surrogate needs a C-section?",
+      "expectedKeywords": ["cesarean section", "surgical delivery", "medical coverage", "additional care", "recovery"],
+      "expectedSources": ["Medical Procedures Coverage"]
+    },
+    {
+      "id": "TC102",
+      "category": "Compensation & Benefits",
+      "difficulty": "Easy",
+      "question": "Do surrogates get paid for medical appointments?",
+      "expectedKeywords": ["appointment compensation", "travel reimbursement", "time compensation", "medical visits"],
+      "expectedSources": ["Appointment Compensation"]
+    },
+    {
+      "id": "TC103",
+      "category": "Requirements & Eligibility",
+      "difficulty": "Medium",
+      "question": "Can someone with a previous C-section be a surrogate?",
+      "expectedKeywords": ["previous cesarean", "VBAC", "medical evaluation", "doctor approval", "surgical history"],
+      "expectedSources": ["Medical History Requirements"]
+    },
+    {
+      "id": "TC104",
+      "category": "Process & Timeline",
+      "difficulty": "Medium",
+      "question": "How many embryo transfers might be needed?",
+      "expectedKeywords": ["embryo transfer", "multiple attempts", "success rates", "medical protocol", "IVF"],
+      "expectedSources": ["IVF Process"]
+    },
+    {
+      "id": "TC105",
+      "category": "General",
+      "difficulty": "Easy",
+      "question": "Can surrogates work during pregnancy?",
+      "expectedKeywords": ["work restrictions", "employment", "doctor approval", "physical limitations", "bed rest"],
+      "expectedSources": ["Work and Pregnancy"]
+    },
+    {
+      "id": "TC106",
+      "category": "Medical & Health",
+      "difficulty": "Hard",
+      "question": "What screening tests do surrogates undergo?",
+      "expectedKeywords": ["medical screening", "psychological evaluation", "genetic testing", "infectious disease", "background check"],
+      "expectedSources": ["Screening Process"]
+    },
+    {
+      "id": "TC107",
+      "category": "Legal & Contracts",
+      "difficulty": "Medium",
+      "question": "Who pays for legal representation?",
+      "expectedKeywords": ["independent legal counsel", "attorney fees", "legal representation", "separate lawyers", "contract review"],
+      "expectedSources": ["Legal Representation"]
+    },
+    {
+      "id": "TC108",
+      "category": "Pricing & Costs",
+      "difficulty": "Medium",
+      "question": "Are there costs for failed transfers?",
+      "expectedKeywords": ["failed transfer", "additional costs", "multiple attempts", "medical expenses", "cycle cancellation"],
+      "expectedSources": ["Transfer Costs"]
+    },
+    {
+      "id": "TC109",
+      "category": "Insurance & Coverage",
+      "difficulty": "Hard",
+      "question": "What if complications require NICU care?",
+      "expectedKeywords": ["NICU", "intensive care", "premature birth", "medical coverage", "extended hospital stay"],
+      "expectedSources": ["NICU Coverage"]
+    },
+    {
+      "id": "TC110",
+      "category": "Compensation & Benefits",
+      "difficulty": "Medium",
+      "question": "Is there compensation for bed rest?",
+      "expectedKeywords": ["bed rest", "lost wages", "compensation", "medical necessity", "doctor ordered"],
+      "expectedSources": ["Bed Rest Compensation"]
+    },
+    {
+      "id": "TC111",
+      "category": "Requirements & Eligibility",
+      "difficulty": "Easy",
+      "question": "Do surrogates need to live in a specific state?",
+      "expectedKeywords": ["geographic requirements", "state laws", "travel", "location", "residency"],
+      "expectedSources": ["Geographic Requirements"]
+    },
+    {
+      "id": "TC112",
+      "category": "Process & Timeline",
+      "difficulty": "Hard",
+      "question": "What happens if the intended parents back out?",
+      "expectedKeywords": ["contract breach", "legal protection", "compensation", "backup plan", "legal remedies"],
+      "expectedSources": ["Contract Protection"]
+    },
+    {
+      "id": "TC113",
+      "category": "General",
+      "difficulty": "Medium",
+      "question": "Can surrogates have visitors during labor?",
+      "expectedKeywords": ["delivery room", "visitors", "intended parents", "family", "hospital policy"],
+      "expectedSources": ["Delivery Preferences"]
+    },
+    {
+      "id": "TC114",
+      "category": "Medical & Health",
+      "difficulty": "Medium",
+      "question": "What pain management options are available?",
+      "expectedKeywords": ["epidural", "pain relief", "natural birth", "medical options", "anesthesia"],
+      "expectedSources": ["Pain Management"]
+    },
+    {
+      "id": "TC115",
+      "category": "Legal & Contracts",
+      "difficulty": "Easy",
+      "question": "When is the surrogacy contract signed?",
+      "expectedKeywords": ["contract signing", "legal clearance", "before transfer", "attorney review", "final agreement"],
+      "expectedSources": ["Contract Timeline"]
+    },
+    {
+      "id": "TC116",
+      "category": "Pricing & Costs",
+      "difficulty": "Hard",
+      "question": "What happens if there's a miscarriage?",
+      "expectedKeywords": ["miscarriage", "pregnancy loss", "compensation", "medical care", "emotional support"],
+      "expectedSources": ["Pregnancy Loss"]
+    },
+    {
+      "id": "TC117",
+      "category": "Insurance & Coverage",
+      "difficulty": "Medium",
+      "question": "Is travel for medical appointments covered?",
+      "expectedKeywords": ["travel expenses", "mileage", "hotel", "medical appointments", "reimbursement"],
+      "expectedSources": ["Travel Coverage"]
+    },
+    {
+      "id": "TC118",
+      "category": "Compensation & Benefits",
+      "difficulty": "Easy",
+      "question": "When does compensation start?",
+      "expectedKeywords": ["pregnancy confirmation", "heartbeat", "compensation start", "first payment", "medical confirmation"],
+      "expectedSources": ["Compensation Timeline"]
+    },
+    {
+      "id": "TC119",
+      "category": "Requirements & Eligibility",
+      "difficulty": "Medium",
+      "question": "Can single women be surrogates?",
+      "expectedKeywords": ["marital status", "single women", "eligibility", "support system", "requirements"],
+      "expectedSources": ["Eligibility Requirements"]
+    },
+    {
+      "id": "TC120",
+      "category": "Process & Timeline",
+      "difficulty": "Easy",
+      "question": "How often are medical check-ups during pregnancy?",
+      "expectedKeywords": ["medical appointments", "prenatal care", "doctor visits", "monitoring", "regular check-ups"],
+      "expectedSources": ["Prenatal Care Schedule"]
+    },
+    {
+      "id": "TC121",
+      "category": "General",
+      "difficulty": "Hard",
+      "question": "What support is available for surrogate families?",
+      "expectedKeywords": ["family support", "counseling", "children", "spouse", "emotional support"],
+      "expectedSources": ["Family Support Services"]
+    },
+    {
+      "id": "TC122",
+      "category": "Medical & Health",
+      "difficulty": "Easy",
+      "question": "Can surrogates exercise during pregnancy?",
+      "expectedKeywords": ["exercise", "physical activity", "doctor approval", "pregnancy fitness", "restrictions"],
+      "expectedSources": ["Exercise Guidelines"]
+    },
+    {
+      "id": "TC123",
+      "category": "Legal & Contracts",
+      "difficulty": "Medium",
+      "question": "What happens to frozen embryos after birth?",
+      "expectedKeywords": ["frozen embryos", "intended parents", "storage", "future use", "embryo disposition"],
+      "expectedSources": ["Embryo Disposition"]
+    },
+    {
+      "id": "TC124",
+      "category": "Pricing & Costs",
+      "difficulty": "Medium",
+      "question": "Are there costs for genetic testing?",
+      "expectedKeywords": ["genetic testing", "amniocentesis", "testing costs", "medical procedures", "optional testing"],
+      "expectedSources": ["Genetic Testing Costs"]
+    },
+    {
+      "id": "TC125",
+      "category": "Insurance & Coverage",
+      "difficulty": "Easy",
+      "question": "Is postpartum care covered?",
+      "expectedKeywords": ["postpartum", "recovery", "medical care", "follow-up", "post-delivery"],
+      "expectedSources": ["Postpartum Care"]
+    },
+    {
+      "id": "TC126",
+      "category": "Compensation & Benefits",
+      "difficulty": "Medium",
+      "question": "What expenses are reimbursed?",
+      "expectedKeywords": ["reimbursement", "medical expenses", "travel", "childcare", "lost wages"],
+      "expectedSources": ["Expense Reimbursement"]
+    },
+    {
+      "id": "TC127",
+      "category": "Requirements & Eligibility",
+      "difficulty": "Hard",
+      "question": "What mental health requirements exist?",
+      "expectedKeywords": ["psychological evaluation", "mental health", "counseling", "emotional stability", "support system"],
+      "expectedSources": ["Mental Health Requirements"]
+    },
+    {
+      "id": "TC128",
+      "category": "Process & Timeline",
+      "difficulty": "Medium",
+      "question": "What happens during the legal clearance phase?",
+      "expectedKeywords": ["legal clearance", "contract review", "attorney approval", "final agreements", "clearance process"],
+      "expectedSources": ["Legal Clearance Process"]
+    },
+    {
+      "id": "TC129",
+      "category": "General",
+      "difficulty": "Easy",
+      "question": "Can surrogates breastfeed their own children?",
+      "expectedKeywords": ["breastfeeding", "milk supply", "own children", "lactation", "nursing"],
+      "expectedSources": ["Breastfeeding Guidelines"]
+    },
+    {
+      "id": "TC130",
+      "category": "Medical & Health",
+      "difficulty": "Medium",
+      "question": "What vaccines are required during pregnancy?",
+      "expectedKeywords": ["vaccines", "immunizations", "pregnancy safety", "medical requirements", "doctor recommendation"],
+      "expectedSources": ["Vaccination Requirements"]
+    },
+    {
+      "id": "TC131",
+      "category": "Legal & Contracts",
+      "difficulty": "Hard",
+      "question": "What happens if intended parents die during pregnancy?",
+      "expectedKeywords": ["intended parent death", "legal guardian", "estate", "backup plan", "legal arrangements"],
+      "expectedSources": ["Emergency Legal Situations"]
+    },
+    {
+      "id": "TC132",
+      "category": "Pricing & Costs",
+      "difficulty": "Easy",
+      "question": "What is included in medical expenses?",
+      "expectedKeywords": ["medical costs", "doctor visits", "hospital", "prescriptions", "procedures"],
+      "expectedSources": ["Medical Expense Coverage"]
+    },
+    {
+      "id": "TC133",
+      "category": "Insurance & Coverage",
+      "difficulty": "Medium",
+      "question": "What if a surrogate needs emergency surgery?",
+      "expectedKeywords": ["emergency surgery", "medical coverage", "hospital care", "surgical procedures", "emergency care"],
+      "expectedSources": ["Emergency Medical Coverage"]
+    },
+    {
+      "id": "TC134",
+      "category": "Compensation & Benefits",
+      "difficulty": "Easy",
+      "question": "Are there milestone bonuses?",
+      "expectedKeywords": ["milestone payments", "bonuses", "pregnancy milestones", "additional compensation", "incentives"],
+      "expectedSources": ["Milestone Compensation"]
+    },
+    {
+      "id": "TC135",
+      "category": "Requirements & Eligibility",
+      "difficulty": "Medium",
+      "question": "Can surrogates have tattoos or piercings?",
+      "expectedKeywords": ["tattoos", "piercings", "body modifications", "medical safety", "appearance requirements"],
+      "expectedSources": ["Appearance Guidelines"]
+    },
+    {
+      "id": "TC136",
+      "category": "Process & Timeline",
+      "difficulty": "Hard",
+      "question": "What happens if the baby has special needs?",
+      "expectedKeywords": ["special needs", "disability", "medical care", "intended parents", "support services"],
+      "expectedSources": ["Special Needs Support"]
+    },
+    {
+      "id": "TC137",
+      "category": "General",
+      "difficulty": "Medium",
+      "question": "Can surrogates choose their delivery hospital?",
+      "expectedKeywords": ["hospital choice", "delivery preferences", "medical facility", "doctor privileges", "location"],
+      "expectedSources": ["Hospital Selection"]
+    },
+    {
+      "id": "TC138",
+      "category": "Medical & Health",
+      "difficulty": "Easy",
+      "question": "What prenatal testing is required?",
+      "expectedKeywords": ["prenatal testing", "ultrasounds", "blood tests", "monitoring", "routine tests"],
+      "expectedSources": ["Prenatal Testing"]
+    },
+    {
+      "id": "TC139",
+      "category": "Legal & Contracts",
+      "difficulty": "Medium",
+      "question": "Who has custody during pregnancy?",
+      "expectedKeywords": ["custody", "pregnancy period", "surrogate rights", "intended parents", "temporary custody"],
+      "expectedSources": ["Custody During Pregnancy"]
+    },
+    {
+      "id": "TC140",
+      "category": "Pricing & Costs",
+      "difficulty": "Medium",
+      "question": "What if additional IVF cycles are needed?",
+      "expectedKeywords": ["additional cycles", "IVF attempts", "extra costs", "success rates", "multiple transfers"],
+      "expectedSources": ["Multiple IVF Cycles"]
+    },
+    {
+      "id": "TC141",
+      "category": "Insurance & Coverage",
+      "difficulty": "Hard",
+      "question": "What if the surrogate has pregnancy complications?",
+      "expectedKeywords": ["pregnancy complications", "high-risk", "specialist care", "extended coverage", "medical expenses"],
+      "expectedSources": ["Complication Coverage"]
+    },
+    {
+      "id": "TC142",
+      "category": "Compensation & Benefits",
+      "difficulty": "Medium",
+      "question": "Is there life insurance for surrogates?",
+      "expectedKeywords": ["life insurance", "coverage amount", "policy terms", "beneficiaries", "protection"],
+      "expectedSources": ["Life Insurance Coverage"]
+    },
+    {
+      "id": "TC143",
+      "category": "Requirements & Eligibility",
+      "difficulty": "Easy",
+      "question": "What BMI requirements exist?",
+      "expectedKeywords": ["BMI", "weight requirements", "healthy weight", "medical clearance", "body mass index"],
+      "expectedSources": ["Weight Requirements"]
+    },
+    {
+      "id": "TC144",
+      "category": "Process & Timeline",
+      "difficulty": "Medium",
+      "question": "How long is the medical clearance process?",
+      "expectedKeywords": ["medical clearance", "timeline", "testing period", "doctor approval", "clearance duration"],
+      "expectedSources": ["Medical Clearance Timeline"]
+    },
+    {
+      "id": "TC145",
+      "category": "General",
+      "difficulty": "Hard",
+      "question": "What happens if there's a natural disaster during pregnancy?",
+      "expectedKeywords": ["natural disaster", "emergency plan", "relocation", "medical care", "contingency plan"],
+      "expectedSources": ["Emergency Contingency Plans"]
+    },
+    {
+      "id": "TC146",
+      "category": "Medical & Health",
+      "difficulty": "Medium",
+      "question": "Can surrogates take medications during pregnancy?",
+      "expectedKeywords": ["medications", "doctor approval", "pregnancy safety", "prescriptions", "medical clearance"],
+      "expectedSources": ["Medication Guidelines"]
+    },
+    {
+      "id": "TC147",
+      "category": "Legal & Contracts",
+      "difficulty": "Easy",
+      "question": "What legal documents are required?",
+      "expectedKeywords": ["legal documents", "contracts", "agreements", "consent forms", "legal paperwork"],
+      "expectedSources": ["Legal Documentation"]
+    },
+    {
+      "id": "TC148",
+      "category": "Pricing & Costs",
+      "difficulty": "Hard",
+      "question": "What happens if intended parents can't pay?",
+      "expectedKeywords": ["payment default", "escrow protection", "financial security", "contract breach", "payment guarantee"],
+      "expectedSources": ["Payment Protection"]
+    },
+    {
+      "id": "TC149",
+      "category": "Insurance & Coverage",
+      "difficulty": "Medium",
+      "question": "Is dental care covered during pregnancy?",
+      "expectedKeywords": ["dental care", "oral health", "pregnancy dental", "dental coverage", "routine cleaning"],
+      "expectedSources": ["Dental Coverage"]
+    },
+    {
+      "id": "TC150",
+      "category": "Compensation & Benefits",
+      "difficulty": "Easy",
+      "question": "How is compensation calculated?",
+      "expectedKeywords": ["compensation calculation", "base amount", "experience", "location", "additional payments"],
+      "expectedSources": ["Compensation Structure"]
+    },
+    {
+      "id": "TC151",
+      "category": "Requirements & Eligibility",
+      "difficulty": "Medium",
+      "question": "Can surrogates have pets?",
+      "expectedKeywords": ["pets", "animals", "household", "safety", "allergies"],
+      "expectedSources": ["Household Requirements"]
+    },
+    {
+      "id": "TC152",
+      "category": "Process & Timeline",
+      "difficulty": "Easy",
+      "question": "What happens at the first appointment?",
+      "expectedKeywords": ["first appointment", "initial consultation", "medical evaluation", "paperwork", "orientation"],
+      "expectedSources": ["First Appointment Process"]
+    },
+    {
+      "id": "TC153",
+      "category": "General",
+      "difficulty": "Medium",
+      "question": "Can surrogates travel during pregnancy?",
+      "expectedKeywords": ["travel restrictions", "doctor approval", "pregnancy travel", "safety", "medical clearance"],
+      "expectedSources": ["Travel Guidelines"]
+    },
+    {
+      "id": "TC154",
+      "category": "Medical & Health",
+      "difficulty": "Hard",
+      "question": "What if the surrogate develops gestational diabetes?",
+      "expectedKeywords": ["gestational diabetes", "medical management", "specialist care", "monitoring", "treatment"],
+      "expectedSources": ["Gestational Diabetes Management"]
+    },
+    {
+      "id": "TC155",
+      "category": "Legal & Contracts",
+      "difficulty": "Medium",
+      "question": "What rights do surrogates have during pregnancy?",
+      "expectedKeywords": ["surrogate rights", "medical decisions", "autonomy", "legal protection", "choice"],
+      "expectedSources": ["Surrogate Rights"]
+    },
+    {
+      "id": "TC156",
+      "category": "Pricing & Costs",
+      "difficulty": "Medium",
+      "question": "Are there costs for second opinions?",
+      "expectedKeywords": ["second opinion", "medical consultation", "specialist", "additional costs", "expert opinion"],
+      "expectedSources": ["Second Opinion Costs"]
+    },
+    {
+      "id": "TC157",
+      "category": "Insurance & Coverage",
+      "difficulty": "Easy",
+      "question": "What prescription medications are covered?",
+      "expectedKeywords": ["prescription coverage", "medications", "fertility drugs", "pregnancy medications", "pharmacy"],
+      "expectedSources": ["Prescription Coverage"]
+    },
+    {
+      "id": "TC158",
+      "category": "Compensation & Benefits",
+      "difficulty": "Medium",
+      "question": "Are there benefits for experienced surrogates?",
+      "expectedKeywords": ["experienced surrogates", "repeat surrogates", "bonus compensation", "preferred status", "incentives"],
+      "expectedSources": ["Experienced Surrogate Benefits"]
+    },
+    {
+      "id": "TC159",
+      "category": "Requirements & Eligibility",
+      "difficulty": "Hard",
+      "question": "What financial requirements exist for surrogates?",
+      "expectedKeywords": ["financial stability", "income requirements", "debt", "financial screening", "economic security"],
+      "expectedSources": ["Financial Requirements"]
+    },
+    {
+      "id": "TC160",
+      "category": "Process & Timeline",
+      "difficulty": "Medium",
+      "question": "What happens during the psychological evaluation?",
+      "expectedKeywords": ["psychological evaluation", "mental health assessment", "counselor", "evaluation process", "psychological testing"],
+      "expectedSources": ["Psychological Evaluation Process"]
+    },
+    {
+      "id": "TC161",
+      "category": "General",
+      "difficulty": "Easy",
+      "question": "Can surrogates choose the baby's name?",
+      "expectedKeywords": ["baby name", "intended parents choice", "naming rights", "birth certificate", "parent decision"],
+      "expectedSources": ["Naming Rights"]
+    },
+    {
+      "id": "TC162",
+      "category": "Medical & Health",
+      "difficulty": "Medium",
+      "question": "What happens if the surrogate gets sick?",
+      "expectedKeywords": ["illness", "medical care", "pregnancy safety", "treatment", "doctor consultation"],
+      "expectedSources": ["Illness During Pregnancy"]
+    },
+    {
+      "id": "TC163",
+      "category": "Legal & Contracts",
+      "difficulty": "Hard",
+      "question": "What happens if surrogacy laws change?",
+      "expectedKeywords": ["law changes", "legal updates", "contract protection", "grandfathered agreements", "legal compliance"],
+      "expectedSources": ["Legal Changes Impact"]
+    },
+    {
+      "id": "TC164",
+      "category": "Pricing & Costs",
+      "difficulty": "Easy",
+      "question": "What payment methods are accepted?",
+      "expectedKeywords": ["payment methods", "escrow", "bank transfer", "check", "payment processing"],
+      "expectedSources": ["Payment Methods"]
+    },
+    {
+      "id": "TC165",
+      "category": "Insurance & Coverage",
+      "difficulty": "Medium",
+      "question": "What if the baby needs special medical care?",
+      "expectedKeywords": ["special medical care", "NICU", "specialist", "extended care", "medical expenses"],
+      "expectedSources": ["Special Medical Care Coverage"]
+    },
+    {
+      "id": "TC166",
+      "category": "Compensation & Benefits",
+      "difficulty": "Easy",
+      "question": "Are surrogate expenses tax deductible?",
+      "expectedKeywords": ["tax deductible", "expenses", "tax implications", "deductions", "tax advice"],
+      "expectedSources": ["Tax Information"]
+    },
+    {
+      "id": "TC167",
+      "category": "Requirements & Eligibility",
+      "difficulty": "Medium",
+      "question": "Can military spouses be surrogates?",
+      "expectedKeywords": ["military spouse", "military family", "deployment", "geographic flexibility", "special considerations"],
+      "expectedSources": ["Military Spouse Surrogacy"]
+    },
+    {
+      "id": "TC168",
+      "category": "Process & Timeline",
+      "difficulty": "Hard",
+      "question": "What happens if multiple embryos implant?",
+      "expectedKeywords": ["multiple embryos", "twins", "triplets", "selective reduction", "multiple pregnancy"],
+      "expectedSources": ["Multiple Pregnancy Management"]
+    },
+    {
+      "id": "TC169",
+      "category": "General",
+      "difficulty": "Medium",
+      "question": "Can surrogates have contact after birth?",
+      "expectedKeywords": ["post-birth contact", "ongoing relationship", "intended parents", "communication", "boundaries"],
+      "expectedSources": ["Post-Birth Relationships"]
+    },
+    {
+      "id": "TC170",
+      "category": "Medical & Health",
+      "difficulty": "Easy",
+      "question": "What nutrition guidelines exist for surrogates?",
+      "expectedKeywords": ["nutrition", "diet", "healthy eating", "prenatal nutrition", "dietary guidelines"],
+      "expectedSources": ["Nutrition Guidelines"]
+    },
+    {
+      "id": "TC171",
+      "category": "Legal & Contracts",
+      "difficulty": "Medium",
+      "question": "Who owns the medical records?",
+      "expectedKeywords": ["medical records", "privacy", "ownership", "access rights", "confidentiality"],
+      "expectedSources": ["Medical Records Ownership"]
+    },
+    {
+      "id": "TC172",
+      "category": "Pricing & Costs",
+      "difficulty": "Medium",
+      "question": "What happens if the cycle is cancelled?",
+      "expectedKeywords": ["cancelled cycle", "medical reasons", "compensation", "restart", "cycle cancellation"],
+      "expectedSources": ["Cycle Cancellation"]
+    },
+    {
+      "id": "TC173",
+      "category": "Insurance & Coverage",
+      "difficulty": "Hard",
+      "question": "What if there are birth defects?",
+      "expectedKeywords": ["birth defects", "genetic conditions", "medical coverage", "specialist care", "ongoing treatment"],
+      "expectedSources": ["Birth Defect Coverage"]
+    },
+    {
+      "id": "TC174",
+      "category": "Compensation & Benefits",
+      "difficulty": "Medium",
+      "question": "Is there compensation for pumping breast milk?",
+      "expectedKeywords": ["breast milk pumping", "lactation compensation", "milk donation", "pumping supplies", "time compensation"],
+      "expectedSources": ["Breast Milk Compensation"]
+    },
+    {
+      "id": "TC175",
+      "category": "Requirements & Eligibility",
+      "difficulty": "Easy",
+      "question": "What education requirements exist?",
+      "expectedKeywords": ["education", "high school", "diploma", "educational background", "requirements"],
+      "expectedSources": ["Education Requirements"]
+    },
+    {
+      "id": "TC176",
+      "category": "Process & Timeline",
+      "difficulty": "Medium",
+      "question": "What happens during embryo transfer day?",
+      "expectedKeywords": ["embryo transfer", "transfer day", "procedure", "clinic visit", "medical process"],
+      "expectedSources": ["Embryo Transfer Process"]
+    },
+    {
+      "id": "TC177",
+      "category": "General",
+      "difficulty": "Hard",
+      "question": "What support is available for surrogate children?",
+      "expectedKeywords": ["surrogate children", "family support", "counseling", "age-appropriate", "emotional support"],
+      "expectedSources": ["Children Support Services"]
+    },
+    {
+      "id": "TC178",
+      "category": "Medical & Health",
+      "difficulty": "Medium",
+      "question": "What happens if the surrogate has allergies?",
+      "expectedKeywords": ["allergies", "medical management", "safe medications", "allergy treatment", "medical consultation"],
+      "expectedSources": ["Allergy Management"]
+    },
+    {
+      "id": "TC179",
+      "category": "Legal & Contracts",
+      "difficulty": "Easy",
+      "question": "When does the contract become effective?",
+      "expectedKeywords": ["contract effective date", "legal binding", "signing", "activation", "legal force"],
+      "expectedSources": ["Contract Effective Date"]
+    },
+    {
+      "id": "TC180",
+      "category": "Pricing & Costs",
+      "difficulty": "Hard",
+      "question": "What if there are international complications?",
+      "expectedKeywords": ["international complications", "cross-border", "legal issues", "additional costs", "complex arrangements"],
+      "expectedSources": ["International Complications"]
+    },
+    {
+      "id": "TC181",
+      "category": "Insurance & Coverage",
+      "difficulty": "Medium",
+      "question": "Is alternative medicine covered?",
+      "expectedKeywords": ["alternative medicine", "acupuncture", "chiropractic", "holistic care", "complementary therapy"],
+      "expectedSources": ["Alternative Medicine Coverage"]
+    },
+    {
+      "id": "TC182",
+      "category": "Compensation & Benefits",
+      "difficulty": "Easy",
+      "question": "Are there clothing allowances?",
+      "expectedKeywords": ["clothing allowance", "maternity clothes", "wardrobe", "pregnancy attire", "allowance"],
+      "expectedSources": ["Clothing Allowance"]
+    },
+    {
+      "id": "TC183",
+      "category": "Requirements & Eligibility",
+      "difficulty": "Medium",
+      "question": "Can surrogates have mental health history?",
+      "expectedKeywords": ["mental health history", "psychological evaluation", "depression", "anxiety", "mental health clearance"],
+      "expectedSources": ["Mental Health History"]
+    },
+    {
+      "id": "TC184",
+      "category": "Process & Timeline",
+      "difficulty": "Easy",
+      "question": "What happens during the final legal steps?",
+      "expectedKeywords": ["final legal steps", "birth certificate", "parentage", "legal completion", "final papers"],
+      "expectedSources": ["Final Legal Process"]
+    },
+    {
+      "id": "TC185",
+      "category": "General",
+      "difficulty": "Medium",
+      "question": "Can surrogates participate in birth plans?",
+      "expectedKeywords": ["birth plan", "delivery preferences", "medical decisions", "labor choices", "birth experience"],
+      "expectedSources": ["Birth Plan Participation"]
+    },
+    {
+      "id": "TC186",
+      "category": "Medical & Health",
+      "difficulty": "Hard",
+      "question": "What if the surrogate develops preeclampsia?",
+      "expectedKeywords": ["preeclampsia", "high blood pressure", "pregnancy complication", "medical management", "specialist care"],
+      "expectedSources": ["Preeclampsia Management"]
+    },
+    {
+      "id": "TC187",
+      "category": "Legal & Contracts",
+      "difficulty": "Medium",
+      "question": "What happens with leftover medications?",
+      "expectedKeywords": ["leftover medications", "disposal", "return", "medication handling", "pharmacy"],
+      "expectedSources": ["Medication Disposal"]
+    },
+    {
+      "id": "TC188",
+      "category": "Pricing & Costs",
+      "difficulty": "Medium",
+      "question": "Are there costs for genetic counseling?",
+      "expectedKeywords": ["genetic counseling", "genetic testing", "counselor fees", "genetic consultation", "hereditary"],
+      "expectedSources": ["Genetic Counseling Costs"]
+    },
+    {
+      "id": "TC189",
+      "category": "Insurance & Coverage",
+      "difficulty": "Easy",
+      "question": "What mental health services are covered?",
+      "expectedKeywords": ["mental health services", "counseling", "therapy", "psychological support", "emotional care"],
+      "expectedSources": ["Mental Health Coverage"]
+    },
+    {
+      "id": "TC190",
+      "category": "Compensation & Benefits",
+      "difficulty": "Medium",
+      "question": "Is there compensation for spouse support?",
+      "expectedKeywords": ["spouse support", "partner involvement", "family compensation", "support person", "partner time"],
+      "expectedSources": ["Spouse Support Compensation"]
+    },
+    {
+      "id": "TC191",
+      "category": "Requirements & Eligibility",
+      "difficulty": "Hard",
+      "question": "What happens if a surrogate moves during pregnancy?",
+      "expectedKeywords": ["relocation", "moving", "state laws", "medical continuity", "geographic change"],
+      "expectedSources": ["Relocation During Pregnancy"]
+    },
+    {
+      "id": "TC192",
+      "category": "Process & Timeline",
+      "difficulty": "Medium",
+      "question": "What happens if labor starts early?",
+      "expectedKeywords": ["premature labor", "early delivery", "emergency procedures", "medical response", "hospital protocol"],
+      "expectedSources": ["Premature Labor Protocol"]
+    },
+    {
+      "id": "TC193",
+      "category": "General",
+      "difficulty": "Easy",
+      "question": "Can surrogates request specific doctors?",
+      "expectedKeywords": ["doctor selection", "physician choice", "medical team", "doctor preferences", "healthcare provider"],
+      "expectedSources": ["Doctor Selection"]
+    },
+    {
+      "id": "TC194",
+      "category": "Medical & Health",
+      "difficulty": "Medium",
+      "question": "What if the surrogate needs bed rest?",
+      "expectedKeywords": ["bed rest", "activity restriction", "medical necessity", "work restrictions", "home rest"],
+      "expectedSources": ["Bed Rest Requirements"]
+    },
+    {
+      "id": "TC195",
+      "category": "Legal & Contracts",
+      "difficulty": "Hard",
+      "question": "What if there are disputes during pregnancy?",
+      "expectedKeywords": ["disputes", "mediation", "conflict resolution", "legal arbitration", "disagreements"],
+      "expectedSources": ["Dispute Resolution"]
+    },
+    {
+      "id": "TC196",
+      "category": "Pricing & Costs",
+      "difficulty": "Easy",
+      "question": "What costs are not covered?",
+      "expectedKeywords": ["excluded costs", "not covered", "out-of-pocket", "additional expenses", "exclusions"],
+      "expectedSources": ["Cost Exclusions"]
+    },
+    {
+      "id": "TC197",
+      "category": "Insurance & Coverage",
+      "difficulty": "Medium",
+      "question": "What if the baby is born in another state?",
+      "expectedKeywords": ["out-of-state birth", "state laws", "insurance coverage", "medical reciprocity", "cross-state"],
+      "expectedSources": ["Out-of-State Birth Coverage"]
+    },
+    {
+      "id": "TC198",
+      "category": "Compensation & Benefits",
+      "difficulty": "Hard",
+      "question": "What happens to compensation if the baby dies?",
+      "expectedKeywords": ["infant death", "stillbirth", "compensation", "bereavement", "support", "full payment"],
+      "expectedSources": ["Infant Loss Compensation"]
+    },
+    {
+      "id": "TC199",
+      "category": "Requirements & Eligibility",
+      "difficulty": "Medium",
+      "question": "Can surrogates have chronic conditions?",
+      "expectedKeywords": ["chronic conditions", "medical conditions", "diabetes", "hypertension", "medical clearance"],
+      "expectedSources": ["Chronic Condition Requirements"]
+    },
+    {
+      "id": "TC200",
+      "category": "Process & Timeline",
+      "difficulty": "Easy",
+      "question": "What is the final step in the surrogacy process?",
+      "expectedKeywords": ["final step", "baby handover", "legal completion", "discharge", "process completion"],
+      "expectedSources": ["Final Process Steps"]
     }
   ],
   "evaluationMetrics": {
