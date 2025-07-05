@@ -21,7 +21,7 @@ interface TestResult {
   question: string;
   configA: {
     answer: string;
-    sources: string[];
+    sources: Array<string | {url: string; title: string}>;
     executionTime: number;
     scores: {
       accuracy: number;
@@ -31,7 +31,7 @@ interface TestResult {
   };
   configB: {
     answer: string;
-    sources: string[];
+    sources: Array<string | {url: string; title: string}>;
     executionTime: number;
     scores: {
       accuracy: number;
@@ -417,7 +417,7 @@ export default function ABTestingResultsPage() {
                             <div className="text-xs font-medium text-conab-header/70 mb-1">Sources:</div>
                             <div className="text-xs text-conab-header/60">
                               {result.configA.sources.slice(0, 2).map((source, i) => (
-                                <div key={i} className="truncate">• {source}</div>
+                                <div key={i} className="truncate">• {typeof source === 'string' ? source : (source.title || source.url)}</div>
                               ))}
                               {result.configA.sources.length > 2 && (
                                 <div className="text-conab-header/40">+{result.configA.sources.length - 2} more</div>
@@ -446,7 +446,7 @@ export default function ABTestingResultsPage() {
                             <div className="text-xs font-medium text-conab-header/70 mb-1">Sources:</div>
                             <div className="text-xs text-conab-header/60">
                               {result.configB.sources.slice(0, 2).map((source, i) => (
-                                <div key={i} className="truncate">• {source}</div>
+                                <div key={i} className="truncate">• {typeof source === 'string' ? source : (source.title || source.url)}</div>
                               ))}
                               {result.configB.sources.length > 2 && (
                                 <div className="text-conab-header/40">+{result.configB.sources.length - 2} more</div>
