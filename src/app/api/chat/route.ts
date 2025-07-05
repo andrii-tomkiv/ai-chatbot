@@ -17,9 +17,14 @@ export async function POST(request: NextRequest) {
     let answer = "";
     let sources: any[] = [];
 
+    // Create timeout promise (2 seconds)
+    const timeoutPromise = new Promise((_, reject) => {
+      setTimeout(() => reject(new Error('Request timeout after 2 seconds')), 2000);
+    });
+
     if (model.includes("groq") || model.includes("llama")) {
-      // Call Groq API
-      const groqResponse = await fetch(
+      // Call Groq API with timeout
+      const groqAPICall = fetch(
         "https://api.groq.com/openai/v1/chat/completions",
         {
           method: "POST",
@@ -36,6 +41,8 @@ export async function POST(request: NextRequest) {
         }
       );
 
+      const groqResponse = await Promise.race([groqAPICall, timeoutPromise]) as Response;
+
       if (!groqResponse.ok) {
         throw new Error(`Groq API error: ${groqResponse.status}`);
       }
@@ -43,16 +50,19 @@ export async function POST(request: NextRequest) {
       const groqData = await groqResponse.json();
       answer = groqData.choices[0].message.content;
     } else {
-      // Call Mistral API
+      // Call Mistral API with timeout
       const mistralClient = new Mistral({
         apiKey: process.env.MISTRAL_API_KEY,
       });
-      const mistralResponse = await mistralClient.chat.complete({
+      
+      const mistralAPICall = mistralClient.chat.complete({
         model: "mistral-small-latest",
         messages: messages,
         maxTokens: options.maxTokens || 1000,
         temperature: options.temperature || 0.7,
       });
+
+      const mistralResponse = await Promise.race([mistralAPICall, timeoutPromise]) as any;
 
       const content = mistralResponse.choices[0]?.message?.content;
       if (Array.isArray(content)) {

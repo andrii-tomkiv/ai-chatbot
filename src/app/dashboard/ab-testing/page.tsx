@@ -228,18 +228,148 @@ export default function ABTestingResultsPage() {
               </div>
             </div>
 
-            {/* Average Scores */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-              <div className="bg-white border border-conab-action/20 rounded-xl p-4 shadow-sm">
-                <h4 className="font-semibold text-conab-header mb-2">Configuration A Average</h4>
-                <div className="text-2xl font-bold text-conab-action">
-                  {getAverageScore('A', selectedResult.results).toFixed(2)}/5
+            {/* Configuration Details */}
+            <div className="mb-6">
+              <h3 className="text-lg font-semibold text-conab-header mb-4">Configuration Details</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="bg-white border border-conab-action/20 rounded-xl p-4 shadow-sm">
+                  <h4 className="font-semibold text-conab-action mb-3">Configuration A</h4>
+                  <div className="space-y-2 text-sm">
+                    <div><span className="font-medium text-conab-header">Name:</span> {selectedResult.configurations.A.name}</div>
+                    <div><span className="font-medium text-conab-header">Provider:</span> {selectedResult.configurations.A.provider}</div>
+                    <div><span className="font-medium text-conab-header">Model:</span> {selectedResult.configurations.A.model}</div>
+                    <div><span className="font-medium text-conab-header">Max Tokens:</span> {selectedResult.configurations.A.maxTokens}</div>
+                    <div><span className="font-medium text-conab-header">Temperature:</span> {selectedResult.configurations.A.temperature}</div>
+                    <div><span className="font-medium text-conab-header">Max Results:</span> {selectedResult.configurations.A.maxResults}</div>
+                    <div><span className="font-medium text-conab-header">Average Score:</span> {selectedResult.summary.averageScores.configA.helpfulness.toFixed(2)}/5</div>
+                  </div>
+                  <div className="mt-4 pt-4 border-t border-conab-action/20">
+                    <div className="font-medium text-conab-header mb-2">System Prompt:</div>
+                    <div className="bg-conab-light-background/50 p-3 rounded-lg border border-conab-action/20 text-xs text-conab-header leading-relaxed max-h-40 overflow-y-auto">
+                      {selectedResult.configurations.A.systemPrompt}
+                    </div>
+                  </div>
+                </div>
+                <div className="bg-white border border-conab-green/20 rounded-xl p-4 shadow-sm">
+                  <h4 className="font-semibold text-conab-green mb-3">Configuration B</h4>
+                  <div className="space-y-2 text-sm">
+                    <div><span className="font-medium text-conab-header">Name:</span> {selectedResult.configurations.B.name}</div>
+                    <div><span className="font-medium text-conab-header">Provider:</span> {selectedResult.configurations.B.provider}</div>
+                    <div><span className="font-medium text-conab-header">Model:</span> {selectedResult.configurations.B.model}</div>
+                    <div><span className="font-medium text-conab-header">Max Tokens:</span> {selectedResult.configurations.B.maxTokens}</div>
+                    <div><span className="font-medium text-conab-header">Temperature:</span> {selectedResult.configurations.B.temperature}</div>
+                    <div><span className="font-medium text-conab-header">Max Results:</span> {selectedResult.configurations.B.maxResults}</div>
+                    <div><span className="font-medium text-conab-header">Average Score:</span> {selectedResult.summary.averageScores.configB.helpfulness.toFixed(2)}/5</div>
+                  </div>
+                  <div className="mt-4 pt-4 border-t border-conab-green/20">
+                    <div className="font-medium text-conab-header mb-2">System Prompt:</div>
+                    <div className="bg-conab-light-background/50 p-3 rounded-lg border border-conab-green/20 text-xs text-conab-header leading-relaxed max-h-40 overflow-y-auto">
+                      {selectedResult.configurations.B.systemPrompt}
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div className="bg-white border border-conab-green/20 rounded-xl p-4 shadow-sm">
-                <h4 className="font-semibold text-conab-header mb-2">Configuration B Average</h4>
-                <div className="text-2xl font-bold text-conab-green">
-                  {getAverageScore('B', selectedResult.results).toFixed(2)}/5
+            </div>
+
+            {/* Category Breakdown */}
+            <div className="mb-6">
+              <h3 className="text-lg font-semibold text-conab-header mb-4">Category Breakdown</h3>
+              <div className="bg-white border border-conab-header/20 rounded-xl overflow-hidden shadow-sm">
+                <div className="px-4 py-3 bg-gradient-to-r from-conab-header to-conab-middle-blue border-b border-conab-header/20">
+                  <div className="grid grid-cols-6 gap-4 text-white text-sm font-medium">
+                    <div>Category</div>
+                    <div>Total</div>
+                    <div>A Wins</div>
+                    <div>B Wins</div>
+                    <div>Ties</div>
+                    <div>Avg Score Diff</div>
+                  </div>
+                </div>
+                <div className="max-h-64 overflow-y-auto">
+                  {Object.entries(selectedResult.categoryBreakdown).map(([category, breakdown]: [string, any]) => (
+                    <div key={category} className="px-4 py-3 border-b border-conab-header/10 last:border-b-0 hover:bg-conab-light-background/30 transition-colors">
+                      <div className="grid grid-cols-6 gap-4 text-sm">
+                        <div className="font-medium text-conab-header">{category}</div>
+                        <div className="text-conab-header">{breakdown.total}</div>
+                        <div className="text-conab-action">{breakdown.configAWins}</div>
+                        <div className="text-conab-green">{breakdown.configBWins}</div>
+                        <div className="text-conab-header">{breakdown.ties}</div>
+                        <div className="text-conab-header">{Math.abs(breakdown.averageConfigAScore - breakdown.averageConfigBScore).toFixed(2)}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Difficulty Breakdown */}
+            <div className="mb-6">
+              <h3 className="text-lg font-semibold text-conab-header mb-4">Difficulty Breakdown</h3>
+              <div className="bg-white border border-conab-header/20 rounded-xl overflow-hidden shadow-sm">
+                <div className="px-4 py-3 bg-gradient-to-r from-conab-header to-conab-middle-blue border-b border-conab-header/20">
+                  <div className="grid grid-cols-6 gap-4 text-white text-sm font-medium">
+                    <div>Difficulty</div>
+                    <div>Total</div>
+                    <div>A Wins</div>
+                    <div>B Wins</div>
+                    <div>Ties</div>
+                    <div>Avg Score Diff</div>
+                  </div>
+                </div>
+                <div className="max-h-64 overflow-y-auto">
+                  {Object.entries(selectedResult.difficultyBreakdown).map(([difficulty, breakdown]: [string, any]) => (
+                    <div key={difficulty} className="px-4 py-3 border-b border-conab-header/10 last:border-b-0 hover:bg-conab-light-background/30 transition-colors">
+                      <div className="grid grid-cols-6 gap-4 text-sm">
+                        <div className="font-medium text-conab-header">{difficulty}</div>
+                        <div className="text-conab-header">{breakdown.total}</div>
+                        <div className="text-conab-action">{breakdown.configAWins}</div>
+                        <div className="text-conab-green">{breakdown.configBWins}</div>
+                        <div className="text-conab-header">{breakdown.ties}</div>
+                        <div className="text-conab-header">{Math.abs(breakdown.averageConfigAScore - breakdown.averageConfigBScore).toFixed(2)}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Detailed Summary */}
+            <div className="mb-6">
+              <h3 className="text-lg font-semibold text-conab-header mb-4">Detailed Summary</h3>
+              <div className="bg-white border border-conab-header/20 rounded-xl p-4 shadow-sm">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                  <div>
+                    <span className="font-medium text-conab-header">Evaluation Strategy:</span>
+                    <div className="text-conab-action capitalize">{selectedResult.evaluationStrategy}</div>
+                  </div>
+                  <div>
+                    <span className="font-medium text-conab-header">Test Timestamp:</span>
+                    <div className="text-conab-header">{formatDate(selectedResult.timestamp)}</div>
+                  </div>
+                  <div>
+                    <span className="font-medium text-conab-header">Execution Time:</span>
+                    <div className="text-conab-header">{Math.round(selectedResult.summary.executionTime / 1000)}s</div>
+                  </div>
+                </div>
+                <div className="mt-4 pt-4 border-t border-conab-header/10">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <span className="font-medium text-conab-header">Configuration A Detailed Scores:</span>
+                      <div className="mt-2 space-y-1 text-sm">
+                        <div>Accuracy: {selectedResult.summary.averageScores.configA.accuracy.toFixed(2)}/5</div>
+                        <div>Completeness: {selectedResult.summary.averageScores.configA.completeness.toFixed(2)}/5</div>
+                        <div>Helpfulness: {selectedResult.summary.averageScores.configA.helpfulness.toFixed(2)}/5</div>
+                      </div>
+                    </div>
+                    <div>
+                      <span className="font-medium text-conab-header">Configuration B Detailed Scores:</span>
+                      <div className="mt-2 space-y-1 text-sm">
+                        <div>Accuracy: {selectedResult.summary.averageScores.configB.accuracy.toFixed(2)}/5</div>
+                        <div>Completeness: {selectedResult.summary.averageScores.configB.completeness.toFixed(2)}/5</div>
+                        <div>Helpfulness: {selectedResult.summary.averageScores.configB.helpfulness.toFixed(2)}/5</div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -249,12 +379,12 @@ export default function ABTestingResultsPage() {
               <div className="px-4 py-3 bg-gradient-to-r from-conab-header to-conab-middle-blue border-b border-conab-header/20">
                 <h4 className="font-semibold text-white">Detailed Results</h4>
               </div>
-              <div className="max-h-96 overflow-y-auto">
+              <div className="max-h-[600px] overflow-y-auto">
                 {selectedResult.results.map((result, index) => (
-                  <div key={index} className="px-4 py-3 border-b border-conab-header/10 last:border-b-0 hover:bg-conab-light-background/30 transition-colors">
-                    <div className="flex justify-between items-start mb-2">
+                  <div key={index} className="px-4 py-4 border-b border-conab-header/10 last:border-b-0 hover:bg-conab-light-background/30 transition-colors">
+                    <div className="flex justify-between items-start mb-3">
                       <div className="flex-1">
-                        <div className="font-medium text-conab-header">{result.question}</div>
+                        <div className="font-medium text-conab-header mb-1">{result.question}</div>
                         <div className="text-sm text-conab-header/60">{result.category} • {result.difficulty}</div>
                       </div>
                       <div className={`px-2 py-1 rounded-lg text-xs font-medium ${
@@ -266,12 +396,64 @@ export default function ABTestingResultsPage() {
                          result.winner === 'B' ? 'Config B Wins' : 'Tie'}
                       </div>
                     </div>
-                    <div className="grid grid-cols-2 gap-4 text-sm">
-                      <div>
-                        <span className="font-medium text-conab-action">A:</span> {result.configA.scores.helpfulness}/5
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                      <div className="border border-conab-action/20 rounded-lg p-3">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="font-medium text-conab-action">Configuration A</span>
+                          <span className="text-conab-action font-medium">{result.configA.scores.helpfulness}/5</span>
+                        </div>
+                        <div className="text-xs text-conab-header/60 mb-1">
+                          Accuracy: {result.configA.scores.accuracy}/5 • Completeness: {result.configA.scores.completeness}/5
+                        </div>
+                        <div className="text-xs text-conab-header/60 mb-2">
+                          Execution: {result.configA.executionTime}ms
+                        </div>
+                        <div className="bg-conab-light-background/50 p-2 rounded text-xs text-conab-header leading-relaxed max-h-32 overflow-y-auto">
+                          {result.configA.answer || 'No answer provided'}
+                        </div>
+                        {result.configA.sources && result.configA.sources.length > 0 && (
+                          <div className="mt-2">
+                            <div className="text-xs font-medium text-conab-header/70 mb-1">Sources:</div>
+                            <div className="text-xs text-conab-header/60">
+                              {result.configA.sources.slice(0, 2).map((source, i) => (
+                                <div key={i} className="truncate">• {source}</div>
+                              ))}
+                              {result.configA.sources.length > 2 && (
+                                <div className="text-conab-header/40">+{result.configA.sources.length - 2} more</div>
+                              )}
+                            </div>
+                          </div>
+                        )}
                       </div>
-                      <div>
-                        <span className="font-medium text-conab-green">B:</span> {result.configB.scores.helpfulness}/5
+                      
+                      <div className="border border-conab-green/20 rounded-lg p-3">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="font-medium text-conab-green">Configuration B</span>
+                          <span className="text-conab-green font-medium">{result.configB.scores.helpfulness}/5</span>
+                        </div>
+                        <div className="text-xs text-conab-header/60 mb-1">
+                          Accuracy: {result.configB.scores.accuracy}/5 • Completeness: {result.configB.scores.completeness}/5
+                        </div>
+                        <div className="text-xs text-conab-header/60 mb-2">
+                          Execution: {result.configB.executionTime}ms
+                        </div>
+                        <div className="bg-conab-light-background/50 p-2 rounded text-xs text-conab-header leading-relaxed max-h-32 overflow-y-auto">
+                          {result.configB.answer || 'No answer provided'}
+                        </div>
+                        {result.configB.sources && result.configB.sources.length > 0 && (
+                          <div className="mt-2">
+                            <div className="text-xs font-medium text-conab-header/70 mb-1">Sources:</div>
+                            <div className="text-xs text-conab-header/60">
+                              {result.configB.sources.slice(0, 2).map((source, i) => (
+                                <div key={i} className="truncate">• {source}</div>
+                              ))}
+                              {result.configB.sources.length > 2 && (
+                                <div className="text-conab-header/40">+{result.configB.sources.length - 2} more</div>
+                              )}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>

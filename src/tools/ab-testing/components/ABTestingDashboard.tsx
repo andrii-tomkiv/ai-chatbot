@@ -2,8 +2,9 @@
 
 import { useState } from 'react';
 import { TestConfiguration, TestResult, ABTestRunner } from '../ab-test-runner';
-import { BarChart3, History } from 'lucide-react';
+import { History } from 'lucide-react';
 import Link from 'next/link';
+import { log } from 'console';
 
 export default function ABTestingDashboard() {
   const [testConfigA, setTestConfigA] = useState<TestConfiguration>({
@@ -46,7 +47,7 @@ export default function ABTestingDashboard() {
     ],
     groq: [
       { id: 'llama-3.3-70b-versatile', name: 'Llama 3.3 70B Versatile' },
-      { id: 'mixtral-8x7b-32768', name: 'Mixtral 8x7B' }
+      { id: 'llama3-70b-8192', name: 'Llama 3.1 70B (Fast & Reliable)' }
     ]
   };
 
@@ -69,6 +70,8 @@ export default function ABTestingDashboard() {
   };
 
   const runABTest = async () => {
+    console.log(testConfigA);
+    console.log(testConfigB);
     setIsRunning(true);
     setResults([]);
     setError(null);
