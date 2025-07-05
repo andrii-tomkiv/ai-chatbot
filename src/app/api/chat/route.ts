@@ -17,13 +17,11 @@ export async function POST(request: NextRequest) {
     let answer = "";
     let sources: any[] = [];
 
-    // Create timeout promise (2 seconds)
     const timeoutPromise = new Promise((_, reject) => {
       setTimeout(() => reject(new Error('Request timeout after 2 seconds')), 2000);
     });
 
     if (model.includes("groq") || model.includes("llama")) {
-      // Call Groq API with timeout
       const groqAPICall = fetch(
         "https://api.groq.com/openai/v1/chat/completions",
         {
@@ -33,7 +31,7 @@ export async function POST(request: NextRequest) {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            model: "llama-3.3-70b-versatile",
+            model: model,
             messages: messages,
             max_tokens: options.maxTokens || 1000,
             temperature: options.temperature || 0.7,
@@ -50,13 +48,12 @@ export async function POST(request: NextRequest) {
       const groqData = await groqResponse.json();
       answer = groqData.choices[0].message.content;
     } else {
-      // Call Mistral API with timeout
       const mistralClient = new Mistral({
         apiKey: process.env.MISTRAL_API_KEY,
       });
       
       const mistralAPICall = mistralClient.chat.complete({
-        model: "mistral-small-latest",
+        model: model,
         messages: messages,
         maxTokens: options.maxTokens || 1000,
         temperature: options.temperature || 0.7,
