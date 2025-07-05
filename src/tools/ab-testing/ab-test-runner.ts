@@ -25,12 +25,23 @@ export interface TestScores {
   missingKeywords: string[];
 }
 
+// New interface for LLM evaluation results
+export interface LLMTestScores {
+  faithfulness: number;
+  helpfulness: number;
+  justification?: string;
+  keywordMatches: string[];
+  missingKeywords: string[];
+}
+
 export interface ConfigResult {
   answer: string;
   sources: string[];
   scores: TestScores;
+  llmScores?: LLMTestScores; // Optional LLM-specific scores
   executionTime: number;
   errors?: string;
+  context?: string;
 }
 
 export interface TestResult {
@@ -42,6 +53,7 @@ export interface TestResult {
   configB: ConfigResult;
   winner: 'A' | 'B' | 'tie';
   scoreDifference: number;
+  evaluationStrategy: string; // Track which evaluation strategy was used
 }
 
 export interface ABTestReport {
@@ -61,11 +73,13 @@ export interface ABTestReport {
         accuracy: number;
         completeness: number;
         helpfulness: number;
+        faithfulness?: number; // Optional LLM-specific averages
       };
       configB: {
         accuracy: number;
         completeness: number;
         helpfulness: number;
+        faithfulness?: number; // Optional LLM-specific averages
       };
     };
     executionTime: number;
@@ -109,7 +123,7 @@ export class ABTestRunner {
     question: string,
     config: TestConfiguration,
     retryCount = 0
-  ): Promise<{ answer: string; sources: string[]; executionTime: number; errors?: string }> {
+  ): Promise<{ answer: string; sources: string[]; executionTime: number; errors?: string; context?: string }> {
     const startTime = Date.now();
     const maxRetries = 2;
     
@@ -157,7 +171,8 @@ export class ABTestRunner {
       return {
         answer: data.answer || '',
         sources: data.sources || [],
-        executionTime
+        executionTime,
+        context: data.context || ''
       };
     } catch (error) {
       const executionTime = Date.now() - startTime;
@@ -192,7 +207,8 @@ export class ABTestRunner {
         answer: '',
         sources: [],
         executionTime,
-        errors: errorMessage
+        errors: errorMessage,
+        context: ''
       };
     }
   }
@@ -202,7 +218,9 @@ export class ABTestRunner {
     sources: string[],
     expectedKeywords: string[],
     expectedSources: string[],
-    strategy: 'keywords' | 'sources' | 'llm-evaluation'
+    strategy: 'keywords' | 'sources' | 'llm-evaluation',
+    context?: string,
+    userQuestion?: string
   ): Promise<TestScores> {
     switch (strategy) {
       case 'keywords':
@@ -213,7 +231,11 @@ export class ABTestRunner {
         throw new Error('Source accuracy evaluation not implemented yet');
       
       case 'llm-evaluation':
-        throw new Error('LLM-based evaluation not implemented yet');
+        if (!context || !userQuestion) {
+          throw new Error('Context and user question are required for LLM evaluation');
+        }
+        const { evaluateWithLLM } = await import('./evaluation-strategies/llm-evaluation');
+        return evaluateWithLLM(answer, sources, expectedKeywords, expectedSources, context, userQuestion);
       
       default:
         throw new Error(`Unknown evaluation strategy: ${strategy}`);
@@ -234,7 +256,9 @@ export class ABTestRunner {
       resultA.sources,
       testCase.expectedKeywords,
       testCase.expectedSources,
-      strategy
+      strategy,
+      resultA.context,
+      testCase.question
     );
 
     const resultB = await this.sendQuestionToChatbot(testCase.question, configB);
@@ -243,12 +267,27 @@ export class ABTestRunner {
       resultB.sources,
       testCase.expectedKeywords,
       testCase.expectedSources,
-      strategy
+      strategy,
+      resultB.context,
+      testCase.question
     );
 
-    const winner = scoresA.helpfulness > scoresB.helpfulness ? 'A' : 
-                   scoresB.helpfulness > scoresA.helpfulness ? 'B' : 'tie';
-    const scoreDifference = Math.abs(scoresA.helpfulness - scoresB.helpfulness);
+    // Determine winner based on evaluation strategy
+    let winner: 'A' | 'B' | 'tie';
+    let scoreDifference: number;
+    
+    if (strategy === 'llm-evaluation') {
+      // For LLM evaluation, compare helpfulness scores
+      const scoreA = scoresA.helpfulness;
+      const scoreB = scoresB.helpfulness;
+      winner = scoreA > scoreB ? 'A' : scoreA < scoreB ? 'B' : 'tie';
+      scoreDifference = Math.abs(scoreA - scoreB);
+    } else {
+      // For other strategies, use helpfulness as before
+      winner = scoresA.helpfulness > scoresB.helpfulness ? 'A' : 
+               scoresB.helpfulness > scoresA.helpfulness ? 'B' : 'tie';
+      scoreDifference = Math.abs(scoresA.helpfulness - scoresB.helpfulness);
+    }
 
     return {
       testCaseId: testCase.id,
@@ -260,17 +299,20 @@ export class ABTestRunner {
         sources: resultA.sources,
         scores: scoresA,
         executionTime: resultA.executionTime,
-        errors: resultA.errors
+        errors: resultA.errors,
+        context: resultA.context
       },
       configB: {
         answer: resultB.answer,
         sources: resultB.sources,
         scores: scoresB,
         executionTime: resultB.executionTime,
-        errors: resultB.errors
+        errors: resultB.errors,
+        context: resultB.context
       },
       winner,
       scoreDifference,
+      evaluationStrategy: strategy
     };
   }
 
@@ -309,7 +351,9 @@ export class ABTestRunner {
         
         this.onProgress?.(progress, `Completed ${i + 1}/${testCasesToRun.length} tests`);
         
-        await new Promise(resolve => setTimeout(resolve, 100));
+        // Add longer delay for LLM evaluation to respect rate limits
+        const delay = strategy === 'llm-evaluation' ? 3000 : 100; // 3 seconds for LLM, 100ms for others
+        await new Promise(resolve => setTimeout(resolve, delay));
       } catch (error) {
         console.error(`Failed to evaluate test case ${testCase.id}:`, error);
         this.onProgress?.(progress, `Error in test ${testCase.id}, continuing...`);
@@ -340,18 +384,52 @@ export class ABTestRunner {
     const configBWins = results.filter(r => r.winner === 'B').length;
     const ties = results.filter(r => r.winner === 'tie').length;
 
-    const averageScores = {
+    let averageScores: {
       configA: {
-        accuracy: results.reduce((sum, r) => sum + r.configA.scores.accuracy, 0) / totalTests,
-        completeness: results.reduce((sum, r) => sum + r.configA.scores.completeness, 0) / totalTests,
-        helpfulness: results.reduce((sum, r) => sum + r.configA.scores.helpfulness, 0) / totalTests,
-      },
+        accuracy: number;
+        completeness: number;
+        helpfulness: number;
+        faithfulness?: number;
+      };
       configB: {
-        accuracy: results.reduce((sum, r) => sum + r.configB.scores.accuracy, 0) / totalTests,
-        completeness: results.reduce((sum, r) => sum + r.configB.scores.completeness, 0) / totalTests,
-        helpfulness: results.reduce((sum, r) => sum + r.configB.scores.helpfulness, 0) / totalTests,
-      },
+        accuracy: number;
+        completeness: number;
+        helpfulness: number;
+        faithfulness?: number;
+      };
     };
+
+    if (strategy === 'llm-evaluation') {
+      // For LLM evaluation, calculate faithfulness averages with null safety
+      averageScores = {
+        configA: {
+          accuracy: results.reduce((sum, r) => sum + (r.configA.scores.accuracy || 0), 0) / totalTests,
+          completeness: results.reduce((sum, r) => sum + (r.configA.scores.completeness || 0), 0) / totalTests,
+          helpfulness: results.reduce((sum, r) => sum + (r.configA.scores.helpfulness || 0), 0) / totalTests,
+          faithfulness: results.reduce((sum, r) => sum + (r.configA.scores.accuracy || 0), 0) / totalTests // accuracy = faithfulness in LLM evaluation
+        },
+        configB: {
+          accuracy: results.reduce((sum, r) => sum + (r.configB.scores.accuracy || 0), 0) / totalTests,
+          completeness: results.reduce((sum, r) => sum + (r.configB.scores.completeness || 0), 0) / totalTests,
+          helpfulness: results.reduce((sum, r) => sum + (r.configB.scores.helpfulness || 0), 0) / totalTests,
+          faithfulness: results.reduce((sum, r) => sum + (r.configB.scores.accuracy || 0), 0) / totalTests // accuracy = faithfulness in LLM evaluation
+        }
+      };
+    } else {
+      // For other strategies, don't include faithfulness
+      averageScores = {
+        configA: {
+          accuracy: results.reduce((sum, r) => sum + (r.configA.scores.accuracy || 0), 0) / totalTests,
+          completeness: results.reduce((sum, r) => sum + (r.configA.scores.completeness || 0), 0) / totalTests,
+          helpfulness: results.reduce((sum, r) => sum + (r.configA.scores.helpfulness || 0), 0) / totalTests,
+        },
+        configB: {
+          accuracy: results.reduce((sum, r) => sum + (r.configB.scores.accuracy || 0), 0) / totalTests,
+          completeness: results.reduce((sum, r) => sum + (r.configB.scores.completeness || 0), 0) / totalTests,
+          helpfulness: results.reduce((sum, r) => sum + (r.configB.scores.helpfulness || 0), 0) / totalTests,
+        }
+      };
+    }
 
     const categoryBreakdown: Record<string, any> = {};
     const categoryGroups = results.reduce((groups, result) => {
@@ -368,8 +446,8 @@ export class ABTestRunner {
         configAWins: categoryResults.filter(r => r.winner === 'A').length,
         configBWins: categoryResults.filter(r => r.winner === 'B').length,
         ties: categoryResults.filter(r => r.winner === 'tie').length,
-        averageConfigAScore: categoryResults.reduce((sum, r) => sum + r.configA.scores.helpfulness, 0) / categoryResults.length,
-        averageConfigBScore: categoryResults.reduce((sum, r) => sum + r.configB.scores.helpfulness, 0) / categoryResults.length,
+        averageConfigAScore: categoryResults.reduce((sum, r) => sum + (r.configA.scores.helpfulness || 0), 0) / categoryResults.length,
+        averageConfigBScore: categoryResults.reduce((sum, r) => sum + (r.configB.scores.helpfulness || 0), 0) / categoryResults.length,
       };
     }
 
@@ -388,8 +466,8 @@ export class ABTestRunner {
         configAWins: difficultyResults.filter(r => r.winner === 'A').length,
         configBWins: difficultyResults.filter(r => r.winner === 'B').length,
         ties: difficultyResults.filter(r => r.winner === 'tie').length,
-        averageConfigAScore: difficultyResults.reduce((sum, r) => sum + r.configA.scores.helpfulness, 0) / difficultyResults.length,
-        averageConfigBScore: difficultyResults.reduce((sum, r) => sum + r.configB.scores.helpfulness, 0) / difficultyResults.length,
+        averageConfigAScore: difficultyResults.reduce((sum, r) => sum + (r.configA.scores.helpfulness || 0), 0) / difficultyResults.length,
+        averageConfigBScore: difficultyResults.reduce((sum, r) => sum + (r.configB.scores.helpfulness || 0), 0) / difficultyResults.length,
       };
     }
 
@@ -405,7 +483,23 @@ export class ABTestRunner {
         averageScores,
         executionTime
       },
-      results,
+      results: (results || []).map(result => ({
+        ...result,
+        configA: {
+          ...result.configA,
+          // Ensure context is properly handled
+          context: result.configA.context ? 
+            (typeof result.configA.context === 'string' ? result.configA.context : JSON.stringify(result.configA.context)) : 
+            undefined
+        },
+        configB: {
+          ...result.configB,
+          // Ensure context is properly handled
+          context: result.configB.context ? 
+            (typeof result.configB.context === 'string' ? result.configB.context : JSON.stringify(result.configB.context)) : 
+            undefined
+        }
+      })),
       categoryBreakdown,
       difficultyBreakdown
     };
@@ -413,26 +507,78 @@ export class ABTestRunner {
 
   private async saveReport(report: ABTestReport, configAName: string, configBName: string): Promise<void> {
     try {
+      console.log('Attempting to save report:', {
+        configAName,
+        configBName,
+        evaluationStrategy: report.evaluationStrategy,
+        resultsCount: report.results.length,
+        timestamp: report.timestamp
+      });
+      
+      // Clean and validate the report data before sending
+      const cleanReport = {
+        ...report,
+        // Ensure all required fields are present
+        timestamp: report.timestamp || new Date().toISOString(),
+        configurations: report.configurations,
+        evaluationStrategy: report.evaluationStrategy || 'unknown',
+        summary: report.summary,
+        results: (report.results || []).map(result => ({
+          ...result,
+          configA: {
+            ...result.configA,
+            // Ensure context is properly handled
+            context: result.configA.context ? 
+              (typeof result.configA.context === 'string' ? result.configA.context : JSON.stringify(result.configA.context)) : 
+              undefined
+          },
+          configB: {
+            ...result.configB,
+            // Ensure context is properly handled
+            context: result.configB.context ? 
+              (typeof result.configB.context === 'string' ? result.configB.context : JSON.stringify(result.configB.context)) : 
+              undefined
+          }
+        })),
+        categoryBreakdown: report.categoryBreakdown || {},
+        difficultyBreakdown: report.difficultyBreakdown || {}
+      };
+      
       const response = await fetch('/api/ab-test-report', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          report,
+          report: cleanReport,
           configAName,
           configBName
         }),
       });
 
       if (!response.ok) {
-        throw new Error(`Failed to save report: ${response.status}`);
+        const errorText = await response.text();
+        console.error('Save report failed:', {
+          status: response.status,
+          statusText: response.statusText,
+          error: errorText
+        });
+        throw new Error(`Failed to save report: ${response.status} - ${errorText}`);
       }
 
       const result = await response.json();
       console.log(`Report saved successfully: ${result.filename}`);
     } catch (error) {
       console.error('Failed to save report:', error);
+      console.error('Report structure:', {
+        hasTimestamp: !!report.timestamp,
+        hasConfigurations: !!report.configurations,
+        hasResults: !!report.results,
+        resultsLength: report.results?.length,
+        hasSummary: !!report.summary,
+        evaluationStrategy: report.evaluationStrategy
+      });
+      throw error;
     }
   }
 } 

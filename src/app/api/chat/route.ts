@@ -159,6 +159,7 @@ Please use this context to answer the user's question accurately and cite the so
     return NextResponse.json({
       answer: answer,
       sources: sources,
+      context: context,
       success: true,
     });
   } catch (error) {

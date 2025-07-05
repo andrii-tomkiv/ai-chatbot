@@ -60,11 +60,13 @@ interface ABTestReport {
         accuracy: number;
         completeness: number;
         helpfulness: number;
+        faithfulness?: number;
       };
       configB: {
         accuracy: number;
         completeness: number;
         helpfulness: number;
+        faithfulness?: number;
       };
     };
     executionTime: number;
@@ -143,6 +145,20 @@ export default function ABTestingResultsPage() {
     );
     
     return scores.reduce((sum, score) => sum + score, 0) / scores.length;
+  };
+
+  const getAverageFaithfulness = (config: 'A' | 'B', results: TestResult[]) => {
+    if (results.length === 0) return 0;
+    
+    const scores = results.map(r => 
+      config === 'A' ? r.configA.scores.accuracy : r.configB.scores.accuracy
+    );
+    
+    return scores.reduce((sum, score) => sum + score, 0) / scores.length;
+  };
+
+  const isLLMEvaluation = (report: ABTestReport) => {
+    return report.evaluationStrategy === 'llm-evaluation';
   };
 
   if (loading && !selectedResult) {
@@ -241,7 +257,7 @@ export default function ABTestingResultsPage() {
                     <div><span className="font-medium text-conab-header">Max Tokens:</span> {selectedResult.configurations.A.maxTokens}</div>
                     <div><span className="font-medium text-conab-header">Temperature:</span> {selectedResult.configurations.A.temperature}</div>
                     <div><span className="font-medium text-conab-header">Max Results:</span> {selectedResult.configurations.A.maxResults}</div>
-                    <div><span className="font-medium text-conab-header">Average Score:</span> {selectedResult.summary.averageScores.configA.helpfulness.toFixed(2)}/5</div>
+                    <div><span className="font-medium text-conab-header">Average Score:</span> {selectedResult.summary.averageScores.configA.helpfulness?.toFixed(2) || 'N/A'}/5</div>
                   </div>
                   <div className="mt-4 pt-4 border-t border-conab-action/20">
                     <div className="font-medium text-conab-header mb-2">System Prompt:</div>
@@ -259,7 +275,7 @@ export default function ABTestingResultsPage() {
                     <div><span className="font-medium text-conab-header">Max Tokens:</span> {selectedResult.configurations.B.maxTokens}</div>
                     <div><span className="font-medium text-conab-header">Temperature:</span> {selectedResult.configurations.B.temperature}</div>
                     <div><span className="font-medium text-conab-header">Max Results:</span> {selectedResult.configurations.B.maxResults}</div>
-                    <div><span className="font-medium text-conab-header">Average Score:</span> {selectedResult.summary.averageScores.configB.helpfulness.toFixed(2)}/5</div>
+                    <div><span className="font-medium text-conab-header">Average Score:</span> {selectedResult.summary.averageScores.configB.helpfulness?.toFixed(2) || 'N/A'}/5</div>
                   </div>
                   <div className="mt-4 pt-4 border-t border-conab-green/20">
                     <div className="font-medium text-conab-header mb-2">System Prompt:</div>
@@ -294,7 +310,7 @@ export default function ABTestingResultsPage() {
                         <div className="text-conab-action">{breakdown.configAWins}</div>
                         <div className="text-conab-green">{breakdown.configBWins}</div>
                         <div className="text-conab-header">{breakdown.ties}</div>
-                        <div className="text-conab-header">{Math.abs(breakdown.averageConfigAScore - breakdown.averageConfigBScore).toFixed(2)}</div>
+                        <div className="text-conab-header">{Math.abs((breakdown.averageConfigAScore || 0) - (breakdown.averageConfigBScore || 0)).toFixed(2)}</div>
                       </div>
                     </div>
                   ))}
@@ -325,7 +341,7 @@ export default function ABTestingResultsPage() {
                         <div className="text-conab-action">{breakdown.configAWins}</div>
                         <div className="text-conab-green">{breakdown.configBWins}</div>
                         <div className="text-conab-header">{breakdown.ties}</div>
-                        <div className="text-conab-header">{Math.abs(breakdown.averageConfigAScore - breakdown.averageConfigBScore).toFixed(2)}</div>
+                        <div className="text-conab-header">{Math.abs((breakdown.averageConfigAScore || 0) - (breakdown.averageConfigBScore || 0)).toFixed(2)}</div>
                       </div>
                     </div>
                   ))}
@@ -356,17 +372,35 @@ export default function ABTestingResultsPage() {
                     <div>
                       <span className="font-medium text-conab-header">Configuration A Detailed Scores:</span>
                       <div className="mt-2 space-y-1 text-sm">
-                        <div>Accuracy: {selectedResult.summary.averageScores.configA.accuracy.toFixed(2)}/5</div>
-                        <div>Completeness: {selectedResult.summary.averageScores.configA.completeness.toFixed(2)}/5</div>
-                        <div>Helpfulness: {selectedResult.summary.averageScores.configA.helpfulness.toFixed(2)}/5</div>
+                        {isLLMEvaluation(selectedResult) ? (
+                          <>
+                            <div>Faithfulness: {selectedResult.summary.averageScores.configA.accuracy?.toFixed(2) || 'N/A'}/5</div>
+                            <div>Helpfulness: {selectedResult.summary.averageScores.configA.helpfulness?.toFixed(2) || 'N/A'}/5</div>
+                          </>
+                        ) : (
+                          <>
+                            <div>Accuracy: {selectedResult.summary.averageScores.configA.accuracy?.toFixed(2) || 'N/A'}/5</div>
+                            <div>Completeness: {selectedResult.summary.averageScores.configA.completeness?.toFixed(2) || 'N/A'}/5</div>
+                            <div>Helpfulness: {selectedResult.summary.averageScores.configA.helpfulness?.toFixed(2) || 'N/A'}/5</div>
+                          </>
+                        )}
                       </div>
                     </div>
                     <div>
                       <span className="font-medium text-conab-header">Configuration B Detailed Scores:</span>
                       <div className="mt-2 space-y-1 text-sm">
-                        <div>Accuracy: {selectedResult.summary.averageScores.configB.accuracy.toFixed(2)}/5</div>
-                        <div>Completeness: {selectedResult.summary.averageScores.configB.completeness.toFixed(2)}/5</div>
-                        <div>Helpfulness: {selectedResult.summary.averageScores.configB.helpfulness.toFixed(2)}/5</div>
+                        {isLLMEvaluation(selectedResult) ? (
+                          <>
+                            <div>Faithfulness: {selectedResult.summary.averageScores.configB.accuracy?.toFixed(2) || 'N/A'}/5</div>
+                            <div>Helpfulness: {selectedResult.summary.averageScores.configB.helpfulness?.toFixed(2) || 'N/A'}/5</div>
+                          </>
+                        ) : (
+                          <>
+                            <div>Accuracy: {selectedResult.summary.averageScores.configB.accuracy?.toFixed(2) || 'N/A'}/5</div>
+                            <div>Completeness: {selectedResult.summary.averageScores.configB.completeness?.toFixed(2) || 'N/A'}/5</div>
+                            <div>Helpfulness: {selectedResult.summary.averageScores.configB.helpfulness?.toFixed(2) || 'N/A'}/5</div>
+                          </>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -401,10 +435,14 @@ export default function ABTestingResultsPage() {
                       <div className="border border-conab-action/20 rounded-lg p-3">
                         <div className="flex items-center justify-between mb-2">
                           <span className="font-medium text-conab-action">Configuration A</span>
-                          <span className="text-conab-action font-medium">{result.configA.scores.helpfulness}/5</span>
+                          <span className="text-conab-action font-medium">{result.configA.scores.helpfulness || 'N/A'}/5</span>
                         </div>
                         <div className="text-xs text-conab-header/60 mb-1">
-                          Accuracy: {result.configA.scores.accuracy}/5 • Completeness: {result.configA.scores.completeness}/5
+                          {isLLMEvaluation(selectedResult) ? (
+                            `Faithfulness: ${result.configA.scores.accuracy || 'N/A'}/5 • Helpfulness: ${result.configA.scores.helpfulness || 'N/A'}/5`
+                          ) : (
+                            `Accuracy: ${result.configA.scores.accuracy || 'N/A'}/5 • Completeness: ${result.configA.scores.completeness || 'N/A'}/5`
+                          )}
                         </div>
                         <div className="text-xs text-conab-header/60 mb-2">
                           Execution: {result.configA.executionTime}ms
@@ -430,10 +468,14 @@ export default function ABTestingResultsPage() {
                       <div className="border border-conab-green/20 rounded-lg p-3">
                         <div className="flex items-center justify-between mb-2">
                           <span className="font-medium text-conab-green">Configuration B</span>
-                          <span className="text-conab-green font-medium">{result.configB.scores.helpfulness}/5</span>
+                          <span className="text-conab-green font-medium">{result.configB.scores.helpfulness || 'N/A'}/5</span>
                         </div>
                         <div className="text-xs text-conab-header/60 mb-1">
-                          Accuracy: {result.configB.scores.accuracy}/5 • Completeness: {result.configB.scores.completeness}/5
+                          {isLLMEvaluation(selectedResult) ? (
+                            `Faithfulness: ${result.configB.scores.accuracy || 'N/A'}/5 • Helpfulness: ${result.configB.scores.helpfulness || 'N/A'}/5`
+                          ) : (
+                            `Accuracy: ${result.configB.scores.accuracy || 'N/A'}/5 • Completeness: ${result.configB.scores.completeness || 'N/A'}/5`
+                          )}
                         </div>
                         <div className="text-xs text-conab-header/60 mb-2">
                           Execution: {result.configB.executionTime}ms

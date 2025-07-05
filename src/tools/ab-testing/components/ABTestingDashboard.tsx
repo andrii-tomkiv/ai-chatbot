@@ -120,6 +120,20 @@ export default function ABTestingDashboard() {
     return scores.reduce((sum, score) => sum + score, 0) / scores.length;
   };
 
+  const getAverageFaithfulness = (config: 'A' | 'B') => {
+    if (results.length === 0) return 0;
+    
+    const scores = results.map(r => 
+      config === 'A' ? r.configA.scores.accuracy : r.configB.scores.accuracy
+    );
+    
+    return scores.reduce((sum, score) => sum + score, 0) / scores.length;
+  };
+
+  const isLLMEvaluation = () => {
+    return results.length > 0 && results[0].evaluationStrategy === 'llm-evaluation';
+  };
+
   return (
     <div className="space-y-6">
       <div className="bg-white rounded-lg p-6 border border-conab-header/20 shadow-lg">
@@ -424,11 +438,37 @@ export default function ABTestingDashboard() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
               <div className="bg-white border border-conab-action/20 rounded-xl p-4 shadow-sm">
                 <h4 className="font-semibold text-conab-header mb-2">Configuration A Average</h4>
-                <div className="text-2xl font-bold text-conab-action">{getAverageScore('A').toFixed(2)}/5</div>
+                {isLLMEvaluation() ? (
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-conab-header/70">Faithfulness:</span>
+                      <span className="text-lg font-bold text-conab-action">{getAverageFaithfulness('A').toFixed(2)}/5</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-conab-header/70">Helpfulness:</span>
+                      <span className="text-lg font-bold text-conab-action">{getAverageScore('A').toFixed(2)}/5</span>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-2xl font-bold text-conab-action">{getAverageScore('A').toFixed(2)}/5</div>
+                )}
               </div>
               <div className="bg-white border border-conab-green/20 rounded-xl p-4 shadow-sm">
                 <h4 className="font-semibold text-conab-header mb-2">Configuration B Average</h4>
-                <div className="text-2xl font-bold text-conab-green">{getAverageScore('B').toFixed(2)}/5</div>
+                {isLLMEvaluation() ? (
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-conab-header/70">Faithfulness:</span>
+                      <span className="text-lg font-bold text-conab-green">{getAverageFaithfulness('B').toFixed(2)}/5</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-conab-header/70">Helpfulness:</span>
+                      <span className="text-lg font-bold text-conab-green">{getAverageScore('B').toFixed(2)}/5</span>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-2xl font-bold text-conab-green">{getAverageScore('B').toFixed(2)}/5</div>
+                )}
               </div>
             </div>
 
@@ -455,12 +495,27 @@ export default function ABTestingDashboard() {
                       </div>
                     </div>
                     <div className="grid grid-cols-2 gap-4 text-sm">
-                      <div>
-                        <span className="font-medium text-conab-action">A:</span> {result.configA.scores.helpfulness}/5
-                      </div>
-                      <div>
-                        <span className="font-medium text-conab-green">B:</span> {result.configB.scores.helpfulness}/5
-                      </div>
+                      {isLLMEvaluation() ? (
+                        <>
+                          <div className="space-y-1">
+                            <div><span className="font-medium text-conab-action">A:</span> Faithfulness {result.configA.scores.accuracy}/5</div>
+                            <div><span className="font-medium text-conab-action">A:</span> Helpfulness {result.configA.scores.helpfulness}/5</div>
+                          </div>
+                          <div className="space-y-1">
+                            <div><span className="font-medium text-conab-green">B:</span> Faithfulness {result.configB.scores.accuracy}/5</div>
+                            <div><span className="font-medium text-conab-green">B:</span> Helpfulness {result.configB.scores.helpfulness}/5</div>
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <div>
+                            <span className="font-medium text-conab-action">A:</span> {result.configA.scores.helpfulness}/5
+                          </div>
+                          <div>
+                            <span className="font-medium text-conab-green">B:</span> {result.configB.scores.helpfulness}/5
+                          </div>
+                        </>
+                      )}
                     </div>
                   </div>
                 ))}
