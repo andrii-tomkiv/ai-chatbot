@@ -1,14 +1,11 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
-    './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
-    './src/components/**/*.{js,ts,jsx,tsx,mdx}',
-    './src/app/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
     extend: {
       colors: {
-        // Surrogates (GC) colors
         gc: {
           'light-background': '#faeff0',
           'dark-background': '#4f163b',
@@ -21,7 +18,6 @@ module.exports = {
           'action-red': '#f05569',
           'purple': '#914e7a',
         },
-        // Egg donor (ED) colors
         ed: {
           'light-background': '#eefbfa',
           'dark-background': '#083030',
@@ -31,7 +27,6 @@ module.exports = {
           'action-lighten': '#0da5a5',
           'action-darken': '#0d2a2a',
         },
-        // Intended Parents (IP) colors
         ip: {
           'light-background': '#faf9f9',
           'dark-background': '#3e4152',
@@ -41,7 +36,6 @@ module.exports = {
           'light-text-lighten': '#f4e4c3',
           'radial-center': '#4c5067',
         },
-        // Conab Colors
         conab: {
           'light-background': '#fdf6f4',
           'dark-background': '#013141',
