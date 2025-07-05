@@ -1,0 +1,906 @@
+{
+  "timestamp": "2025-07-05T12:08:57.201Z",
+  "configurations": {
+    "A": {
+      "name": "Configuration A",
+      "provider": "groq",
+      "model": "llama3-70b-8192",
+      "maxTokens": 1000,
+      "temperature": 0.7,
+      "maxResults": 5,
+      "systemPrompt": "You are a helpful AI assistant for ConceiveAbilities."
+    },
+    "B": {
+      "name": "Configuration B",
+      "provider": "groq",
+      "model": "llama-3.3-70b-versatile",
+      "maxTokens": 1000,
+      "temperature": 0.7,
+      "maxResults": 5,
+      "systemPrompt": "You are a helpful AI assistant for ConceiveAbilities."
+    }
+  },
+  "evaluationStrategy": "keywords",
+  "summary": {
+    "totalTests": 18,
+    "configAWins": 3,
+    "configBWins": 2,
+    "ties": 13,
+    "averageScores": {
+      "configA": {
+        "accuracy": 1.6111111111111112,
+        "completeness": 1.6111111111111112,
+        "helpfulness": 1.6111111111111112
+      },
+      "configB": {
+        "accuracy": 1.5555555555555556,
+        "completeness": 1.5555555555555556,
+        "helpfulness": 1.5555555555555556
+      }
+    },
+    "executionTime": 64093
+  },
+  "results": [
+    {
+      "testCaseId": "TC011",
+      "category": "Process & Timeline",
+      "difficulty": "Medium",
+      "question": "How does the Matching Matters process work?",
+      "configA": {
+        "answer": "The Matching Matters process is a proprietary and comprehensive approach developed by ConceiveAbilities to match intended parents with surrogate mothers. Here's an overview of how it works:\n\n1. **Initial Application and Screening**: Both intended parents and surrogate mothers fill out an initial application, which includes information about their backgrounds, medical history, and motivations for participating in the surrogacy process.\n2. **In-Depth Interviews and Assessments**: ConceiveAbilities' experienced team conducts in-depth interviews with both intended parents and surrogate mothers to gain a deeper understanding of their needs, expectations, and preferences.\n3. **Psychological Evaluations**: Surrogate mothers undergo a psychological evaluation to assess their mental fitness for the surrogacy process and ensure they are prepared for the emotional demands of surrogacy.\n4. **Medical Screening**: Surrogate mothers undergo medical screening to ensure they are healthy enough to carry a pregnancy and meet the medical requirements for surrogacy.\n5. **Match Meeting**: Once the surrogate mother has completed the screening process, ConceiveAbilities arranges a match meeting between the intended parents and the surrogate mother. This meeting allows both parties to get to know each other, discuss their expectations, and determine whether they are a good match.\n6. **Matching Criteria**: ConceiveAbilities considers a range of factors when matching intended parents with surrogate mothers, including:\n\t* Location and proximity\n\t* Medical requirements and history\n\t* Personal preferences and values\n\t* Family dynamics and relationships\n\t* Expectations for communication and involvement during the pregnancy\n7. **Ongoing Support and Communication**: Once a match is made, ConceiveAbilities provides ongoing support and communication to both intended parents and surrogate mothers throughout the surrogacy process.\n\nThe Matching Matters process is designed to ensure that intended parents and surrogate mothers are well-matched and prepared for a successful and fulfilling surrogacy experience. By taking the time to thoroughly understand the needs and expectations of both parties, ConceiveAbilities can facilitate a positive and supportive relationship that benefits everyone involved.",
+        "sources": [],
+        "scores": {
+          "accuracy": 2,
+          "completeness": 2,
+          "helpfulness": 2,
+          "keywordMatches": [
+            "expectations",
+            "values"
+          ],
+          "missingKeywords": [
+            "onboarding",
+            "relationship compatibility",
+            "medical criteria"
+          ]
+        },
+        "executionTime": 2009
+      },
+      "configB": {
+        "answer": "The Matching Matters process is a personalized approach used by ConceiveAbilities to match intended parents with surrogate mothers. Here's an overview of how it works:\n\n1. **Intended Parent Profile Creation**: Intended parents create a profile that includes information about themselves, their family, and their preferences for a surrogate mother. This profile helps ConceiveAbilities understand their needs and expectations.\n2. **Surrogate Mother Profile Creation**: Surrogate mothers also create profiles, which include information about their medical history, lifestyle, and motivations for becoming a surrogate.\n3. **Matching Criteria**: ConceiveAbilities uses a comprehensive set of criteria to match intended parents with surrogate mothers. This criteria includes factors such as:\n\t* Location and travel preferences\n\t* Medical history and health requirements\n\t* Lifestyle and personality preferences\n\t* Family dynamics and relationship expectations\n\t* Surrogacy experience and preferences\n4. **Personalized Matching**: ConceiveAbilities' experienced matching team reviews the profiles and uses their expertise to identify potential matches between intended parents and surrogate mothers. They consider the unique needs and preferences of each party to ensure a compatible match.\n5. **Introduction and Meeting**: Once a potential match is identified, ConceiveAbilities facilitates an introduction between the intended parents and the surrogate mother. This may involve a phone call, video conference, or in-person meeting, allowing both parties to get to know each other and discuss their expectations.\n6. **Match Confirmation**: If both parties feel comfortable with the match, they confirm their decision to work together. ConceiveAbilities then provides guidance and support throughout the surrogacy journey.\n7. **Ongoing Support**: ConceiveAbilities' team remains involved throughout the surrogacy process, providing emotional support, coordinating medical appointments, and facilitating communication between the intended parents and surrogate mother.\n\nThe Matching Matters process is designed to create a strong foundation for a successful surrogacy journey. By carefully considering the needs and preferences of both intended parents and surrogate mothers, ConceiveAbilities aims to build lasting relationships and facilitate a positive experience for all parties involved.",
+        "sources": [],
+        "scores": {
+          "accuracy": 1,
+          "completeness": 1,
+          "helpfulness": 1,
+          "keywordMatches": [
+            "expectations"
+          ],
+          "missingKeywords": [
+            "onboarding",
+            "values",
+            "relationship compatibility",
+            "medical criteria"
+          ]
+        },
+        "executionTime": 1811
+      },
+      "winner": "A",
+      "scoreDifference": 1
+    },
+    {
+      "testCaseId": "TC028",
+      "category": "Process & Timeline",
+      "difficulty": "Medium",
+      "question": "How long should surrogates supply breast milk?",
+      "configA": {
+        "answer": "The decision of how long a surrogate should supply breast milk, also known as induced lactation or surrogate breastfeeding, depends on various factors, including the intended parents' (IPs) preferences, the surrogate's comfort level, and the baby's needs.\n\nTypically, surrogates who choose to induce lactation for the baby they carried may breastfeed or express milk for a few weeks to a few months after birth. The American Academy of Pediatrics (AAP) recommends exclusive breastfeeding for the first six months, but this may not be feasible or desirable for every surrogate and IP arrangement.\n\nSome common scenarios include:\n\n1. **Short-term milk supply**: The surrogate may express milk for 2-4 weeks, allowing the baby to receive the benefits of colostrum and early milk, which are rich in antibodies and nutrients.\n2. **Longer-term milk supply**: Some surrogates may choose to continue expressing milk for 2-3 months or more, depending on their comfort level and the IPs' needs.\n3. **Pumping and freezing**: Surrogates may also choose to pump and freeze their milk for the IPs to use over a longer period, often up to 6 months or more.\n\nIt's essential to note that induced lactation can be a complex and time-consuming process, requiring dedication and effort from the surrogate. The decision to supply breast milk should be made jointly by the surrogate and the IPs, taking into account the surrogate's physical and emotional well-being, as well as the baby's needs.\n\nAt ConceiveAbilities, we prioritize open communication and support for all parties involved in the surrogacy journey, including discussions around breast milk supply and induced lactation. Our team is here to provide guidance and resources to help surrogates and IPs navigate this aspect of their journey.",
+        "sources": [],
+        "scores": {
+          "accuracy": 1,
+          "completeness": 1,
+          "helpfulness": 1,
+          "keywordMatches": [
+            "intended parents"
+          ],
+          "missingKeywords": [
+            "shared decision",
+            "personal decision",
+            "fed is best",
+            "healthcare professional"
+          ]
+        },
+        "executionTime": 1538
+      },
+      "configB": {
+        "answer": "The decision on how long a surrogate should supply breast milk, also known as breast milk pumping or donation, depends on various factors and is typically discussed between the surrogate, intended parents, and their healthcare team. \n\nWhile there's no one-size-fits-all answer, here are some general guidelines:\n\n1. **Initial agreement**: The surrogate and intended parents usually discuss and agree upon the terms of breast milk supply in their surrogacy contract. This may include the duration, frequency, and volume of breast milk to be provided.\n2. **Typical duration**: Surrogates often pump and provide breast milk for 3-6 months after birth. However, this can vary depending on the intended parents' needs, the surrogate's comfort level, and any medical considerations.\n3. **Intended parents' needs**: If the intended parents have a premature baby or a baby with special medical needs, they may require breast milk for a longer period. In such cases, the surrogate may be asked to pump for 6-12 months or more.\n4. **Surrogate's comfort and well-being**: The surrogate's physical and emotional well-being are crucial considerations. Pumping breast milk can be time-consuming and physically demanding. The surrogate may need to adjust her schedule, diet, and lifestyle to accommodate pumping, which can be challenging.\n5. **Medical considerations**: In some cases, the surrogate's healthcare provider may advise against extended breast milk pumping due to medical concerns, such as breast infection, nipple damage, or other health issues.\n\nUltimately, the decision on how long a surrogate should supply breast milk should be made with the surrogate's consent, taking into account her physical and emotional well-being, as well as the intended parents' needs and preferences.",
+        "sources": [],
+        "scores": {
+          "accuracy": 1,
+          "completeness": 1,
+          "helpfulness": 1,
+          "keywordMatches": [
+            "intended parents"
+          ],
+          "missingKeywords": [
+            "shared decision",
+            "personal decision",
+            "fed is best",
+            "healthcare professional"
+          ]
+        },
+        "executionTime": 1535
+      },
+      "winner": "tie",
+      "scoreDifference": 0
+    },
+    {
+      "testCaseId": "TC044",
+      "category": "Process & Timeline",
+      "difficulty": "Medium",
+      "question": "How does ConceiveAbilities ensure surrogate medical coverage?",
+      "configA": {
+        "answer": "ConceiveAbilities works to ensure surrogate medical coverage through several steps:\n\n1. **Insurance Review**: ConceiveAbilities reviews the surrogate's existing health insurance policy to determine if it covers surrogacy-related expenses. If the policy does not cover surrogacy, ConceiveAbilities may recommend purchasing a separate surrogacy insurance policy.\n\n2. **Surrogacy Insurance Options**: ConceiveAbilities offers access to specialized surrogacy insurance policies that cover the surrogate's medical expenses related to the surrogacy journey. These policies may include coverage for prenatal care, delivery, and postpartum care.\n\n3. **Case Management**: ConceiveAbilities' experienced case managers work closely with the surrogate, intended parents, and healthcare providers to coordinate medical care and ensure that all parties are aware of the surrogate's insurance coverage and any out-of-pocket expenses.\n\n4. **Escrow Management**: ConceiveAbilities manages an escrow account on behalf of the intended parents, which includes funds allocated for the surrogate's medical expenses. This ensures that the surrogate's medical bills are paid promptly and efficiently.\n\n5. **Advocacy**: ConceiveAbilities advocates on behalf of the surrogate to ensure that she receives the medical care she needs, and that her insurance claims are processed efficiently.\n\n6. **Network of Healthcare Providers**: ConceiveAbilities has established relationships with a network of healthcare providers who are experienced in surrogacy and fertility care. This network helps to ensure that the surrogate receives high-quality medical care and that her insurance coverage is utilized effectively.\n\nBy taking these steps, ConceiveAbilities helps to ensure that surrogates have access to the medical care they need, and that intended parents can focus on their journey to parenthood without undue financial stress.",
+        "sources": [],
+        "scores": {
+          "accuracy": 1,
+          "completeness": 1,
+          "helpfulness": 1,
+          "keywordMatches": [
+            "medical expenses"
+          ],
+          "missingKeywords": [
+            "deep expertise",
+            "30 years experience",
+            "comprehensive medical coverage",
+            "postpartum recovery"
+          ]
+        },
+        "executionTime": 1539
+      },
+      "configB": {
+        "answer": "ConceiveAbilities, a leading surrogacy agency, prioritizes the health and well-being of its surrogates and the babies they carry. To ensure surrogate medical coverage, ConceiveAbilities works closely with intended parents, surrogates, and medical professionals to provide comprehensive medical care and support throughout the surrogacy journey. Here are some ways ConceiveAbilities ensures surrogate medical coverage:\n\n1. **Insurance Verification**: ConceiveAbilities verifies the surrogate's existing health insurance coverage to determine if it includes maternity care and surrogacy-related expenses. If the surrogate's insurance does not cover surrogacy, ConceiveAbilities works with intended parents to secure alternative coverage.\n2. **Surrogate Insurance Options**: ConceiveAbilities offers surrogates access to specialized insurance products designed specifically for surrogacy, which provide coverage for pregnancy-related medical expenses, including prenatal care, delivery, and postpartum care.\n3. **Intended Parent Insurance**: In some cases, intended parents may have insurance that covers surrogacy-related medical expenses. ConceiveAbilities works with intended parents to verify their insurance coverage and ensure that it includes surrogate medical expenses.\n4. **Medical Billing and Claims**: ConceiveAbilities assists surrogates and intended parents with medical billing and claims, ensuring that all surrogacy-related medical expenses are properly submitted and reimbursed.\n5. **Pre-Pregnancy Medical Screening**: Before a surrogate becomes pregnant, ConceiveAbilities requires a thorough medical screening to identify any potential health risks or concerns. This screening helps ensure that the surrogate is healthy enough to carry a pregnancy and reduces the risk of complications.\n6. **Ongoing Medical Support**: Throughout the pregnancy, ConceiveAbilities provides surrogates with access to medical support and resources, including prenatal care, ultrasounds, and medical consultations.\n7. **Emergency Medical Fund**: ConceiveAbilities has an emergency medical fund in place to cover unexpected medical expenses that may arise during the surrogacy journey.\n8. **Collaboration with Medical Professionals**: ConceiveAbilities works closely with medical professionals, including obstetricians, fertility specialists, and other healthcare providers, to ensure that surrogates receive the best possible medical care throughout their pregnancy.\n9. **Surrogate Support and Education**: ConceiveAbilities provides surrogates with comprehensive support and education on pregnancy, childbirth, and postpartum care, empowering them to make informed decisions about their health and well-being.\n10. **Post-Pregnancy Medical Care**: After the baby is born, ConceiveAbilities ensures that surrogates receive proper postpartum medical care, including follow-up appointments and support for any complications that may arise.\n\nBy taking a proactive and comprehensive approach to surrogate medical coverage, ConceiveAbilities helps ensure the health and well-being of its surrogates and the babies they carry, while also providing intended parents with peace of mind throughout the surrogacy journey.",
+        "sources": [],
+        "scores": {
+          "accuracy": 1,
+          "completeness": 1,
+          "helpfulness": 1,
+          "keywordMatches": [
+            "medical expenses"
+          ],
+          "missingKeywords": [
+            "deep expertise",
+            "30 years experience",
+            "comprehensive medical coverage",
+            "postpartum recovery"
+          ]
+        },
+        "executionTime": 2454
+      },
+      "winner": "tie",
+      "scoreDifference": 0
+    },
+    {
+      "testCaseId": "TC088",
+      "category": "Process & Timeline",
+      "difficulty": "Medium",
+      "question": "How long does the matching process typically take?",
+      "configA": {
+        "answer": "At ConceiveAbilities, the matching process typically takes a few weeks to a few months. However, it can vary depending on several factors, such as the intended parents' specific requirements, the availability of suitable surrogates, and the complexity of the match.\n\nOur experienced matching team works closely with intended parents and surrogates to understand their unique needs, preferences, and circumstances. They use this information to identify potential matches and facilitate introductions.\n\nHere's a general outline of what you can expect during the matching process:\n\n1. **Initial consultation**: We'll discuss your goals, preferences, and requirements with you to understand what you're looking for in a surrogate or intended parent match.\n2. **Profile creation**: We'll create a profile for you, highlighting your key characteristics, preferences, and requirements.\n3. **Matching**: Our team will review potential matches and introduce you to suitable candidates.\n4. **Introduction and meeting**: If both parties are interested, we'll facilitate an introduction, which may include a phone call, video call, or in-person meeting.\n5. **Match confirmation**: If the introduction is successful, we'll confirm the match and begin the next steps in the surrogacy journey.\n\nKeep in mind that every match is unique, and the time it takes to find the right match can vary. Our team is dedicated to finding the perfect match for you, and we'll work closely with you throughout the process to ensure a successful and fulfilling experience.",
+        "sources": [],
+        "scores": {
+          "accuracy": 1,
+          "completeness": 1,
+          "helpfulness": 1,
+          "keywordMatches": [
+            "preferences"
+          ],
+          "missingKeywords": [
+            "matching timeline",
+            "compatibility",
+            "process duration",
+            "selection"
+          ]
+        },
+        "executionTime": 2454
+      },
+      "configB": {
+        "answer": "The matching process with ConceiveAbilities can vary in length, but on average, it typically takes around 1-3 months. However, this timeframe may be shorter or longer depending on several factors, including:\n\n1. **Availability of suitable surrogates**: The number of available surrogates and their individual circumstances can impact the matching process.\n2. **Intended parents' preferences**: The more specific your preferences, such as location, age, or health requirements, the longer the matching process may take.\n3. **Surrogate's matching criteria**: Each surrogate has their own set of preferences and requirements, which can influence the matching process.\n4. **Case complexity**: Unique circumstances, such as multiple births or special medical needs, may require more time to find a suitable match.\n\nConceiveAbilities' experienced matching team works diligently to find the best possible match for you, taking into account your individual needs and preferences. They will guide you through the process, keeping you informed and involved every step of the way.\n\nKeep in mind that while the matching process may take some time, it's essential to find the right surrogate for your family-building journey. ConceiveAbilities is committed to helping you achieve your goal of becoming parents, and their team will work tirelessly to ensure a successful match.",
+        "sources": [],
+        "scores": {
+          "accuracy": 1,
+          "completeness": 1,
+          "helpfulness": 1,
+          "keywordMatches": [
+            "preferences"
+          ],
+          "missingKeywords": [
+            "matching timeline",
+            "compatibility",
+            "process duration",
+            "selection"
+          ]
+        },
+        "executionTime": 1239
+      },
+      "winner": "tie",
+      "scoreDifference": 0
+    },
+    {
+      "testCaseId": "TC096",
+      "category": "Process & Timeline",
+      "difficulty": "Easy",
+      "question": "What happens after the baby is born?",
+      "configA": {
+        "answer": "Congratulations on reaching this exciting milestone. After the baby is born, several steps are typically taken to ensure a smooth transition for all parties involved in the surrogacy journey. Here's an overview of what happens after the baby is born:\n\n1. **Initial Care and Bonding**: Immediately after birth, the baby will receive any necessary medical care and attention from the hospital staff. The intended parents will usually have the opportunity to bond with their newborn, and this is a wonderful time for them to begin their parenting journey.\n2. **Establishing Parentage**: The intended parents will need to establish their parentage through legal documentation, which may involve birth certificates, adoption, or other legal proceedings. This process can vary depending on the laws of the state or country where the birth takes place.\n3. **Surrogate Recovery**: The gestational surrogate will need time to recover from childbirth, which is typically 6-8 weeks. During this time, she will receive postpartum care and support from her healthcare provider.\n4. **Post-Delivery Support**: ConceiveAbilities and other surrogacy agencies often provide post-delivery support to both the intended parents and the surrogate. This may include counseling, emotional support, and guidance on navigating the transition to parenthood.\n5. **Ongoing Communication**: After the baby is born, the surrogate and intended parents may choose to maintain a relationship, which can be an important part of the surrogacy journey. This can involve regular updates, photos, and visits, depending on the agreement and boundaries established by all parties.\n6. **Compensation and Expense Reimbursement**: The surrogate will typically receive compensation and reimbursement for expenses related to the surrogacy, as outlined in the surrogacy agreement.\n7. **Closing the Surrogacy Journey**: Once the baby is born and the intended parents have established parentage, the surrogacy journey is considered complete. ConceiveAbilities and other agencies will often provide a final review of the journey, ensuring that all parties are satisfied and that any remaining issues are addressed.\n\nKeep in mind that every surrogacy journey is unique, and the specifics may vary depending on individual circumstances. ConceiveAbilities is here to support and guide you throughout the entire process, from matching to post-delivery care.",
+        "sources": [],
+        "scores": {
+          "accuracy": 2,
+          "completeness": 2,
+          "helpfulness": 2,
+          "keywordMatches": [
+            "recovery",
+            "support"
+          ],
+          "missingKeywords": [
+            "post-birth",
+            "hospital discharge",
+            "legal parentage"
+          ]
+        },
+        "executionTime": 1942
+      },
+      "configB": {
+        "answer": "Congratulations on considering the journey of surrogacy. After the baby is born, several important steps and milestones occur. Here's an overview of what typically happens:\n\n1. **Birth and Hospital Stay**: The surrogate mother will give birth to the baby, and the intended parents will usually be present at the hospital to welcome their new baby. The hospital stay will depend on the type of delivery and the health of the surrogate and baby.\n2. **Initial Care and Bonding**: The intended parents will typically spend time with their baby in the hospital, bonding and getting to know each other. This is a special time for the new family to begin their journey together.\n3. **Discharge and Postpartum Care**: After the hospital stay, the surrogate mother will be discharged, and the intended parents will take their baby home. The surrogate will receive postpartum care and support to ensure her physical and emotional recovery.\n4. **Establishing Parentage**: The intended parents will need to establish their parentage through legal proceedings, which may involve court orders, birth certificate amendments, or other documentation. This process varies by state and country.\n5. **Ongoing Support**: ConceiveAbilities and other surrogacy agencies often provide ongoing support to both the surrogate and intended parents after the birth. This may include counseling, resources, and community connections to help navigate the postpartum period and beyond.\n6. **Surrogate Compensation and Expenses**: The surrogate will receive compensation and reimbursement for expenses related to the surrogacy journey, as outlined in the surrogacy agreement.\n7. **Closing the Surrogacy Journey**: After the baby is born and the intended parents have established parentage, the surrogacy journey comes to a close. The surrogate and intended parents may choose to maintain a relationship, and some even become lifelong friends.\n\nKeep in mind that every surrogacy journey is unique, and the specifics may vary depending on individual circumstances. ConceiveAbilities is here to support and guide you through every step of the process.",
+        "sources": [],
+        "scores": {
+          "accuracy": 2,
+          "completeness": 2,
+          "helpfulness": 2,
+          "keywordMatches": [
+            "recovery",
+            "support"
+          ],
+          "missingKeywords": [
+            "post-birth",
+            "hospital discharge",
+            "legal parentage"
+          ]
+        },
+        "executionTime": 1739
+      },
+      "winner": "tie",
+      "scoreDifference": 0
+    },
+    {
+      "testCaseId": "TC104",
+      "category": "Process & Timeline",
+      "difficulty": "Medium",
+      "question": "How many embryo transfers might be needed?",
+      "configA": {
+        "answer": "The number of embryo transfers needed can vary depending on several factors, including the individual's or couple's specific circumstances, the quality of the embryos, and the fertility treatment being used. \n\nOn average, it may take 2-3 embryo transfers to achieve a successful pregnancy. However, some people may become pregnant with the first transfer, while others may require more attempts. \n\n Factors that can influence the number of embryo transfers needed include:\n\n1. **Age**: Women under 35 years old tend to have higher success rates with fewer transfers.\n2. **Embryo quality**: High-quality embryos are more likely to result in a successful pregnancy.\n3. **Fertility diagnosis**: Certain fertility issues, such as recurrent pregnancy loss or immunological factors, may require more transfers.\n4. **Treatment protocol**: The specific fertility treatment being used, such as IVF or FET (frozen embryo transfer), can impact the number of transfers needed.\n\nIt's essential to discuss your individual situation and treatment plan with your fertility specialist to get a better understanding of what to expect. They can provide personalized guidance and support throughout your fertility journey.",
+        "sources": [],
+        "scores": {
+          "accuracy": 3,
+          "completeness": 3,
+          "helpfulness": 3,
+          "keywordMatches": [
+            "embryo transfer",
+            "success rates",
+            "IVF"
+          ],
+          "missingKeywords": [
+            "multiple attempts",
+            "medical protocol"
+          ]
+        },
+        "executionTime": 1128
+      },
+      "configB": {
+        "answer": "The number of embryo transfers needed can vary from person to person and depends on several factors, including:\n\n1. **Age**: Women under 35 typically have a higher success rate with fewer transfers, while women over 35 may require more attempts.\n2. **Embryo quality**: High-quality embryos are more likely to result in a successful pregnancy, reducing the need for multiple transfers.\n3. **Uterine receptivity**: The health and receptivity of the uterus can impact the success of an embryo transfer.\n4. **Medical history**: Certain medical conditions, such as polycystic ovary syndrome (PCOS) or endometriosis, may affect the number of transfers needed.\n5. **Type of fertility treatment**: In vitro fertilization (IVF), donor egg IVF, or gestational surrogacy may have different success rates and requirements for embryo transfers.\n\nOn average, it can take 2-3 embryo transfers to achieve a successful pregnancy. However, some individuals may require more or fewer attempts. Here are some general guidelines:\n\n* **Younger women (under 35)**: 1-2 embryo transfers\n* **Women between 35-37**: 2-3 embryo transfers\n* **Women between 38-40**: 3-4 embryo transfers\n* **Women over 40**: 4 or more embryo transfers\n\nKeep in mind that these are general estimates, and the actual number of embryo transfers needed may vary significantly. It's essential to discuss your individual situation and treatment plan with your fertility specialist to get a better understanding of what to expect.",
+        "sources": [],
+        "scores": {
+          "accuracy": 3,
+          "completeness": 3,
+          "helpfulness": 3,
+          "keywordMatches": [
+            "embryo transfer",
+            "success rates",
+            "IVF"
+          ],
+          "missingKeywords": [
+            "multiple attempts",
+            "medical protocol"
+          ]
+        },
+        "executionTime": 1434
+      },
+      "winner": "tie",
+      "scoreDifference": 0
+    },
+    {
+      "testCaseId": "TC112",
+      "category": "Process & Timeline",
+      "difficulty": "Hard",
+      "question": "What happens if the intended parents back out?",
+      "configA": {
+        "answer": "If intended parents back out of a surrogacy arrangement, it can be a challenging and emotional situation for all parties involved, especially the surrogate. At ConceiveAbilities, we understand the complexity of this situation and have protocols in place to support our surrogates.\n\nHere are some general steps that might occur if intended parents back out:\n\n1. **Notification**: The intended parents would typically notify ConceiveAbilities and the surrogate of their decision to withdraw from the surrogacy arrangement.\n2. **Contract review**: We would review the surrogacy contract to determine the terms and obligations of all parties involved.\n3. **Support for the surrogate**: ConceiveAbilities would provide emotional support and guidance to the surrogate, acknowledging the significant commitment and sacrifices they have made.\n4. **Exploring options**: We would work with the surrogate to explore options for the pregnancy, which might include:\n\t* Continuing the pregnancy and making an adoption plan for the baby.\n\t* Terminating the pregnancy, if that is the surrogate's choice and in accordance with the contract.\n\t* Seeking alternative intended parents, if the surrogate is willing and the contract allows for it.\n5. **Financial considerations**: The surrogacy contract would typically outline the financial responsibilities of the intended parents, including compensation for the surrogate's expenses, lost wages, and other related costs. If the intended parents back out, they may still be responsible for certain financial obligations.\n6. **Counseling and resources**: ConceiveAbilities would offer counseling and connect the surrogate with resources to help them navigate this difficult situation.\n\nIt's essential to note that every surrogacy arrangement is unique, and the specifics of what happens if intended parents back out would depend on the individual circumstances and the terms of the surrogacy contract. At ConceiveAbilities, we prioritize the well-being and support of our surrogates throughout the entire process.",
+        "sources": [],
+        "scores": {
+          "accuracy": 1,
+          "completeness": 1,
+          "helpfulness": 1,
+          "keywordMatches": [
+            "compensation"
+          ],
+          "missingKeywords": [
+            "contract breach",
+            "legal protection",
+            "backup plan",
+            "legal remedies"
+          ]
+        },
+        "executionTime": 1566
+      },
+      "configB": {
+        "answer": "If intended parents back out of a surrogacy arrangement, it can be a challenging and emotional situation for all parties involved, especially the surrogate. At ConceiveAbilities, we prioritize the well-being and protection of our surrogates.\n\nIn the event that intended parents back out, we have a comprehensive plan in place to support our surrogates. Here are some steps that would be taken:\n\n1. **Notification and Support**: We would immediately notify the surrogate and provide her with emotional support and guidance throughout the process.\n2. **Contractual Obligations**: We would review the surrogacy contract to understand the intended parents' obligations and responsibilities. The contract would outline the intended parents' financial responsibilities, including compensation for the surrogate's expenses and any medical costs incurred during the pregnancy.\n3. **Financial Protection**: ConceiveAbilities would work to ensure that the surrogate's financial well-being is protected. This may include seeking compensation from the intended parents for the surrogate's expenses, lost wages, and any other related costs.\n4. **Alternative Arrangements**: If the surrogate is still pregnant, we would work to find alternative intended parents or make arrangements for the baby's care and well-being.\n5. **Counseling and Resources**: We would provide the surrogate with access to counseling and other resources to help her cope with the emotional impact of the intended parents' decision.\n6. **Ongoing Support**: ConceiveAbilities would continue to support the surrogate throughout the process, ensuring that her physical and emotional needs are met.\n\nIt's essential to note that ConceiveAbilities has a thorough screening and matching process to minimize the risk of intended parents backing out. However, we understand that unforeseen circumstances can arise, and we are committed to supporting our surrogates every step of the way.\n\nIf you have any further questions or concerns, please don't hesitate to reach out. We're here to help.",
+        "sources": [],
+        "scores": {
+          "accuracy": 1,
+          "completeness": 1,
+          "helpfulness": 1,
+          "keywordMatches": [
+            "compensation"
+          ],
+          "missingKeywords": [
+            "contract breach",
+            "legal protection",
+            "backup plan",
+            "legal remedies"
+          ]
+        },
+        "executionTime": 1667
+      },
+      "winner": "tie",
+      "scoreDifference": 0
+    },
+    {
+      "testCaseId": "TC120",
+      "category": "Process & Timeline",
+      "difficulty": "Easy",
+      "question": "How often are medical check-ups during pregnancy?",
+      "configA": {
+        "answer": "Congratulations on your pregnancy. As a helpful AI assistant for ConceiveAbilities, I'd be happy to guide you through the typical medical check-up schedule during pregnancy.\n\nThe frequency of medical check-ups during pregnancy may vary depending on your individual health, the health of your baby, and your pregnancy risk factors. However, here's a general outline of what you can expect:\n\n**First Trimester (Week 1-12):**\n\n* Initial prenatal visit: usually around 6-8 weeks of pregnancy\n* Follow-up visits: every 4-6 weeks until the end of the first trimester\n\n**Second Trimester (Week 13-26):**\n\n* Visits: every 4-6 weeks\n* Ultrasound scans: usually around 16-20 weeks to check for fetal development and detect any potential issues\n\n**Third Trimester (Week 27-40):**\n\n* Visits: every 2-4 weeks until 36 weeks\n* Visits: every 1-2 weeks from 36 weeks until birth\n\n**Additional Check-ups:**\n\n* If you have a high-risk pregnancy or underlying medical conditions, your healthcare provider may schedule more frequent check-ups.\n* If you experience any concerns or complications, such as bleeding, contractions, or decreased fetal movement, you should contact your healthcare provider immediately.\n\nKeep in mind that these are general guidelines, and your healthcare provider may have specific recommendations based on your individual needs. It's essential to attend all scheduled check-ups to ensure a healthy pregnancy and detect any potential issues early on.\n\nRemember, if you have any questions or concerns, don't hesitate to reach out to your healthcare provider or ConceiveAbilities for support.",
+        "sources": [],
+        "scores": {
+          "accuracy": 0,
+          "completeness": 0,
+          "helpfulness": 0,
+          "keywordMatches": [],
+          "missingKeywords": [
+            "medical appointments",
+            "prenatal care",
+            "doctor visits",
+            "monitoring",
+            "regular check-ups"
+          ]
+        },
+        "executionTime": 1473
+      },
+      "configB": {
+        "answer": "As a helpful AI assistant for ConceiveAbilities, I'd be happy to guide you through the typical medical check-up schedule during pregnancy. \n\nThe frequency of medical check-ups during pregnancy may vary depending on the individual's health, age, and any pre-existing medical conditions. However, here is a general outline of what you can expect:\n\n1. **First Trimester (Week 1-12)**: Prenatal check-ups are usually scheduled every 4-6 weeks. This is a critical period, and your healthcare provider will monitor your health and the baby's development closely.\n2. **Second Trimester (Week 13-26)**: Check-ups are typically scheduled every 4-6 weeks. Your healthcare provider will continue to monitor your health, the baby's growth, and perform routine tests such as ultrasounds and blood work.\n3. **Third Trimester (Week 27-38)**: Check-ups are usually scheduled every 2-3 weeks. Your healthcare provider will closely monitor the baby's growth, your health, and prepare you for childbirth.\n4. **Last Month of Pregnancy (Week 39-40)**: Check-ups are typically scheduled every 1-2 weeks. Your healthcare provider will monitor your health, the baby's position, and prepare you for delivery.\n\nAdditionally, your healthcare provider may schedule more frequent check-ups if you have any underlying medical conditions, are carrying multiples, or if there are concerns about the baby's health.\n\nSome common medical check-ups and tests during pregnancy include:\n\n* Ultrasounds to monitor the baby's growth and development\n* Blood work to check for infections, blood type, and other health markers\n* Urine tests to check for protein, sugar, and other substances\n* Blood pressure and weight checks\n* Fetal heart rate monitoring\n* Group B strep testing (between 35-37 weeks)\n\nKeep in mind that every pregnancy is unique, and your healthcare provider may adjust the schedule based on your individual needs. It's essential to attend all scheduled check-ups and communicate openly with your healthcare provider to ensure a healthy pregnancy and a positive birth experience.",
+        "sources": [],
+        "scores": {
+          "accuracy": 1,
+          "completeness": 1,
+          "helpfulness": 1,
+          "keywordMatches": [
+            "monitoring"
+          ],
+          "missingKeywords": [
+            "medical appointments",
+            "prenatal care",
+            "doctor visits",
+            "regular check-ups"
+          ]
+        },
+        "executionTime": 1861
+      },
+      "winner": "B",
+      "scoreDifference": 1
+    },
+    {
+      "testCaseId": "TC128",
+      "category": "Process & Timeline",
+      "difficulty": "Medium",
+      "question": "What happens during the legal clearance phase?",
+      "configA": {
+        "answer": "The legal clearance phase is a crucial step in the surrogacy journey, and it's essential to understand what happens during this process. \n\nDuring the legal clearance phase, the surrogacy agency, attorneys, and other relevant parties work together to ensure that all legal requirements are met, and the intended parents' rights are protected. Here's a general overview of what happens during this phase:\n\n1. **Contract review and negotiation**: The surrogacy agreement, also known as the gestational carrier agreement, is reviewed and negotiated between the intended parents and the gestational carrier (surrogate). This contract outlines the terms and conditions of the surrogacy arrangement, including the surrogate's responsibilities, compensation, and other important details.\n2. **Background checks and screening**: The intended parents and the gestational carrier may undergo background checks and screening to ensure that all parties are suitable for the surrogacy arrangement.\n3. **Insurance and financial arrangements**: The intended parents' insurance coverage and financial arrangements are reviewed to ensure that they have adequate coverage for the surrogate's medical expenses and other related costs.\n4. **Establishment of parentage**: The legal team works to establish the intended parents' parentage through a court process, which may involve a pre-birth order or a post-birth adoption. This step is crucial in ensuring that the intended parents have legal rights and responsibilities for the child.\n5. **Surrogate's rights and responsibilities**: The gestational carrier's rights and responsibilities are also outlined and protected during this phase, including her right to make medical decisions during the pregnancy and her responsibilities regarding the pregnancy and childbirth.\n6. **Court approval**: In some cases, the surrogacy arrangement may need to be approved by a court, which involves filing a petition and attending a court hearing.\n7. **Finalization of legal documents**: Once all the legal requirements are met, the surrogacy agreement and other relevant documents are finalized, and the intended parents and the gestational carrier are prepared for the next steps in the surrogacy journey.\n\nThe legal clearance phase can be complex and time-consuming, but it's essential to ensure that all parties are protected and that the surrogacy arrangement is legally sound. At ConceiveAbilities, we work closely with our intended parents, gestational carriers, and legal teams to navigate this process and ensure a smooth surrogacy journey.",
+        "sources": [],
+        "scores": {
+          "accuracy": 2,
+          "completeness": 2,
+          "helpfulness": 2,
+          "keywordMatches": [
+            "legal clearance",
+            "contract review"
+          ],
+          "missingKeywords": [
+            "attorney approval",
+            "final agreements",
+            "clearance process"
+          ]
+        },
+        "executionTime": 2035
+      },
+      "configB": {
+        "answer": "The legal clearance phase is a critical step in the surrogacy process. During this phase, the legal team reviews and finalizes the surrogacy contract and other necessary documents to ensure that the rights and responsibilities of all parties involved are clearly defined and protected.\n\nHere's what typically happens during the legal clearance phase:\n\n1. **Contract Review**: The surrogate and intended parents review and negotiate the terms of the surrogacy contract, which outlines the agreements and expectations of all parties involved.\n2. **Document Preparation**: The legal team prepares the necessary documents, including the surrogacy contract, birth orders, and other legal paperwork.\n3. **Background Checks**: Background checks may be conducted on the surrogate and intended parents to ensure that everyone involved is eligible to participate in the surrogacy process.\n4. **Insurance Verification**: The legal team verifies that the surrogate has adequate health insurance coverage for the pregnancy and birth.\n5. **Escrow Account Setup**: An escrow account is set up to hold the surrogate's compensation and expenses, which are then disbursed according to the terms of the contract.\n6. **Contract Signing**: Once all parties are satisfied with the contract terms, the surrogate and intended parents sign the contract, and the legal team witnesses the signatures.\n7. **Court Approval**: In some cases, the surrogacy contract may need to be approved by a court, especially if the intended parents are not genetically related to the child.\n8. **Birth Order Preparation**: The legal team prepares a birth order, which is a court document that establishes the intended parents' parental rights and allows them to be named on the birth certificate.\n\nThe legal clearance phase is an essential step in ensuring that the surrogacy process is completed smoothly and that all parties involved are protected. It's a complex process that requires the expertise of experienced surrogacy attorneys who can navigate the legal landscape and ensure that everyone's rights and interests are respected.",
+        "sources": [],
+        "scores": {
+          "accuracy": 2,
+          "completeness": 2,
+          "helpfulness": 2,
+          "keywordMatches": [
+            "legal clearance",
+            "contract review"
+          ],
+          "missingKeywords": [
+            "attorney approval",
+            "final agreements",
+            "clearance process"
+          ]
+        },
+        "executionTime": 1634
+      },
+      "winner": "tie",
+      "scoreDifference": 0
+    },
+    {
+      "testCaseId": "TC136",
+      "category": "Process & Timeline",
+      "difficulty": "Hard",
+      "question": "What happens if the baby has special needs?",
+      "configA": {
+        "answer": "At ConceiveAbilities, we understand that every surrogacy journey is unique, and sometimes, unexpected challenges can arise. If a baby is born with special needs, our team is committed to providing support and guidance to ensure the best possible outcome for all parties involved.\n\nHere are some general steps that may be taken if a baby is born with special needs:\n\n1. **Medical care**: The baby will receive immediate medical attention from a qualified healthcare team to address any urgent needs. The surrogate, intended parents, and our team will work together to ensure the baby receives the necessary care.\n2. **Communication and collaboration**: We will facilitate open and honest communication between the surrogate, intended parents, and medical professionals to discuss the baby's condition, treatment options, and any necessary arrangements for ongoing care.\n3. **Emotional support**: Our team is trained to provide emotional support to both the surrogate and intended parents during this challenging time. We understand that receiving news about a baby's special needs can be overwhelming, and we're here to offer guidance and reassurance.\n4. **Financial considerations**: Depending on the surrogacy agreement, the intended parents may be responsible for the baby's medical expenses. Our team can help facilitate discussions about financial arrangements and ensure that all parties are aware of their responsibilities.\n5. **Ongoing support**: After the baby is born, we will continue to provide support to the surrogate and intended parents as they navigate the baby's special needs. This may include connecting them with resources, such as pediatric specialists, therapy services, or support groups.\n6. **Surrogate care**: We will also ensure that the surrogate receives any necessary medical and emotional care during this time, as her well-being is our top priority.\n\nIt's essential to note that every situation is unique, and the specific steps taken will depend on the individual circumstances. At ConceiveAbilities, we're committed to providing compassionate and professional support to all parties involved, ensuring that the baby receives the best possible care, and that the surrogate and intended parents have the resources they need to navigate this journey.",
+        "sources": [],
+        "scores": {
+          "accuracy": 3,
+          "completeness": 3,
+          "helpfulness": 3,
+          "keywordMatches": [
+            "special needs",
+            "medical care",
+            "intended parents"
+          ],
+          "missingKeywords": [
+            "disability",
+            "support services"
+          ]
+        },
+        "executionTime": 1739
+      },
+      "configB": {
+        "answer": "At ConceiveAbilities, we understand that every family's journey is unique, and some may face the possibility of having a child with special needs. While it's impossible to predict with certainty, we want to assure you that we're here to support you every step of the way.\n\nIf the baby is born with special needs, our primary concern is the well-being and health of the child and the family. Here are some general considerations:\n\n1. **Medical care**: The child will receive the necessary medical attention and care to address their specific needs. This may involve working with a team of specialists, such as pediatricians, therapists, and other healthcare professionals.\n2. **Support systems**: We can connect you with resources, support groups, and organizations that specialize in helping families with children with special needs. These networks can provide valuable guidance, emotional support, and practical advice.\n3. **Financial considerations**: Raising a child with special needs can come with additional expenses. We can help you explore available financial resources, such as insurance coverage, government programs, and non-profit organizations that offer assistance.\n4. **Lifestyle adjustments**: Depending on the child's needs, you may need to make adjustments to your daily routine, living situation, or work arrangements. We're here to offer guidance and support as you navigate these changes.\n5. **Ongoing support**: Our relationship with you doesn't end after the birth of the child. We're committed to providing ongoing support and resources to help you and your family thrive.\n\nIt's essential to remember that every child is unique, and having a child with special needs can bring its own set of rewards and challenges. With the right support and resources, many families find that having a child with special needs can be a incredibly rewarding experience.\n\nIf you have any specific concerns or questions, please don't hesitate to reach out to us. We're here to listen, provide guidance, and support you throughout your journey.",
+        "sources": [],
+        "scores": {
+          "accuracy": 2,
+          "completeness": 2,
+          "helpfulness": 2,
+          "keywordMatches": [
+            "special needs",
+            "medical care"
+          ],
+          "missingKeywords": [
+            "disability",
+            "intended parents",
+            "support services"
+          ]
+        },
+        "executionTime": 1648
+      },
+      "winner": "A",
+      "scoreDifference": 1
+    },
+    {
+      "testCaseId": "TC144",
+      "category": "Process & Timeline",
+      "difficulty": "Medium",
+      "question": "How long is the medical clearance process?",
+      "configA": {
+        "answer": "The medical clearance process for surrogates and egg donors at ConceiveAbilities typically takes around 4-6 weeks to complete, but it can vary depending on individual circumstances and the speed at which medical records are received. This process involves a series of medical evaluations and screenings to ensure the surrogate or egg donor is healthy and suitable for the surrogacy or egg donation process.\n\nHere's a general breakdown of what you can expect during the medical clearance process:\n\n1. **Initial Screening**: 1-2 weeks - This involves completing a comprehensive medical questionnaire and providing basic medical information.\n2. **Medical Records Review**: 1-2 weeks - Your medical records will be reviewed by our medical team to ensure you meet the necessary health requirements.\n3. **Blood Work and Screening Tests**: 1-2 weeks - You'll undergo blood work and other screening tests to check for infectious diseases, genetic disorders, and other health issues.\n4. **Medical Clearance**: 1-2 weeks - Once all test results are received, our medical team will review them and provide medical clearance.\n\nPlease note that the timeline may vary depending on individual circumstances, such as the need for additional testing or the time it takes to receive medical records. Our team will keep you informed throughout the process and answer any questions you may have.\n\nIt's also important to note that the medical clearance process is an essential step in ensuring the health and well-being of both the surrogate or egg donor and the intended parents. We're committed to making this process as smooth and efficient as possible while maintaining the highest standards of medical care.",
+        "sources": [],
+        "scores": {
+          "accuracy": 2,
+          "completeness": 2,
+          "helpfulness": 2,
+          "keywordMatches": [
+            "medical clearance",
+            "timeline"
+          ],
+          "missingKeywords": [
+            "testing period",
+            "doctor approval",
+            "clearance duration"
+          ]
+        },
+        "executionTime": 1419
+      },
+      "configB": {
+        "answer": "The medical clearance process for surrogacy typically takes around 4-6 weeks to complete, but it can vary depending on individual circumstances and the specific requirements of the surrogacy program. \n\nDuring this time, you'll undergo a series of medical tests and evaluations to ensure you're physically and emotionally ready for the surrogacy journey. These tests may include:\n\n1. Medical history review\n2. Blood work and lab tests\n3. Ultrasound and other imaging tests\n4. Psychological evaluation\n5. Infection disease screening\n6. Genetic testing (if required)\n\nOnce all the necessary tests and evaluations are completed, your medical results will be reviewed, and you'll be cleared to move forward with the surrogacy process. \n\nPlease note that the medical clearance process may vary depending on the specific surrogacy program and the intended parents' requirements. Your surrogacy coordinator will guide you through the process and keep you informed about the timeline and any additional requirements.",
+        "sources": [],
+        "scores": {
+          "accuracy": 2,
+          "completeness": 2,
+          "helpfulness": 2,
+          "keywordMatches": [
+            "medical clearance",
+            "timeline"
+          ],
+          "missingKeywords": [
+            "testing period",
+            "doctor approval",
+            "clearance duration"
+          ]
+        },
+        "executionTime": 924
+      },
+      "winner": "tie",
+      "scoreDifference": 0
+    },
+    {
+      "testCaseId": "TC152",
+      "category": "Process & Timeline",
+      "difficulty": "Easy",
+      "question": "What happens at the first appointment?",
+      "configA": {
+        "answer": "The first appointment with ConceiveAbilities is an exciting step towards your surrogacy or egg donation journey. This initial meeting, often referred to as a consultation, is an opportunity for you to learn more about the program, ask questions, and get a sense of what to expect.\n\nHere's what you can typically expect during the first appointment:\n\n1. **Introduction and Overview**: You'll meet with a dedicated program coordinator who will introduce themselves, explain the ConceiveAbilities program, and provide an overview of the surrogacy or egg donation process.\n2. **Discussion of Your Goals and Expectations**: You'll have the chance to share your motivations, goals, and expectations for your surrogacy or egg donation journey. This helps the program coordinator understand your unique needs and preferences.\n3. **Review of the Process**: The program coordinator will walk you through the entire process, including the medical, legal, and emotional aspects of surrogacy or egg donation. They'll explain the steps involved, the timeline, and what you can expect at each stage.\n4. **Discussion of Requirements and Qualifications**: You'll learn about the requirements and qualifications for surrogates or egg donors, such as age, health, and lifestyle considerations.\n5. **Q&A Session**: This is your chance to ask questions, address concerns, and clarify any doubts you may have. The program coordinator is there to provide guidance, support, and reassurance.\n6. **Next Steps**: Depending on your interests and qualifications, the program coordinator will outline the next steps, which may include filling out an application, undergoing medical screening, or meeting with a mental health professional.\n7. **Support and Resources**: You'll learn about the support and resources available to you throughout your journey, including counseling, education, and community connections.\n\nThe first appointment is usually around 30-60 minutes long and can be conducted in-person, over the phone, or via video conference, depending on your preference and location.\n\nRemember, this initial meeting is a great opportunity to get a feel for the ConceiveAbilities program and determine if it's the right fit for you. Don't hesitate to ask questions or share your concerns – the program coordinator is there to support you every step of the way.",
+        "sources": [],
+        "scores": {
+          "accuracy": 1,
+          "completeness": 1,
+          "helpfulness": 1,
+          "keywordMatches": [
+            "first appointment"
+          ],
+          "missingKeywords": [
+            "initial consultation",
+            "medical evaluation",
+            "paperwork",
+            "orientation"
+          ]
+        },
+        "executionTime": 1945
+      },
+      "configB": {
+        "answer": "The first appointment at ConceiveAbilities is often referred to as a consultation or initial meeting. This is an opportunity for you to meet with a representative from ConceiveAbilities, typically a program coordinator or a nurse, to discuss your journey to becoming a gestational carrier (also known as a surrogate) or intended parent.\n\nHere's what you can expect during the first appointment:\n\n**For Gestational Carriers (Surrogates):**\n\n1. Introduction: You'll meet with a program coordinator who will introduce themselves and explain the surrogacy process.\n2. Overview of the Program: They will provide an overview of ConceiveAbilities' surrogacy program, including the requirements, benefits, and expectations.\n3. Personal and Medical History: You'll be asked to share your personal and medical history, including your pregnancy and childbirth experiences.\n4. Discussion of Motivations: You'll have the opportunity to discuss your motivations for becoming a gestational carrier and what you hope to achieve through this journey.\n5. Next Steps: The coordinator will explain the next steps in the process, including the application, screening, and matching process.\n\n**For Intended Parents:**\n\n1. Introduction: You'll meet with a program coordinator who will introduce themselves and explain the surrogacy process.\n2. Overview of the Program: They will provide an overview of ConceiveAbilities' surrogacy program, including the requirements, benefits, and expectations.\n3. Discussion of Your Journey: You'll have the opportunity to share your story, including your experiences with infertility, and what brings you to surrogacy.\n4. Overview of the Matching Process: The coordinator will explain the process of matching with a gestational carrier, including the criteria used to match families with surrogates.\n5. Next Steps: The coordinator will explain the next steps in the process, including the application, screening, and matching process.\n\n**Common to Both:**\n\n1. Questions and Concerns: You'll have the opportunity to ask questions and express any concerns you may have about the surrogacy process.\n2. Review of the Contract: You'll receive an overview of the contract and the terms of the agreement.\n3. Discussion of Support: The coordinator will discuss the support services offered by ConceiveAbilities, including counseling, education, and community resources.\n\nThe first appointment is usually around 30-60 minutes long, and it's a great opportunity to get a sense of the surrogacy process and what to expect. It's also a chance for you to ask questions and get a feel for the ConceiveAbilities team and their approach to surrogacy.",
+        "sources": [],
+        "scores": {
+          "accuracy": 1,
+          "completeness": 1,
+          "helpfulness": 1,
+          "keywordMatches": [
+            "first appointment"
+          ],
+          "missingKeywords": [
+            "initial consultation",
+            "medical evaluation",
+            "paperwork",
+            "orientation"
+          ]
+        },
+        "executionTime": 2153
+      },
+      "winner": "tie",
+      "scoreDifference": 0
+    },
+    {
+      "testCaseId": "TC160",
+      "category": "Process & Timeline",
+      "difficulty": "Medium",
+      "question": "What happens during the psychological evaluation?",
+      "configA": {
+        "answer": "The psychological evaluation is an important step in the surrogacy process. It's a thorough assessment that helps ensure you're emotionally prepared for the journey ahead. Here's what you can expect:\n\n**Purpose:**\nThe psychological evaluation is designed to assess your mental health, emotional stability, and readiness to participate in the surrogacy process. It's a mandatory step for all surrogates and intended parents.\n\n**What to expect:**\n\n1. **Initial consultation:** You'll have an initial consultation with a licensed psychologist or therapist who specializes in reproductive psychology. This is usually a 1-2 hour session.\n2. **Discussion of motivations:** You'll be asked about your motivations for becoming a surrogate or intended parent. This helps the psychologist understand your reasons and expectations.\n3. **Emotional assessment:** The psychologist will assess your emotional stability, coping mechanisms, and ability to manage stress. They may ask about your support system, relationships, and any previous experiences with trauma or loss.\n4. **Personality assessment:** You may be asked to complete a personality questionnaire or participate in a personality assessment. This helps the psychologist understand your personality traits, values, and behaviors.\n5. **Surrogacy-specific questions:** The psychologist will ask questions specific to surrogacy, such as your feelings about pregnancy, childbirth, and the potential emotional challenges of surrogacy.\n6. **Intended parent-surrogate relationship:** If you're a surrogate, you'll be asked about your expectations for the relationship with the intended parents. If you're an intended parent, you'll be asked about your expectations for the relationship with the surrogate.\n7. **Support system:** The psychologist will assess your support system, including your family, friends, and any other individuals who will be involved in the surrogacy process.\n\n**What happens after the evaluation:**\nAfter the evaluation, the psychologist will provide a report to ConceiveAbilities, which will include:\n\n1. **Recommendations:** The psychologist may provide recommendations for you to prepare for the surrogacy process, such as counseling or support groups.\n2. **Clearance:** If the psychologist determines that you're emotionally prepared for surrogacy, you'll be cleared to move forward with the process.\n3. **Additional support:** If the psychologist identifies any areas of concern, they may recommend additional support or counseling to help you prepare for the surrogacy process.\n\nRemember, the psychological evaluation is an important step in ensuring your emotional well-being and readiness for the surrogacy process. It's a chance to reflect on your motivations, expectations, and emotional preparedness, and to receive guidance and support to help you navigate the journey ahead.",
+        "sources": [],
+        "scores": {
+          "accuracy": 1,
+          "completeness": 1,
+          "helpfulness": 1,
+          "keywordMatches": [
+            "psychological evaluation"
+          ],
+          "missingKeywords": [
+            "mental health assessment",
+            "counselor",
+            "evaluation process",
+            "psychological testing"
+          ]
+        },
+        "executionTime": 2130
+      },
+      "configB": {
+        "answer": "The psychological evaluation is an important step in the surrogacy journey, and it's a requirement for both surrogates and intended parents. This evaluation is designed to assess your emotional readiness, stability, and suitability for the surrogacy process.\n\nDuring the psychological evaluation, you'll typically meet with a licensed psychologist or therapist who has experience in reproductive psychology. The evaluation usually consists of:\n\n1. **Initial Interview**: You'll have a conversation with the psychologist to discuss your motivations, expectations, and understanding of the surrogacy process.\n2. **Questionnaire or Survey**: You may be asked to complete a questionnaire or survey to gather more information about your background, relationships, and emotional well-being.\n3. **In-Depth Discussion**: The psychologist will engage in an in-depth discussion with you to explore your feelings, concerns, and expectations about the surrogacy journey. This may include topics such as:\n\t* Your reasons for pursuing surrogacy (as an intended parent) or becoming a surrogate\n\t* Your support system and relationships\n\t* Your emotional preparedness for the potential challenges and outcomes of surrogacy\n\t* Your understanding of the surrogacy contract and agreements\n4. **Assessment of Emotional Stability**: The psychologist will assess your emotional stability, coping mechanisms, and ability to handle stress, uncertainty, and potential complications during the surrogacy process.\n5. **Discussion of Boundary Setting**: You'll discuss how to set and maintain healthy boundaries with the other party involved in the surrogacy arrangement (e.g., the surrogate or intended parents).\n6. **Conclusion and Recommendations**: The psychologist will summarize their findings and provide recommendations to ensure a successful and emotionally healthy surrogacy journey.\n\nThe goal of the psychological evaluation is to:\n\n* Ensure that you're emotionally prepared for the surrogacy process\n* Identify any potential areas of concern or risk\n* Provide guidance and support to help you navigate the surrogacy journey\n* Confirm that you're making an informed decision about pursuing surrogacy\n\nRemember, the psychological evaluation is a supportive and non-judgmental process. It's an opportunity to explore your feelings, concerns, and expectations in a safe and confidential environment.",
+        "sources": [],
+        "scores": {
+          "accuracy": 1,
+          "completeness": 1,
+          "helpfulness": 1,
+          "keywordMatches": [
+            "psychological evaluation"
+          ],
+          "missingKeywords": [
+            "mental health assessment",
+            "counselor",
+            "evaluation process",
+            "psychological testing"
+          ]
+        },
+        "executionTime": 1807
+      },
+      "winner": "tie",
+      "scoreDifference": 0
+    },
+    {
+      "testCaseId": "TC168",
+      "category": "Process & Timeline",
+      "difficulty": "Hard",
+      "question": "What happens if multiple embryos implant?",
+      "configA": {
+        "answer": "If multiple embryos implant, it's known as a multiple pregnancy. This can occur when more than one embryo develops and attaches to the uterine lining during in vitro fertilization (IVF) or other assisted reproductive technologies.\n\nIn a multiple pregnancy, the risks to both the mother and the babies are higher compared to a singleton pregnancy. Some potential complications include:\n\n1. **Preterm birth**: Multiple pregnancies are more likely to result in preterm birth, which can increase the risk of health problems for the babies.\n2. **Low birth weight**: Babies born in multiple pregnancies tend to have lower birth weights, which can lead to health issues.\n3. **Pregnancy complications**: Women carrying multiple pregnancies are at higher risk for pregnancy complications, such as preeclampsia, gestational diabetes, and placental abruption.\n4. **C-section delivery**: Multiple pregnancies often require a cesarean section delivery, which carries its own set of risks and recovery challenges.\n\nTo minimize the risks associated with multiple pregnancies, many fertility clinics, including those working with ConceiveAbilities, follow guidelines that recommend transferring a single embryo (known as elective single embryo transfer or eSET) whenever possible. This approach can help reduce the risk of multiple pregnancies and the associated complications.\n\nHowever, in some cases, multiple embryos may still implant, and the pregnancy will proceed as a multiple pregnancy. In these situations, close monitoring and prenatal care are crucial to ensure the best possible outcomes for both the mother and the babies.\n\nIt's essential for individuals undergoing fertility treatment to discuss the risks and benefits of multiple pregnancies with their fertility specialist and make informed decisions about their care.",
+        "sources": [],
+        "scores": {
+          "accuracy": 2,
+          "completeness": 2,
+          "helpfulness": 2,
+          "keywordMatches": [
+            "multiple embryos",
+            "multiple pregnancy"
+          ],
+          "missingKeywords": [
+            "twins",
+            "triplets",
+            "selective reduction"
+          ]
+        },
+        "executionTime": 1389
+      },
+      "configB": {
+        "answer": "If multiple embryos implant during an in vitro fertilization (IVF) cycle or other fertility treatment, it's known as a multiple pregnancy. This can occur when more than one embryo is transferred to the uterus, and multiple embryos successfully implant and develop.\n\nThe risks associated with multiple pregnancies are higher compared to single pregnancies. Some potential complications include:\n\n1. **Preterm birth**: Multiple pregnancies are more likely to result in preterm birth, which can increase the risk of health problems for the babies.\n2. **Low birth weight**: Babies born in multiple pregnancies are often smaller than singleton babies, which can lead to health issues.\n3. **Pregnancy-induced hypertension**: Women carrying multiple pregnancies are at a higher risk of developing high blood pressure during pregnancy.\n4. **Gestational diabetes**: Multiple pregnancies can increase the risk of gestational diabetes.\n\nTo minimize the risks, many fertility clinics, including those affiliated with ConceiveAbilities, follow guidelines for the number of embryos to transfer during an IVF cycle. These guidelines are based on factors such as:\n\n1. **Age of the woman**: Women under 35 years old may have a higher chance of successful implantation with a single embryo transfer, while women over 35 may require multiple embryos.\n2. **Quality of the embryos**: The quality and grading of the embryos can influence the decision on how many to transfer.\n3. **Previous IVF attempts**: Women who have had previous unsuccessful IVF attempts may require multiple embryos to increase the chances of success.\n\nIn general, the American Society for Reproductive Medicine (ASRM) recommends the following guidelines for embryo transfer:\n\n* Women under 35 years old: 1 embryo\n* Women between 35-37 years old: 1-2 embryos\n* Women between 38-40 years old: 2-3 embryos\n* Women over 40 years old: 3-5 embryos (although this is not always recommended due to the increased risks associated with multiple pregnancies)\n\nIt's essential to discuss the risks and benefits of multiple embryo transfer with your fertility doctor or healthcare provider to determine the best approach for your individual situation.",
+        "sources": [],
+        "scores": {
+          "accuracy": 2,
+          "completeness": 2,
+          "helpfulness": 2,
+          "keywordMatches": [
+            "multiple embryos",
+            "multiple pregnancy"
+          ],
+          "missingKeywords": [
+            "twins",
+            "triplets",
+            "selective reduction"
+          ]
+        },
+        "executionTime": 1867
+      },
+      "winner": "tie",
+      "scoreDifference": 0
+    },
+    {
+      "testCaseId": "TC176",
+      "category": "Process & Timeline",
+      "difficulty": "Medium",
+      "question": "What happens during embryo transfer day?",
+      "configA": {
+        "answer": "Embryo transfer day is a significant milestone in the in vitro fertilization (IVF) journey. It's the day when the embryo is transferred into the uterus, marking the final step in the IVF process. Here's what you can expect to happen during embryo transfer day:\n\n1. **Preparation**: You'll typically arrive at the fertility clinic or hospital in the morning, and you'll be asked to change into a gown and prepare for the procedure.\n2. **Ultrasound**: Your fertility specialist will perform an ultrasound to check the thickness of your uterine lining and confirm that your uterus is ready for the embryo transfer.\n3. **Embryo selection**: Your fertility specialist will select the best embryo(s) for transfer, based on factors such as embryo quality, grade, and stage of development.\n4. **Embryo loading**: The selected embryo(s) will be loaded into a catheter, which is a thin, flexible tube.\n5. **Transfer procedure**: You'll lie on an exam table, and your fertility specialist will insert the catheter through your cervix and into your uterus. The embryo(s) will be released through the catheter, and the catheter will be gently removed.\n6. **Verification**: After the transfer, your fertility specialist may use ultrasound to verify that the embryo(s) have been placed correctly in the uterus.\n7. **Rest and recovery**: You'll be asked to rest for a short period, usually 30 minutes to an hour, to allow the embryo(s) to implant.\n8. **Post-transfer instructions**: Your fertility specialist will provide you with instructions on what to do after the transfer, including:\n\t* Avoiding heavy lifting, bending, or strenuous activities\n\t* Taking progesterone supplements to support implantation\n\t* Attending follow-up appointments to monitor your pregnancy\n9. **Pregnancy test**: About 10-14 days after the embryo transfer, you'll take a pregnancy test to confirm whether the embryo has implanted and you're pregnant.\n\nIt's essential to note that embryo transfer is a relatively painless procedure, and you may experience some mild cramping or discomfort during and after the transfer. Your fertility specialist will discuss any potential risks and side effects with you before the procedure.\n\nRemember, embryo transfer day is an exciting and emotional milestone, and it's essential to stay positive and focused on the possibility of a successful pregnancy.",
+        "sources": [],
+        "scores": {
+          "accuracy": 3,
+          "completeness": 3,
+          "helpfulness": 3,
+          "keywordMatches": [
+            "embryo transfer",
+            "transfer day",
+            "procedure"
+          ],
+          "missingKeywords": [
+            "clinic visit",
+            "medical process"
+          ]
+        },
+        "executionTime": 2024
+      },
+      "configB": {
+        "answer": "Embryo transfer day is a significant milestone in the IVF (In Vitro Fertilization) or donor egg/surrogacy journey. It's the day when the embryo is transferred into the uterus, marking the final step in the IVF process. Here's what you can expect during embryo transfer day:\n\n**Preparation:**\n\n1. **Medications:** You may be prescribed medications to prepare your uterus for the embryo transfer. These may include estrogen and progesterone to thicken the uterine lining.\n2. **Ultrasound:** An ultrasound will be performed to check the thickness of your uterine lining and ensure it's ready for the embryo transfer.\n3. **Embryo selection:** The embryologist will select the best embryo(s) for transfer, based on factors like quality, grade, and stage of development.\n\n**The Embryo Transfer Procedure:**\n\n1. **Arrival at the clinic:** You'll arrive at the clinic, usually in the morning, and fill out any necessary paperwork.\n2. **Preparation:** You'll be asked to change into a gown and lie on an exam table.\n3. **Ultrasound guidance:** The doctor will use ultrasound guidance to visualize the uterus and guide the catheter (a thin, flexible tube) through the cervix and into the uterus.\n4. **Embryo loading:** The selected embryo(s) will be loaded into a special catheter.\n5. **Transfer:** The catheter is gently inserted through the cervix, and the embryo(s) are released into the uterus.\n6. **Verification:** The doctor will use ultrasound to verify that the embryo(s) have been transferred correctly.\n\n**After the Transfer:**\n\n1. **Rest:** You'll be asked to rest for a short period, usually 30 minutes to an hour, to allow the embryo(s) to settle.\n2. **Instructions:** The doctor or nurse will provide instructions on post-transfer care, including:\n\t* Avoiding heavy lifting, bending, or strenuous activities.\n\t* Taking medications as prescribed.\n\t* Attending follow-up appointments for pregnancy testing and ultrasound monitoring.\n3. **Pregnancy testing:** You'll be scheduled for a pregnancy test, usually 9-14 days after the embryo transfer, to confirm whether the transfer was successful.\n\n**Tips and Reminders:**\n\n* Bring a support person, if desired, to provide emotional support during the procedure.\n* Wear comfortable clothing and avoid wearing perfumes or scented lotions, as they may interfere with the embryo transfer process.\n* Plan to take it easy for the rest of the day and avoid strenuous activities.\n\nEmbryo transfer day can be an emotional and exciting experience. Remember to stay calm, follow the instructions provided by your healthcare team, and focus on the positive outcome – a successful pregnancy!",
+        "sources": [],
+        "scores": {
+          "accuracy": 3,
+          "completeness": 3,
+          "helpfulness": 3,
+          "keywordMatches": [
+            "embryo transfer",
+            "transfer day",
+            "procedure"
+          ],
+          "missingKeywords": [
+            "clinic visit",
+            "medical process"
+          ]
+        },
+        "executionTime": 2365
+      },
+      "winner": "tie",
+      "scoreDifference": 0
+    },
+    {
+      "testCaseId": "TC184",
+      "category": "Process & Timeline",
+      "difficulty": "Easy",
+      "question": "What happens during the final legal steps?",
+      "configA": {
+        "answer": "During the final legal steps of a surrogacy journey with ConceiveAbilities, several important processes take place to ensure a smooth transition of parental rights. Here's an overview of what you can expect:\n\n1. **Pre-Birth Order (PBO)**: If allowed by the state, a Pre-Birth Order is obtained before the baby's birth. This court order establishes the intended parents' rights as the legal parents and allows them to make medical decisions for the baby.\n2. **Birth and Hospital Stay**: After the baby's birth, the intended parents will typically be present in the hospital, and the surrogate will follow the birth plan agreed upon. The hospital will usually require documentation, such as the PBO or a letter from the attorney, to ensure the intended parents' rights are respected.\n3. **Post-Birth Order**: If a PBO was not obtained, or if the state does not allow PBOs, a Post-Birth Order is filed after the baby's birth. This order confirms the intended parents' rights as the legal parents and allows them to obtain a birth certificate with their names.\n4. **Adoption or Parentage Proceedings**: In some cases, the intended parents may need to complete an adoption or parentage proceeding to finalize their parental rights. This process typically involves filing paperwork, attending a court hearing, and obtaining a final judgment.\n5. **Birth Certificate**: Once the parental rights are established, the intended parents can obtain a birth certificate with their names. This document is essential for various administrative tasks, such as obtaining a social security number, passport, and health insurance for the baby.\n6. **Finalization of Parental Rights**: After the birth certificate is issued, the intended parents' parental rights are fully established, and they can begin making decisions for their child without any further legal hurdles.\n\nThroughout these final legal steps, ConceiveAbilities' experienced team and partnering attorneys will guide you through the process, ensuring a seamless and efficient transition of parental rights.",
+        "sources": [],
+        "scores": {
+          "accuracy": 3,
+          "completeness": 3,
+          "helpfulness": 3,
+          "keywordMatches": [
+            "final legal steps",
+            "birth certificate",
+            "parentage"
+          ],
+          "missingKeywords": [
+            "legal completion",
+            "final papers"
+          ]
+        },
+        "executionTime": 1734
+      },
+      "configB": {
+        "answer": "The final legal steps in the surrogacy process typically involve several important actions to ensure that the intended parents' rights are established and the surrogate's rights are protected. Here's an overview of what happens during the final legal steps:\n\n1. **Pre-Birth Order (PBO)**: Before the baby is born, the intended parents' attorney will file a petition with the court to establish their parental rights. This is usually done between 24-30 weeks of pregnancy. The PBO will outline the terms of the surrogacy agreement and confirm the intended parents' rights as the legal parents of the child.\n2. **Court Hearing**: A court hearing will be scheduled to review the PBO petition. The intended parents, surrogate, and their respective attorneys will attend the hearing. The court will review the surrogacy agreement, the PBO petition, and any other relevant documents to ensure that everyone's rights are protected.\n3. **Birth Certificate**: After the baby is born, the hospital will issue a birth certificate. The intended parents' names will be listed as the parents on the birth certificate, rather than the surrogate's name.\n4. **Post-Birth Order (if necessary)**: In some cases, a post-birth order may be required to confirm the intended parents' parental rights. This is typically necessary if the PBO was not granted before the birth or if there are any issues with the birth certificate.\n5. **Adoption (if necessary)**: If the intended parents are not genetically related to the child, they may need to adopt the child after birth. This process typically involves a step-parent adoption or a second-parent adoption.\n6. **Finalization of Parental Rights**: Once the court has granted the PBO or post-birth order, the intended parents' parental rights are established, and they can begin making decisions for the child.\n7. **Surrogate's Release**: The surrogate will typically sign a release form, confirming that she relinquishes all parental rights to the child and acknowledges the intended parents as the legal parents.\n\nIt's essential to work with an experienced attorney who specializes in surrogacy law to ensure that all legal steps are taken care of properly. ConceiveAbilities can connect you with reputable attorneys who can guide you through the final legal steps and ensure a smooth transition to parenthood.",
+        "sources": [],
+        "scores": {
+          "accuracy": 2,
+          "completeness": 2,
+          "helpfulness": 2,
+          "keywordMatches": [
+            "final legal steps",
+            "birth certificate"
+          ],
+          "missingKeywords": [
+            "parentage",
+            "legal completion",
+            "final papers"
+          ]
+        },
+        "executionTime": 1939
+      },
+      "winner": "A",
+      "scoreDifference": 1
+    },
+    {
+      "testCaseId": "TC192",
+      "category": "Process & Timeline",
+      "difficulty": "Medium",
+      "question": "What happens if labor starts early?",
+      "configA": {
+        "answer": "If labor starts early, it's considered preterm labor. This can be a concerning situation, as babies born before 37 weeks of gestation may face higher risks of health complications. \n\nHere are some key points to consider:\n\n1. **Preterm labor definition**: Labor that begins before 37 weeks of gestation is considered preterm. Babies born between 34 and 36 weeks and 6 days are considered late preterm, while those born before 34 weeks are considered early preterm.\n2. **Risks to the baby**: Preterm babies may experience respiratory issues, difficulty regulating body temperature, and increased risk of infections. They may also require a longer hospital stay and potentially need specialized care in the neonatal intensive care unit (NICU).\n3. **Symptoms of preterm labor**: These can include regular uterine contractions, a change in vaginal discharge, pelvic pressure, back pain, and abdominal cramps.\n4. **Medical interventions**: If preterm labor is suspected, your healthcare provider may try to delay or stop labor using medications such as corticosteroids to promote fetal lung development, or tocolytics to slow down contractions.\n5. **Close monitoring**: If preterm labor cannot be stopped, your healthcare provider will closely monitor the baby's health and prepare for a potential premature birth.\n\nIn the context of surrogacy or egg donation, it's essential for the surrogate or birth mother to inform her healthcare provider and the intended parents immediately if she experiences any symptoms of preterm labor. The healthcare provider will work to ensure the best possible outcome for both the baby and the birth mother.\n\nIf you have any specific concerns or questions about preterm labor, I'm here to help.",
+        "sources": [],
+        "scores": {
+          "accuracy": 0,
+          "completeness": 0,
+          "helpfulness": 0,
+          "keywordMatches": [],
+          "missingKeywords": [
+            "premature labor",
+            "early delivery",
+            "emergency procedures",
+            "medical response",
+            "hospital protocol"
+          ]
+        },
+        "executionTime": 1610
+      },
+      "configB": {
+        "answer": "If labor starts early, also known as preterm labor, it can be a concerning situation for expectant mothers and their babies. Preterm labor is labor that begins before 37 weeks of gestation. \n\nHere are some potential outcomes and considerations:\n\n1. **Increased risk of complications**: Babies born prematurely are at a higher risk of health complications, such as respiratory distress, infection, and developmental delays.\n2. **Medical interventions**: If preterm labor is suspected, medical professionals may try to delay or stop labor using medications like corticosteroids, tocolytics, or bed rest.\n3. **Hospitalization**: Women experiencing preterm labor may be hospitalized to monitor their condition and the baby's well-being.\n4. **Birth weight and size**: Preterm babies may be smaller and weigh less than full-term babies, which can increase their risk of health problems.\n5. **NICU admission**: Preterm babies often require admission to the Neonatal Intensive Care Unit (NICU) for specialized care and monitoring.\n\nHowever, with proper medical care and attention, many preterm babies can thrive and develop normally.\n\n**What can be done to reduce the risk of preterm labor?**\n\nWhile not all cases of preterm labor can be prevented, there are some steps that can be taken to reduce the risk:\n\n1. **Prenatal care**: Regular prenatal check-ups can help identify potential risk factors and allow for early intervention.\n2. **Healthy lifestyle**: Maintaining a healthy diet, exercising regularly, and managing stress can contribute to a healthier pregnancy.\n3. **Avoiding risky behaviors**: Avoiding smoking, drug use, and excessive alcohol consumption can help reduce the risk of preterm labor.\n\nIf you have concerns about preterm labor or any other aspect of your pregnancy, it's essential to discuss them with your healthcare provider. At ConceiveAbilities, we're here to support you throughout your journey.",
+        "sources": [],
+        "scores": {
+          "accuracy": 0,
+          "completeness": 0,
+          "helpfulness": 0,
+          "keywordMatches": [],
+          "missingKeywords": [
+            "premature labor",
+            "early delivery",
+            "emergency procedures",
+            "medical response",
+            "hospital protocol"
+          ]
+        },
+        "executionTime": 1666
+      },
+      "winner": "tie",
+      "scoreDifference": 0
+    },
+    {
+      "testCaseId": "TC200",
+      "category": "Process & Timeline",
+      "difficulty": "Easy",
+      "question": "What is the final step in the surrogacy process?",
+      "configA": {
+        "answer": "The final step in the surrogacy process is the post-birth and post-delivery phase, which can vary depending on the specific circumstances and the individuals involved. However, some common aspects of this final step include:\n\n1. **Birth and delivery**: The surrogate gives birth to the baby, and the intended parents are usually present to welcome their new child.\n2. **Hospital stay and recovery**: The surrogate will typically spend some time in the hospital after giving birth, and the intended parents will often be with their baby, bonding and beginning their new life together.\n3. **Establishing parentage**: The intended parents will need to establish their parentage through legal proceedings, such as adoption or a court order, to ensure they have full parental rights.\n4. **Post-delivery care and support**: The surrogate will receive post-delivery care and support from her medical team and may also receive emotional support from her surrogacy agency, if applicable.\n5. **Closing the surrogacy journey**: The surrogacy agency will typically provide support and guidance to both the surrogate and the intended parents as they navigate the final stages of the surrogacy process, including any necessary paperwork, medical follow-up, and emotional support.\n6. **Ongoing relationship (optional)**: Depending on the arrangement, the surrogate and intended parents may choose to maintain a relationship after the surrogacy journey is complete, which can be a rewarding experience for all parties involved.\n\nIt's essential to note that every surrogacy journey is unique, and the final step may vary depending on individual circumstances. A reputable surrogacy agency, like ConceiveAbilities, can provide guidance and support throughout the entire process, including the final stages.",
+        "sources": [],
+        "scores": {
+          "accuracy": 1,
+          "completeness": 1,
+          "helpfulness": 1,
+          "keywordMatches": [
+            "final step"
+          ],
+          "missingKeywords": [
+            "baby handover",
+            "legal completion",
+            "discharge",
+            "process completion"
+          ]
+        },
+        "executionTime": 1544
+      },
+      "configB": {
+        "answer": "The final step in the surrogacy process is the post-birth and post-delivery phase, which typically includes:\n\n1. **Birth and hospital stay**: The surrogate mother gives birth to the baby, and the intended parents are usually present to welcome their new child.\n2. **Initial bonding and care**: The intended parents take care of the baby in the hospital, and the surrogate mother recovers from childbirth.\n3. **Discharge and transition**: The baby is discharged from the hospital, and the intended parents take their new child home.\n4. **Post-delivery care and support**: The surrogate mother receives post-delivery care and support from the surrogacy agency, her healthcare provider, and her support network.\n5. **Finalization of parental rights**: The intended parents complete any necessary legal steps to finalize their parental rights, such as adoption or birth certificate proceedings.\n6. **Closure and reflection**: The surrogate mother and intended parents reflect on their surrogacy journey, and the surrogate mother begins to return to her normal routine.\n\nAt ConceiveAbilities, we provide ongoing support and guidance throughout this final phase, ensuring a smooth transition for all parties involved. Our goal is to make the surrogacy process as seamless and joyful as possible, allowing intended parents to focus on building their family and surrogate mothers to recover and thrive after the birth of the baby.",
+        "sources": [],
+        "scores": {
+          "accuracy": 2,
+          "completeness": 2,
+          "helpfulness": 2,
+          "keywordMatches": [
+            "final step",
+            "discharge"
+          ],
+          "missingKeywords": [
+            "baby handover",
+            "legal completion",
+            "process completion"
+          ]
+        },
+        "executionTime": 1229
+      },
+      "winner": "B",
+      "scoreDifference": 1
+    }
+  ],
+  "categoryBreakdown": {
+    "Process & Timeline": {
+      "total": 18,
+      "configAWins": 3,
+      "configBWins": 2,
+      "ties": 13,
+      "averageConfigAScore": 1.6111111111111112,
+      "averageConfigBScore": 1.5555555555555556
+    }
+  },
+  "difficultyBreakdown": {
+    "Medium": {
+      "total": 10,
+      "configAWins": 1,
+      "configBWins": 0,
+      "ties": 9,
+      "averageConfigAScore": 1.6,
+      "averageConfigBScore": 1.5
+    },
+    "Easy": {
+      "total": 5,
+      "configAWins": 1,
+      "configBWins": 2,
+      "ties": 2,
+      "averageConfigAScore": 1.4,
+      "averageConfigBScore": 1.6
+    },
+    "Hard": {
+      "total": 3,
+      "configAWins": 1,
+      "configBWins": 0,
+      "ties": 2,
+      "averageConfigAScore": 2,
+      "averageConfigBScore": 1.6666666666666667
+    }
+  }
+}
