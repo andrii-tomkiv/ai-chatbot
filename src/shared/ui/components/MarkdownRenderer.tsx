@@ -14,20 +14,32 @@ export default function MarkdownRenderer({ content, className = '' }: MarkdownRe
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         components={{
-          a: ({ ...props }) => (
-            <a
-              {...props}
-              className="mb-2 inline-flex items-center px-3 py-1.5 bg-gradient-to-r from-conab-action to-conab-action-lighten text-white text-sm rounded-xl hover:from-conab-action-lighten hover:to-conab-action transition-all duration-200 font-medium no-underline shadow-sm hover:shadow-md"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {props.children}
-              <svg className="w-3 h-3 ml-1.5" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
-                <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
-              </svg>
-            </a>
-          ),
+          a: ({ ...props }) => {
+            // Clean [REF]...[/REF] tags from href only
+            let cleanHref = props.href;
+            if (cleanHref && cleanHref.includes('[REF]')) {
+              const refMatch = cleanHref.match(/\[REF\](https?:\/\/[^\[\]]+)\[\/REF\]/);
+              if (refMatch) {
+                cleanHref = refMatch[1];
+              }
+            }
+            
+            return (
+              <a
+                {...props}
+                href={cleanHref}
+                className="mb-2 inline-flex items-center px-3 py-1.5 bg-gradient-to-r from-conab-action to-conab-action-lighten text-white text-sm rounded-xl hover:from-conab-action-lighten hover:to-conab-action transition-all duration-200 font-medium no-underline shadow-sm hover:shadow-md"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {props.children}
+                <svg className="w-3 h-3 ml-1.5" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
+                  <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
+                </svg>
+              </a>
+            );
+          },
           
           h1: ({ ...props }) => (
             <h1 {...props} className="text-xl font-bold text-gray-800 mb-4 mt-6 border-b border-gray-200 pb-2" />
@@ -103,9 +115,9 @@ export default function MarkdownRenderer({ content, className = '' }: MarkdownRe
             <hr {...props} className="border-t border-gray-200 my-6" />
           ),
         }}
-      >
-        {content}
-      </ReactMarkdown>
+              >
+          {content}
+        </ReactMarkdown>
     </div>
   );
 } 
