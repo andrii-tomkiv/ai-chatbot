@@ -27,7 +27,8 @@ export default function ChatBox() {
     temperature: 0.7,
     model: 'mistral',
     maxTokens: 1000,
-    maxResults: 0
+    maxResults: 0,
+    customPrompt: ''
   });
   const { toasts, removeToast, success, error } = useToast();
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -125,7 +126,8 @@ export default function ChatBox() {
         model: modelName,
         temperature: chatSettings.temperature,
         maxTokens: chatSettings.maxTokens,
-        maxResults: chatSettings.maxResults
+        maxResults: chatSettings.maxResults,
+        customPrompt: chatSettings.customPrompt
       });
 
       let textContent = '';
@@ -184,7 +186,7 @@ export default function ChatBox() {
     } finally {
       setIsStreaming(false);
     }
-  }, [chatSettings.model, chatSettings.temperature, chatSettings.maxTokens, chatSettings.maxResults, canSendMessage, rateLimitStatus, checkRateLimit, formatTimeRemaining, forceRateLimitStatus, error]);
+  }, [chatSettings.model, chatSettings.temperature, chatSettings.maxTokens, chatSettings.maxResults, chatSettings.customPrompt, canSendMessage, rateLimitStatus, checkRateLimit, formatTimeRemaining, forceRateLimitStatus, error]);
 
   const regenerateResponse = useCallback(async (messageIndex: number, strategy: 'quick' | 'detailed' | 'concise' = 'quick') => {
     if (messageIndex < 0 || messageIndex >= conversation.length) return;
@@ -216,6 +218,7 @@ export default function ChatBox() {
         temperature: chatSettings.temperature,
         maxTokens: chatSettings.maxTokens,
         maxResults: chatSettings.maxResults,
+        customPrompt: chatSettings.customPrompt,
                 promptType: strategy === 'detailed' ? 'detailed' :
                    strategy === 'concise' ? 'concise' : undefined
       };
@@ -256,7 +259,7 @@ export default function ChatBox() {
       setIsStreaming(false);
       setRegeneratingMessageId(null);
     }
-  }, [conversation, chatSettings.model, chatSettings.temperature, chatSettings.maxTokens, chatSettings.maxResults]);
+  }, [conversation, chatSettings.model, chatSettings.temperature, chatSettings.maxTokens, chatSettings.maxResults, chatSettings.customPrompt]);
 
   useEffect(() => {
     scrollToBottom();

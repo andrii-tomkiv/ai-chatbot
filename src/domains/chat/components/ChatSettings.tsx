@@ -2,12 +2,14 @@
 
 import { useState, useEffect } from 'react';
 import { Settings, Thermometer, Cpu, Info, Search } from 'lucide-react';
+import PromptModal from './Prompt';
 
 export interface ChatSettings {
   temperature: number;
   model: 'mistral' | 'groq';
   maxTokens: number;
   maxResults: number;
+  customPrompt: string;
 }
 
 interface ChatSettingsProps {
@@ -46,6 +48,7 @@ export default function ChatSettings({
   isOpen, 
   onToggle 
 }: ChatSettingsProps) {
+  const [isPromptModalOpen, setIsPromptModalOpen] = useState(false);
   const [localSettings, setLocalSettings] = useState<ChatSettings>(settings);
 
   useEffect(() => {
@@ -87,6 +90,16 @@ export default function ChatSettings({
     return model === 'mistral' ? 1.5 : 2.0;
   };
 
+  const handlePromptModalToggle = () => {
+    setIsPromptModalOpen(!isPromptModalOpen);
+  };
+
+  const handlePromptSave = (prompt: string) => {
+    const newSettings = { ...localSettings, customPrompt: prompt };
+    setLocalSettings(newSettings);
+    onSettingsChange(newSettings);
+  };
+
   const selectedModel = modelOptions.find(m => m.id === localSettings.model);
   const maxTemperature = getMaxTemperature(localSettings.model);
   const temperaturePresets = getTemperaturePresets(maxTemperature);
@@ -116,6 +129,35 @@ export default function ChatSettings({
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
+            </button>
+          </div>
+
+          {/* Custom Prompt Section */}
+          <div className="mb-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <svg className="w-5 h-5 text-conab-action" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                </svg>
+                <label className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Custom Prompt</label>
+              </div>
+              <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+                {localSettings.customPrompt ? 'Custom' : 'Default'}
+              </span>
+            </div>
+            <button
+              onClick={handlePromptModalToggle}
+              className="w-full p-4 border-2 border-gray-200 hover:border-conab-action/30 rounded-2xl transition-all duration-200 hover:scale-105 hover:bg-gray-50/50 text-left"
+            >
+              <div className="font-semibold text-gray-800 mb-1">
+                {localSettings.customPrompt ? 'Edit Custom Prompt' : 'Set Custom Prompt'}
+              </div>
+              <div className="text-sm text-gray-600">
+                {localSettings.customPrompt 
+                  ? `${localSettings.customPrompt.substring(0, 100)}${localSettings.customPrompt.length > 100 ? '...' : ''}`
+                  : 'Click to define a custom system prompt for the AI assistant'
+                }
+              </div>
             </button>
           </div>
 
@@ -288,11 +330,19 @@ export default function ChatSettings({
                 <p><span className="font-medium">Temperature:</span> {localSettings.temperature} ({getTemperatureDescription(localSettings.temperature).toLowerCase()})</p>
                 <p><span className="font-medium">Max Tokens:</span> {localSettings.maxTokens}</p>
                 <p><span className="font-medium">Search Results:</span> {localSettings.maxResults}</p>
+                <p><span className="font-medium">Prompt:</span> {localSettings.customPrompt ? 'Custom' : 'Default'}</p>
               </div>
             </div>
           </div>
         </div>
       )}
+
+      <PromptModal
+        isOpen={isPromptModalOpen}
+        onClose={() => setIsPromptModalOpen(false)}
+        promptValue={localSettings.customPrompt}
+        onSave={handlePromptSave}
+      />
 
       {/* Backdrop */}
       {isOpen && (

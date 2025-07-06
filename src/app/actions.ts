@@ -41,6 +41,7 @@ export interface ChatOptions {
   action?: string;
   temperature?: number;
   maxTokens?: number;
+  customPrompt?: string;
 }
 
 export async function continueConversation(
@@ -159,7 +160,7 @@ export async function continueConversation(
         2
       );
 
-      const systemMessage = buildChatPrompt(context, options.promptType);
+      const systemMessage = buildChatPrompt(context, options.promptType, options.customPrompt);
 
       const messages: LLMMessage[] = [
         { role: 'system', content: systemMessage },

@@ -203,33 +203,9 @@ Key guidelines:
 - **Be conservative with claims**: If the context doesn't explicitly state something, acknowledge the limitation rather than making assumptions.`
 };
 
-export function buildChatPrompt(context: string, promptType: string = 'default'): string {
-  const selectedPrompt = SYSTEM_PROMPTS[promptType as keyof typeof SYSTEM_PROMPTS] || SYSTEM_PROMPTS.default;
+export function buildChatPrompt(context: string, promptType: string = 'default', customPrompt?: string): string {
+  const selectedPrompt = customPrompt || SYSTEM_PROMPTS[promptType as keyof typeof SYSTEM_PROMPTS] || SYSTEM_PROMPTS.default;
   
-  return `${selectedPrompt}
-
-CRITICAL INSTRUCTIONS ABOUT SOURCES AND CONTEXT FORMAT:
-- The context below is provided in JSON format as an array of objects
-- Each object contains "content" (the actual information) and "source" (the URL where it comes from)
-- You MUST ONLY reference the exact URLs provided in the "source" field of each object
-- DO NOT create, invent, or generate any URLs that are not in the context
-- DO NOT make up page names or links beyond what's provided
-- DO NOT modify, shorten, or change any URLs from the context
-- DO NOT create variations of URLs (e.g., if context has "/surrogates/become-a-surrogate-mother/" do NOT create "/become-a-surrogate/")
-- If you reference information from the context, you can cite the exact source URL provided
-- If no relevant URL is provided for specific information, do not reference any sources
-- NEVER invent URLs that seem logical but don't exist in the JSON context
-- Only use information from the "content" field of the JSON objects
-- When citing sources, use the exact "source" URL from the corresponding JSON object
-
-CRITICAL CITATION FORMAT RULES:
-- NEVER use [REF] or [/REF] tags around URLs - this format is strictly forbidden
-- NEVER use any custom citation tags like [SOURCE], [REFERENCE], etc.
-- ONLY use standard markdown link format: [descriptive text](URL)
-- Example: [ConceiveAbilities FAQ](https://www.conceiveabilities.com/egg-donors/faq/)
-- If you want to cite a source, use natural language like "According to the ConceiveAbilities FAQ page" followed by the information
-- URLs should only appear as properly formatted markdown links, never as plain text with tags around them
-
-The context below is in JSON format with content and source pairs:
+  return `${selectedPrompt} \n\n The context below is in JSON format with content and source pairs:
 ${context}`;
 } 
