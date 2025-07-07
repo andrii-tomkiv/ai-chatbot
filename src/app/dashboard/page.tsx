@@ -1,19 +1,35 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import ABTestingDashboard from '@/tools/ab-testing/components/ABTestingDashboard';
+import UserRequestsDashboard from './components/UserRequestsDashboard';
 
-type Tab = 'overview' | 'ab-testing' | 'analytics';
+type Tab = 'overview' | 'ab-testing' | 'analytics' | 'user-requests';
 
 export default function DashboardPage() {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState<Tab>('ab-testing');
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-conab-light-background via-white to-conab-light-background">
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-conab-header mb-2">ConceiveAbilities AI Dashboard</h1>
-          <p className="text-conab-header/70">Evaluate and optimize your AI chatbot performance</p>
+          <div className="flex justify-between items-start">
+            <div>
+              <h1 className="text-3xl font-bold text-conab-header mb-2">ConceiveAbilities AI Dashboard</h1>
+              <p className="text-conab-header/70">Evaluate and optimize your AI chatbot performance</p>
+            </div>
+            <button
+              onClick={() => router.push('/')}
+              className="px-6 py-3 bg-conab-action hover:bg-conab-action-dark text-white rounded-lg font-medium transition-colors duration-200 shadow-sm hover:shadow-md flex items-center space-x-2"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              </svg>
+              <span>Back to Chat</span>
+            </button>
+          </div>
         </div>
 
         {/* Tab Navigation */}
@@ -50,6 +66,16 @@ export default function DashboardPage() {
               >
                 Analytics
               </button>
+              <button
+                onClick={() => setActiveTab('user-requests')}
+                className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                  activeTab === 'user-requests'
+                    ? 'border-conab-action text-conab-action'
+                    : 'border-transparent text-conab-header/60 hover:text-conab-header hover:border-conab-header/30'
+                }`}
+              >
+                User Requests
+              </button>
             </nav>
           </div>
 
@@ -70,6 +96,8 @@ export default function DashboardPage() {
                 <p className="text-conab-header/70">Detailed analytics and insights will be displayed here.</p>
               </div>
             )}
+
+            {activeTab === 'user-requests' && <UserRequestsDashboard />}
           </div>
         </div>
       </div>
