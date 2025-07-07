@@ -1,6 +1,24 @@
 version: '3.8'
 
 services:
+  mysql:
+    image: mysql:8.0
+    container_name: chatbot-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: chatbot_db
+      MYSQL_USER: chatbot_user
+      MYSQL_PASSWORD: chatbot_password
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
   chatbot:
     build:
       context: .
@@ -10,11 +28,15 @@ services:
     environment:
       - NODE_ENV=production
       - NEXT_TELEMETRY_DISABLED=1
+      - DATABASE_URL=mysql://chatbot_user:chatbot_password@mysql:3306/chatbot_db
     env_file:
       - .env
     volumes:
       - ./data:/app/data
     restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
       interval: 30s
@@ -31,6 +53,7 @@ services:
       - "3001:3000"
     environment:
       - NODE_ENV=development
+      - DATABASE_URL=mysql://chatbot_user:chatbot_password@mysql:3306/chatbot_db
     env_file:
       - .env
     volumes:
@@ -38,5 +61,8 @@ services:
       - /app/node_modules
       - /app/.next
     restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
     profiles:
       - dev 
