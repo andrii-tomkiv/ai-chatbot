@@ -38,7 +38,6 @@ export class MistralProviderImpl implements MistralProvider {
       temperature: 0.7,
       ...config,
     };
-    console.log(`[MISTRAL] Final default config:`, this.defaultConfig);
   }
 
   async generateResponse(messages: Message[], mistralConfig?: Partial<MistralConfig>): Promise<MistralResponse> {
@@ -48,17 +47,12 @@ export class MistralProviderImpl implements MistralProvider {
       temperature: config.getValidatedTemperature('mistral', mergedConfig.temperature)
     };
     
-    console.log(`[MISTRAL] Attempting to generate response with model: ${finalConfig.model}`);
-    
     try {
-      console.log(`[MISTRAL] Calling streamText with model: ${finalConfig.model}`);
-      
       const mistralApiKey = config.getApiKeys().mistral;
       if (!mistralApiKey) {
         throw new Error('Mistral API key not configured');
       }
       
-      // Set the API key in environment for this request
       const originalApiKey = process.env.MISTRAL_API_KEY;
       process.env.MISTRAL_API_KEY = mistralApiKey;
       
@@ -79,8 +73,6 @@ export class MistralProviderImpl implements MistralProvider {
           throw new Error('No response content received from Mistral API');
         }
 
-        console.log(`[MISTRAL] Successfully generated response with ${content.length} characters`);
-        
         return {
           content,
           usage: {
@@ -90,7 +82,6 @@ export class MistralProviderImpl implements MistralProvider {
           },
         };
       } finally {
-        // Restore original API key
         if (originalApiKey !== undefined) {
           process.env.MISTRAL_API_KEY = originalApiKey;
         } else {
@@ -98,8 +89,6 @@ export class MistralProviderImpl implements MistralProvider {
         }
       }
     } catch (error) {
-      console.error('[MISTRAL] API error:', error);
-      
       const errorMessage = error instanceof Error ? error.message : String(error);
       
       if (errorMessage.includes('401') || errorMessage.includes('Unauthorized')) {
@@ -123,20 +112,12 @@ export class MistralProviderImpl implements MistralProvider {
       temperature: config.getValidatedTemperature('mistral', mergedConfig.temperature)
     };
     
-    console.log(`[MISTRAL] generateStreamingResponse called with config:`, mistralConfig);
-    console.log(`[MISTRAL] Merged config:`, finalConfig);
-    console.log(`[MISTRAL] Attempting to generate streaming response with model: ${finalConfig.model}`);
-    console.log(`[MISTRAL] Messages:`, messages.map(m => ({ role: m.role, content: m.content.substring(0, 100) + '...' })));
-    
     try {
-      console.log(`[MISTRAL] Calling streamText with model: ${finalConfig.model}`);
-      
       const mistralApiKey = config.getApiKeys().mistral;
       if (!mistralApiKey) {
         throw new Error('Mistral API key not configured');
       }
       
-      // Set the API key in environment for this request
       const originalApiKey = process.env.MISTRAL_API_KEY;
       process.env.MISTRAL_API_KEY = mistralApiKey;
       
@@ -148,7 +129,6 @@ export class MistralProviderImpl implements MistralProvider {
           temperature: finalConfig.temperature,
         });
 
-        console.log(`[MISTRAL] streamText returned, starting to read stream`);
         let hasContent = false;
         let chunkCount = 0;
         let totalContent = '';
@@ -161,18 +141,10 @@ export class MistralProviderImpl implements MistralProvider {
           yield text;
         }
 
-        console.log(`[MISTRAL] Stream ended, received ${chunkCount} chunks`);
-        console.log(`[MISTRAL] Total content length: ${totalContent.length}`);
-        console.log(`[MISTRAL] Total content: "${totalContent}"`);
-        
         if (!hasContent) {
-          console.log(`[MISTRAL] No content received - this might indicate an API issue`);
           throw new Error('No response content received from Mistral API');
         }
-        
-        console.log(`[MISTRAL] Successfully completed streaming response`);
       } finally {
-        // Restore original API key
         if (originalApiKey !== undefined) {
           process.env.MISTRAL_API_KEY = originalApiKey;
         } else {
@@ -181,11 +153,6 @@ export class MistralProviderImpl implements MistralProvider {
       }
     } catch (error) {
       console.error('[MISTRAL] Streaming error:', error);
-      console.error('[MISTRAL] Error details:', {
-        message: error instanceof Error ? error.message : String(error),
-        stack: error instanceof Error ? error.stack : undefined,
-        name: error instanceof Error ? error.name : undefined
-      });
       
       const errorMessage = error instanceof Error ? error.message : String(error);
       

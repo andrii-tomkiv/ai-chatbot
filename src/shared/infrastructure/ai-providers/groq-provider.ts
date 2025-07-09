@@ -48,17 +48,12 @@ export class GroqProviderImpl implements GroqProvider {
       temperature: config.getValidatedTemperature('groq', mergedConfig.temperature)
     };
     
-    console.log(`[GROQ] Attempting to generate response with model: ${finalConfig.model}`);
-    
     try {
-      console.log(`[GROQ] Calling streamText with model: ${finalConfig.model}`);
-      
       const groqApiKey = config.getApiKeys().groq;
       if (!groqApiKey) {
         throw new Error('Groq API key not configured');
       }
       
-      // Set the API key in environment for this request
       const originalApiKey = process.env.GROQ_API_KEY;
       process.env.GROQ_API_KEY = groqApiKey;
       
@@ -79,8 +74,6 @@ export class GroqProviderImpl implements GroqProvider {
           throw new Error('No response content received from Groq API');
         }
 
-        console.log(`[GROQ] Successfully generated response with ${content.length} characters`);
-        
         return {
           content,
           usage: {
@@ -90,7 +83,6 @@ export class GroqProviderImpl implements GroqProvider {
           },
         };
       } finally {
-        // Restore original API key
         if (originalApiKey !== undefined) {
           process.env.GROQ_API_KEY = originalApiKey;
         } else {
@@ -98,8 +90,6 @@ export class GroqProviderImpl implements GroqProvider {
         }
       }
     } catch (error) {
-      console.error('[GROQ] API error:', error);
-      
       const errorMessage = error instanceof Error ? error.message : String(error);
       
       if (errorMessage.includes('401') || errorMessage.includes('Unauthorized')) {
@@ -125,20 +115,12 @@ export class GroqProviderImpl implements GroqProvider {
       temperature: config.getValidatedTemperature('groq', mergedConfig.temperature)
     };
     
-    console.log(`[GROQ] generateStreamingResponse called with config:`, groqConfig);
-    console.log(`[GROQ] Merged config:`, finalConfig);
-    console.log(`[GROQ] Attempting to generate streaming response with model: ${finalConfig.model}`);
-    console.log(`[GROQ] Messages:`, messages.map(m => ({ role: m.role, content: m.content.substring(0, 100) + '...' })));
-    
     try {
-      console.log(`[GROQ] Calling streamText with model: ${finalConfig.model}`);
-      
       const groqApiKey = config.getApiKeys().groq;
       if (!groqApiKey) {
         throw new Error('Groq API key not configured');
       }
       
-      // Set the API key in environment for this request
       const originalApiKey = process.env.GROQ_API_KEY;
       process.env.GROQ_API_KEY = groqApiKey;
       
@@ -150,7 +132,6 @@ export class GroqProviderImpl implements GroqProvider {
           temperature: finalConfig.temperature,
         });
 
-        console.log(`[GROQ] streamText returned, starting to read stream`);
         let hasContent = false;
         let chunkCount = 0;
         let totalContent = '';
@@ -162,19 +143,11 @@ export class GroqProviderImpl implements GroqProvider {
   
           yield text;
         }
-
-        console.log(`[GROQ] Stream ended, received ${chunkCount} chunks`);
-        console.log(`[GROQ] Total content length: ${totalContent.length}`);
-        console.log(`[GROQ] Total content: "${totalContent}"`);
         
         if (!hasContent) {
-          console.log(`[GROQ] No content received - this might indicate an API issue`);
           throw new Error('No response content received from Groq API');
         }
-        
-        console.log(`[GROQ] Successfully completed streaming response`);
       } finally {
-        // Restore original API key
         if (originalApiKey !== undefined) {
           process.env.GROQ_API_KEY = originalApiKey;
         } else {
@@ -183,12 +156,6 @@ export class GroqProviderImpl implements GroqProvider {
       }
     } catch (error) {
       console.error('[GROQ] Streaming error:', error);
-      console.error('[GROQ] Error details:', {
-        message: error instanceof Error ? error.message : String(error),
-        stack: error instanceof Error ? error.stack : undefined,
-        name: error instanceof Error ? error.name : undefined
-      });
-      
       const errorMessage = error instanceof Error ? error.message : String(error);
       
       if (errorMessage.includes('401') || errorMessage.includes('Unauthorized')) {

@@ -1,16 +1,16 @@
 interface RateLimitConfig {
-  windowMs: number; // Time window in milliseconds
-  maxRequests: number; // Maximum requests per window
-  blockDurationMs?: number; // How long to block after limit exceeded
-  spamThreshold?: number; // Number of spam messages before blocking
+  windowMs: number;
+  maxRequests: number;
+  blockDurationMs?: number;
+  spamThreshold?: number;
 }
 
 interface RateLimitEntry {
   count: number;
   resetTime: number;
   blockedUntil?: number;
-  spamCount: number; // Track spam messages
-  lastSpamTime: number; // Track when last spam occurred
+  spamCount: number;
+  lastSpamTime: number;
 }
 
 interface RateLimitStatus {
@@ -32,7 +32,6 @@ export class RateLimiter {
     this.config = config;
     this.storageKey = storageKey;
     this.loadFromStorage();
-    // Clean up expired entries every 5 minutes
     setInterval(() => this.cleanup(), 5 * 60 * 1000);
   }
 
@@ -44,7 +43,6 @@ export class RateLimiter {
           const data = JSON.parse(stored);
           const now = Date.now();
           
-          // Only load non-expired entries
           for (const [identifier, entry] of Object.entries(data)) {
             const rateLimitEntry = entry as RateLimitEntry;
             if (now < rateLimitEntry.resetTime && (!rateLimitEntry.blockedUntil || now < rateLimitEntry.blockedUntil)) {
@@ -76,7 +74,6 @@ export class RateLimiter {
     const now = Date.now();
     const entry = this.store.get(identifier);
 
-    // Check if currently blocked
     if (entry?.blockedUntil && now < entry.blockedUntil) {
       const result = {
         allowed: false,
@@ -91,7 +88,6 @@ export class RateLimiter {
       return result;
     }
 
-    // Check if window has expired
     if (!entry || now > entry.resetTime) {
       const newEntry = {
         count: 1,
@@ -112,9 +108,7 @@ export class RateLimiter {
       };
     }
 
-    // Check if limit exceeded
     if (entry.count >= this.config.maxRequests) {
-      // Block the user if block duration is configured
       if (this.config.blockDurationMs) {
         entry.blockedUntil = now + this.config.blockDurationMs;
       }
@@ -131,7 +125,6 @@ export class RateLimiter {
       };
     }
 
-    // Increment count
     entry.count++;
     this.saveToStorage();
     
@@ -160,7 +153,6 @@ export class RateLimiter {
       };
     }
 
-    // Check if currently blocked
     if (entry.blockedUntil && now < entry.blockedUntil) {
       return {
         allowed: false,
@@ -173,7 +165,6 @@ export class RateLimiter {
       };
     }
 
-    // Check if window has expired
     if (now > entry.resetTime) {
       return {
         allowed: true,
@@ -200,7 +191,6 @@ export class RateLimiter {
     let hasChanges = false;
     
     for (const [identifier, entry] of this.store.entries()) {
-      // Remove entries that are past their reset time and not blocked
       if (now > entry.resetTime && (!entry.blockedUntil || now > entry.blockedUntil)) {
         this.store.delete(identifier);
         hasChanges = true;
@@ -221,7 +211,6 @@ export class RateLimiter {
     this.saveToStorage();
   }
 
-  // Track spam messages and potentially block
   trackSpam(identifier: string): { shouldBlock: boolean; blockDuration?: number } {
     const now = Date.now();
     const entry = this.store.get(identifier);
@@ -238,17 +227,15 @@ export class RateLimiter {
       return { shouldBlock: false };
     }
 
-    // Reset spam count if it's been a while
-    if (now - entry.lastSpamTime > 5 * 60 * 1000) { // 5 minutes
+    if (now - entry.lastSpamTime > 5 * 60 * 1000) {
       entry.spamCount = 0;
     }
 
     entry.spamCount++;
     entry.lastSpamTime = now;
 
-    // Block if spam threshold exceeded
     if (this.config.spamThreshold && entry.spamCount >= this.config.spamThreshold) {
-      const blockDuration = this.config.blockDurationMs || 10 * 60 * 1000; // Default 10 minutes
+      const blockDuration = this.config.blockDurationMs || 10 * 60 * 1000;
       entry.blockedUntil = now + blockDuration;
       this.saveToStorage();
       return { shouldBlock: true, blockDuration };
@@ -259,24 +246,23 @@ export class RateLimiter {
   }
 }
 
-// Create rate limiters for different purposes
 export const chatRateLimiter = new RateLimiter({
-  windowMs: 60 * 1000, // 1 minute
-  maxRequests: 5, // 5 requests per minute
-  blockDurationMs: 10 * 60 * 1000, // 10 minutes block duration
-  spamThreshold: 3 // Block after 3 spam messages
+  windowMs: 60 * 1000,
+  maxRequests: 5,
+  blockDurationMs: 10 * 60 * 1000,
+  spamThreshold: 3
 }, 'chat-rate-limiter');
 
 export const embeddingRateLimiter = new RateLimiter({
-  windowMs: 60 * 1000, // 1 minute
-  maxRequests: 3, // 3 embedding requests per minute
-  blockDurationMs: 15 * 60 * 1000, // 15 minutes block duration
-  spamThreshold: 2 // Block after 2 spam messages
+  windowMs: 60 * 1000,
+  maxRequests: 3,
+  blockDurationMs: 15 * 60 * 1000,
+  spamThreshold: 2
 }, 'embedding-rate-limiter');
 
 export const generalRateLimiter = new RateLimiter({
-  windowMs: 60 * 1000, // 1 minute
-  maxRequests: 15, // 15 general requests per minute
-  blockDurationMs: 5 * 60 * 1000, // 5 minutes block duration
-  spamThreshold: 5 // Block after 5 spam messages
+  windowMs: 60 * 1000,
+  maxRequests: 15,
+  blockDurationMs: 5 * 60 * 1000,
+  spamThreshold: 5
 }, 'general-rate-limiter'); 
