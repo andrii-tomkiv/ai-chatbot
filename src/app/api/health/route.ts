@@ -2,9 +2,6 @@ import { NextResponse } from 'next/server';
 
 export async function GET() {
   try {
-    // Basic health check - you can add more sophisticated checks here
-    // like database connectivity, external API availability, etc.
-    
     return NextResponse.json(
       { 
         status: 'healthy', 
