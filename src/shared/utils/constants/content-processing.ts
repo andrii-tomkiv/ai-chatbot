@@ -4,17 +4,14 @@
  */
 
 export const CONTENT_PROCESSING = {
-  // Chunk settings
   MAX_CHUNK_LENGTH: 1000,
   MIN_PARAGRAPH_LENGTH: 50,
   
-  // Scraping settings
   RETRY_STRATEGIES: 3,
   REQUEST_DELAY_MS: 1000,
   RETRY_DELAY_MS: 2000,
   PROGRESS_SAVE_INTERVAL: 10,
 
-  // Content selectors for scraping
   CONTENT_SELECTORS: [
     'article',
     '.content',
@@ -26,7 +23,6 @@ export const CONTENT_PROCESSING = {
     '.page-content'
   ],
 
-  // File paths
   PATHS: {
     SCRAPED_CONTENT_DIR: './data/scraped-content',
     PROGRESS_FILE_PREFIX: 'scraped-content-progress-',

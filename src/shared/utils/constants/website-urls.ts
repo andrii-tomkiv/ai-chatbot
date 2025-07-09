@@ -4,7 +4,6 @@
  */
 
 export const WEBSITE_URLS = {
-  // Base URLs
   PRODUCTION: {
     BASE: 'https://www.conceiveabilities.com',
     CONTACT: 'https://www.conceiveabilities.com/about/contact-us/',

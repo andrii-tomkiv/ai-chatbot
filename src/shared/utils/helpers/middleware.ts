@@ -2,17 +2,14 @@ import { NextRequest, NextResponse } from 'next/server';
 import { chatRateLimiter, embeddingRateLimiter, generalRateLimiter } from '../../../domains/moderation/services/rate-limiter';
 
 export function getClientIdentifier(request: NextRequest): string {
-  // Try to get real IP from various headers
   const forwarded = request.headers.get('x-forwarded-for');
   const realIp = request.headers.get('x-real-ip');
   const cfConnectingIp = request.headers.get('cf-connecting-ip');
   
   let ip = forwarded?.split(',')[0] || realIp || cfConnectingIp || 'unknown';
   
-  // Clean up IP address
   ip = ip.trim();
   
-  // Add user agent as additional identifier to prevent simple IP spoofing
   const userAgent = request.headers.get('user-agent') || 'unknown';
   
   return `${ip}:${userAgent.substring(0, 50)}`;
@@ -46,7 +43,6 @@ export function rateLimitMiddleware(request: NextRequest, type: 'chat' | 'embedd
       { status: 429 }
     );
     
-    // Add rate limit headers
     response.headers.set('X-RateLimit-Limit', '10');
     response.headers.set('X-RateLimit-Remaining', '0');
     response.headers.set('X-RateLimit-Reset', result.resetTime.toString());
@@ -55,7 +51,6 @@ export function rateLimitMiddleware(request: NextRequest, type: 'chat' | 'embedd
     return response;
   }
   
-  // Add rate limit headers to successful responses
   const response = NextResponse.next();
   response.headers.set('X-RateLimit-Limit', '10');
   response.headers.set('X-RateLimit-Remaining', result.remaining.toString());
@@ -67,11 +62,9 @@ export function rateLimitMiddleware(request: NextRequest, type: 'chat' | 'embedd
 export function spamDetectionMiddleware(request: NextRequest): NextResponse | null {
   const identifier = getClientIdentifier(request);
   
-  // Check for suspicious patterns
   const userAgent = request.headers.get('user-agent') || '';
   const contentType = request.headers.get('content-type') || '';
   
-  // Block common bot user agents
   const botPatterns = [
     /bot/i, /crawler/i, /spider/i, /scraper/i, /curl/i, /wget/i,
     /python/i, /java/i, /perl/i, /ruby/i, /php/i, /go-http-client/i
@@ -85,7 +78,6 @@ export function spamDetectionMiddleware(request: NextRequest): NextResponse | nu
     );
   }
   
-  // Check for rapid requests (less than 1 second apart)
   const now = Date.now();
   const lastRequest = request.headers.get('x-last-request');
   if (lastRequest) {
@@ -104,12 +96,10 @@ export function spamDetectionMiddleware(request: NextRequest): NextResponse | nu
 
 export function contentValidationMiddleware(request: NextRequest): NextResponse | null {
   try {
-    // For POST requests, validate content
     if (request.method === 'POST') {
       const contentType = request.headers.get('content-type') || '';
       
       if (contentType.includes('application/json')) {
-        // Check content length
         const contentLength = request.headers.get('content-length');
         if (contentLength && parseInt(contentLength) > 10000) { // 10KB limit
           return NextResponse.json(
