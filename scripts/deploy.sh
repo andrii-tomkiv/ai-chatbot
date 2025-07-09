@@ -46,8 +46,22 @@ sleep 10
 # Check if the container is running
 if docker ps | grep -q conab-ai-chatbot; then
     echo "✅ Container is running successfully!"
-    echo "🌐 Application is available at: http://localhost:3000"
-    echo "🔍 Health check: http://localhost:3000/api/health"
+    
+    # Detect the appropriate URL based on environment
+    if [ -n "$VERCEL_URL" ]; then
+        APP_URL="https://$VERCEL_URL"
+    elif [ -n "$RAILWAY_STATIC_URL" ]; then
+        APP_URL="$RAILWAY_STATIC_URL"
+    elif [ -n "$HEROKU_APP_NAME" ]; then
+        APP_URL="https://$HEROKU_APP_NAME.herokuapp.com"
+    else
+        # Default to localhost for local development
+        PORT=${PORT:-3000}
+        APP_URL="http://localhost:$PORT"
+    fi
+    
+    echo "🌐 Application is available at: $APP_URL"
+    echo "🔍 Health check: $APP_URL/api/health"
 else
     echo "❌ Container failed to start. Check logs with: docker logs conab-ai-chatbot"
     exit 1

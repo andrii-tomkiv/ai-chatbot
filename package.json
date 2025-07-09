@@ -13,7 +13,6 @@
     "generate-embeddings": "tsx src/scripts/generateEmbeddings.ts",
     "test-sitemap": "tsx src/scripts/test-sitemap.ts",
     "test-groq": "tsx src/scripts/test-groq.ts",
-    "evaluate": "tsx scripts/evaluate-chatbot.ts",
     "migrate-to-supabase": "tsx src/scripts/migrate-to-supabase.ts"
   },
   "dependencies": {

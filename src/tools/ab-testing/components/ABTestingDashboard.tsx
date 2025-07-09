@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { TestConfiguration, TestResult, ABTestRunner } from '../ab-test-runner';
 import { History } from 'lucide-react';
 import Link from 'next/link';
-import { log } from 'console';
 
 export default function ABTestingDashboard() {
   const [testConfigA, setTestConfigA] = useState<TestConfiguration>({
@@ -147,15 +146,11 @@ export default function ABTestingDashboard() {
             View Results History
           </Link>
         </div>
-        
-        {/* Configuration Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          {/* Configuration A */}
           <div className="border border-conab-action/30 rounded-lg p-4 shadow-sm">
             <h3 className="text-lg font-semibold text-conab-header mb-4 text-center bg-gradient-to-r from-conab-action/10 to-conab-action-lighten/10 py-2 rounded border-l-4 border-conab-action">
               Configuration A
             </h3>
-            
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-conab-header mb-2">Name</label>
@@ -166,7 +161,6 @@ export default function ABTestingDashboard() {
                   className="w-full text-conab-header px-3 py-2 border border-conab-header/30 rounded-md focus:outline-none focus:ring-2 focus:ring-conab-action focus:border-conab-action"
                 />
               </div>
-
               <div>
                 <label className="block text-sm font-medium text-conab-header mb-2">Provider</label>
                 <select
@@ -181,7 +175,6 @@ export default function ABTestingDashboard() {
                   ))}
                 </select>
               </div>
-
               <div>
                 <label className="block text-sm font-medium text-conab-header mb-2">Model</label>
                 <select
@@ -196,7 +189,6 @@ export default function ABTestingDashboard() {
                   ))}
                 </select>
               </div>
-
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-conab-header mb-2">Max Tokens</label>
@@ -207,7 +199,6 @@ export default function ABTestingDashboard() {
                     className="w-full text-conab-header px-3 py-2 border border-conab-header/30 rounded-md focus:outline-none focus:ring-2 focus:ring-conab-action focus:border-conab-action"
                   />
                 </div>
-
                 <div>
                   <label className="block text-sm font-medium text-conab-header mb-2">Temperature</label>
                   <input
@@ -221,7 +212,6 @@ export default function ABTestingDashboard() {
                   />
                 </div>
               </div>
-
               <div>
                 <label className="block text-sm font-medium text-conab-header mb-2">Max Results</label>
                 <input
@@ -231,7 +221,6 @@ export default function ABTestingDashboard() {
                   className="w-full text-conab-header px-3 py-2 border border-conab-header/30 rounded-md focus:outline-none focus:ring-2 focus:ring-conab-action focus:border-conab-action"
                 />
               </div>
-
               <div>
                 <label className="block text-sm font-medium text-conab-header mb-2">System Prompt</label>
                 <textarea
@@ -243,13 +232,10 @@ export default function ABTestingDashboard() {
               </div>
             </div>
           </div>
-
-          {/* Configuration B */}
           <div className="border border-conab-green/30 rounded-lg p-4 shadow-sm">
             <h3 className="text-lg font-semibold text-conab-header mb-4 text-center bg-gradient-to-r from-conab-green/10 to-conab-green/20 py-2 rounded border-l-4 border-conab-green">
               Configuration B
             </h3>
-            
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-conab-header mb-2">Name</label>
@@ -260,7 +246,6 @@ export default function ABTestingDashboard() {
                   className="w-full text-conab-header px-3 py-2 border border-conab-header/30 rounded-md focus:outline-none focus:ring-2 focus:ring-conab-green focus:border-conab-green"
                 />
               </div>
-
               <div>
                 <label className="block text-sm font-medium text-conab-header mb-2">Provider</label>
                 <select
@@ -275,7 +260,6 @@ export default function ABTestingDashboard() {
                   ))}
                 </select>
               </div>
-
               <div>
                 <label className="block text-sm font-medium text-conab-header mb-2">Model</label>
                 <select
@@ -290,7 +274,6 @@ export default function ABTestingDashboard() {
                   ))}
                 </select>
               </div>
-
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-conab-header mb-2">Max Tokens</label>
@@ -301,7 +284,6 @@ export default function ABTestingDashboard() {
                     className="w-full text-conab-header px-3 py-2 border border-conab-header/30 rounded-md focus:outline-none focus:ring-2 focus:ring-conab-green focus:border-conab-green"
                   />
                 </div>
-
                 <div>
                   <label className="block text-sm font-medium text-conab-header mb-2">Temperature</label>
                   <input
@@ -315,7 +297,6 @@ export default function ABTestingDashboard() {
                   />
                 </div>
               </div>
-
               <div>
                 <label className="block text-sm font-medium text-conab-header mb-2">Max Results</label>
                 <input
@@ -325,7 +306,6 @@ export default function ABTestingDashboard() {
                   className="w-full text-conab-header px-3 py-2 border border-conab-header/30 rounded-md focus:outline-none focus:ring-2 focus:ring-conab-green focus:border-conab-green"
                 />
               </div>
-
               <div>
                 <label className="block text-sm font-medium text-conab-header mb-2">System Prompt</label>
                 <textarea
@@ -338,8 +318,6 @@ export default function ABTestingDashboard() {
             </div>
           </div>
         </div>
-
-        {/* Test Strategy and Category Selection */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
           <div>
             <label className="block text-sm font-medium text-conab-header mb-2">Evaluation Strategy</label>
@@ -353,7 +331,6 @@ export default function ABTestingDashboard() {
               <option value="llm-evaluation">LLM-based Evaluation</option>
             </select>
           </div>
-
           <div>
             <label className="block text-sm font-medium text-conab-header mb-2">Test Categories</label>
             <select
@@ -371,8 +348,6 @@ export default function ABTestingDashboard() {
             </select>
           </div>
         </div>
-
-        {/* Run Test Button */}
         <div className="flex flex-col items-center mb-6">
           <button
             onClick={runABTest}
@@ -385,8 +360,6 @@ export default function ABTestingDashboard() {
           >
             {isRunning ? 'Running Test...' : 'Run A/B Test'}
           </button>
-          
-          {/* Progress Bar */}
           {isRunning && (
             <div className="mt-4 w-full max-w-md">
               <div className="bg-gray-200 rounded-full h-2 mb-2">
@@ -398,7 +371,6 @@ export default function ABTestingDashboard() {
               <p className="text-sm text-conab-header text-center">{progressMessage}</p>
             </div>
           )}
-          
           {selectedTestCases.length === 0 && (
             <p className="text-sm text-conab-header/60 mt-2">Please select at least one category to run the test</p>
           )}
@@ -408,13 +380,9 @@ export default function ABTestingDashboard() {
             </div>
           )}
         </div>
-
-        {/* Results Section */}
         {results.length > 0 && (
           <div className="mt-8">
             <h3 className="text-xl font-semibold text-conab-header mb-4">Test Results</h3>
-            
-            {/* Summary Stats */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
               <div className="bg-gradient-to-br from-conab-action/10 to-conab-action-lighten/10 p-4 rounded-xl border border-conab-action/20 shadow-sm">
                 <div className="text-2xl font-bold text-conab-action">{calculateWinRate('A').toFixed(1)}%</div>
@@ -433,8 +401,6 @@ export default function ABTestingDashboard() {
                 <div className="text-sm text-conab-header/70">Total Tests</div>
               </div>
             </div>
-
-            {/* Average Scores */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
               <div className="bg-white border border-conab-action/20 rounded-xl p-4 shadow-sm">
                 <h4 className="font-semibold text-conab-header mb-2">Configuration A Average</h4>
@@ -471,8 +437,6 @@ export default function ABTestingDashboard() {
                 )}
               </div>
             </div>
-
-            {/* Detailed Results */}
             <div className="bg-white border border-conab-header/20 rounded-xl overflow-hidden shadow-sm">
               <div className="px-4 py-3 bg-gradient-to-r from-conab-header to-conab-middle-blue border-b border-conab-header/20">
                 <h4 className="font-semibold text-white">Detailed Results</h4>

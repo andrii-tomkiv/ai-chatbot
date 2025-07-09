@@ -18,7 +18,7 @@ The A/B Testing Dashboard is a powerful tool for comparing different configurati
 
 ### 1. Access the Dashboard
 
-Navigate to `http://localhost:3000/dashboard` in your browser after starting the development server.
+Navigate to your application's `/dashboard` endpoint in your browser after starting the development server.
 
 ### 2. Configure Test Settings
 

@@ -25,7 +25,6 @@ export interface TestScores {
   missingKeywords: string[];
 }
 
-// New interface for LLM evaluation results
 export interface LLMTestScores {
   faithfulness: number;
   helpfulness: number;
@@ -38,7 +37,7 @@ export interface ConfigResult {
   answer: string;
   sources: string[];
   scores: TestScores;
-  llmScores?: LLMTestScores; // Optional LLM-specific scores
+  llmScores?: LLMTestScores;
   executionTime: number;
   errors?: string;
   context?: string;
@@ -53,7 +52,7 @@ export interface TestResult {
   configB: ConfigResult;
   winner: 'A' | 'B' | 'tie';
   scoreDifference: number;
-  evaluationStrategy: string; // Track which evaluation strategy was used
+  evaluationStrategy: string;
 }
 
 export interface ABTestReport {
@@ -73,13 +72,13 @@ export interface ABTestReport {
         accuracy: number;
         completeness: number;
         helpfulness: number;
-        faithfulness?: number; // Optional LLM-specific averages
+        faithfulness?: number;
       };
       configB: {
         accuracy: number;
         completeness: number;
         helpfulness: number;
-        faithfulness?: number; // Optional LLM-specific averages
+        faithfulness?: number;
       };
     };
     executionTime: number;
@@ -94,8 +93,33 @@ export class ABTestRunner {
   private baseUrl: string;
   private onProgress?: (progress: number, message: string) => void;
 
-  constructor(baseUrl: string = 'http://localhost:3000') {
-    this.baseUrl = baseUrl;
+  constructor(baseUrl?: string) {
+    this.baseUrl = baseUrl || this.getDefaultBaseUrl();
+  }
+
+  private getDefaultBaseUrl(): string {
+    if (typeof window !== 'undefined') {
+      return `${window.location.protocol}//${window.location.host}`;
+    }
+    
+    const vercelUrl = process.env.VERCEL_URL;
+    const railwayUrl = process.env.RAILWAY_STATIC_URL;
+    const herokuUrl = process.env.HEROKU_APP_NAME;
+    const port = process.env.PORT || '3000';
+    
+    if (vercelUrl) {
+      return `https://${vercelUrl}`;
+    }
+    
+    if (railwayUrl) {
+      return railwayUrl;
+    }
+    
+    if (herokuUrl) {
+      return `https://${herokuUrl}.herokuapp.com`;
+    }
+    
+    return `http://localhost:${port}`;
   }
 
   setProgressCallback(callback: (progress: number, message: string) => void) {
@@ -235,7 +259,7 @@ export class ABTestRunner {
           throw new Error('Context and user question are required for LLM evaluation');
         }
         const { evaluateWithLLM } = await import('./evaluation-strategies/llm-evaluation');
-        return evaluateWithLLM(answer, sources, expectedKeywords, expectedSources, context, userQuestion);
+        return evaluateWithLLM(answer, expectedKeywords, context, userQuestion);
       
       default:
         throw new Error(`Unknown evaluation strategy: ${strategy}`);
@@ -272,18 +296,15 @@ export class ABTestRunner {
       testCase.question
     );
 
-    // Determine winner based on evaluation strategy
     let winner: 'A' | 'B' | 'tie';
     let scoreDifference: number;
     
     if (strategy === 'llm-evaluation') {
-      // For LLM evaluation, compare helpfulness scores
       const scoreA = scoresA.helpfulness;
       const scoreB = scoresB.helpfulness;
       winner = scoreA > scoreB ? 'A' : scoreA < scoreB ? 'B' : 'tie';
       scoreDifference = Math.abs(scoreA - scoreB);
     } else {
-      // For other strategies, use helpfulness as before
       winner = scoresA.helpfulness > scoresB.helpfulness ? 'A' : 
                scoresB.helpfulness > scoresA.helpfulness ? 'B' : 'tie';
       scoreDifference = Math.abs(scoresA.helpfulness - scoresB.helpfulness);
@@ -351,7 +372,6 @@ export class ABTestRunner {
         
         this.onProgress?.(progress, `Completed ${i + 1}/${testCasesToRun.length} tests`);
         
-        // Add longer delay for LLM evaluation to respect rate limits
         const delay = strategy === 'llm-evaluation' ? 3000 : 100; // 3 seconds for LLM, 100ms for others
         await new Promise(resolve => setTimeout(resolve, delay));
       } catch (error) {
@@ -400,7 +420,6 @@ export class ABTestRunner {
     };
 
     if (strategy === 'llm-evaluation') {
-      // For LLM evaluation, calculate faithfulness averages with null safety
       averageScores = {
         configA: {
           accuracy: results.reduce((sum, r) => sum + (r.configA.scores.accuracy || 0), 0) / totalTests,
@@ -416,7 +435,6 @@ export class ABTestRunner {
         }
       };
     } else {
-      // For other strategies, don't include faithfulness
       averageScores = {
         configA: {
           accuracy: results.reduce((sum, r) => sum + (r.configA.scores.accuracy || 0), 0) / totalTests,
@@ -487,14 +505,12 @@ export class ABTestRunner {
         ...result,
         configA: {
           ...result.configA,
-          // Ensure context is properly handled
           context: result.configA.context ? 
             (typeof result.configA.context === 'string' ? result.configA.context : JSON.stringify(result.configA.context)) : 
             undefined
         },
         configB: {
           ...result.configB,
-          // Ensure context is properly handled
           context: result.configB.context ? 
             (typeof result.configB.context === 'string' ? result.configB.context : JSON.stringify(result.configB.context)) : 
             undefined
@@ -515,10 +531,8 @@ export class ABTestRunner {
         timestamp: report.timestamp
       });
       
-      // Clean and validate the report data before sending
       const cleanReport = {
         ...report,
-        // Ensure all required fields are present
         timestamp: report.timestamp || new Date().toISOString(),
         configurations: report.configurations,
         evaluationStrategy: report.evaluationStrategy || 'unknown',
@@ -527,14 +541,12 @@ export class ABTestRunner {
           ...result,
           configA: {
             ...result.configA,
-            // Ensure context is properly handled
             context: result.configA.context ? 
               (typeof result.configA.context === 'string' ? result.configA.context : JSON.stringify(result.configA.context)) : 
               undefined
           },
           configB: {
             ...result.configB,
-            // Ensure context is properly handled
             context: result.configB.context ? 
               (typeof result.configB.context === 'string' ? result.configB.context : JSON.stringify(result.configB.context)) : 
               undefined

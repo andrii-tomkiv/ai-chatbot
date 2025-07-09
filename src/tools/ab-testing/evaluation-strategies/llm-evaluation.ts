@@ -6,21 +6,17 @@ interface GeminiEvaluationResponse {
   justification?: string;
 }
 
-// New interface for LLM-specific evaluation results
 export interface LLMTestScores {
   faithfulness: number;
   helpfulness: number;
   justification?: string;
-  // Keep keyword fields for backward compatibility
   keywordMatches: string[];
   missingKeywords: string[];
 }
 
 export async function evaluateWithLLM(
   answer: string,
-  sources: string[],
   expectedKeywords: string[],
-  expectedSources: string[],
   context: string,
   userQuestion: string
 ): Promise<TestScores> {
@@ -43,7 +39,7 @@ Please evaluate the chatbot's answer on a scale of 1 to 5 for "Faithfulness" and
 **Your Evaluation (respond only with a JSON object):**
 {"Faithfulness": "5", "Helpfulness": "4"}`;
 
-    const response = await fetch('/api/gemini', {
+    const response = await fetch('/api/llm-evaluation', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -72,12 +68,11 @@ Please evaluate the chatbot's answer on a scale of 1 to 5 for "Faithfulness" and
 
     let evaluation: GeminiEvaluationResponse;
     try {
-      // Clean the response by removing markdown code blocks if present
       let cleanedText = generatedText.trim();
       if (cleanedText.startsWith('```json') && cleanedText.endsWith('```')) {
-        cleanedText = cleanedText.slice(7, -3).trim(); // Remove ```json and ```
+        cleanedText = cleanedText.slice(7, -3).trim();
       } else if (cleanedText.startsWith('```') && cleanedText.endsWith('```')) {
-        cleanedText = cleanedText.slice(3, -3).trim(); // Remove generic ```
+        cleanedText = cleanedText.slice(3, -3).trim();
       }
       
       evaluation = JSON.parse(cleanedText);
@@ -86,11 +81,9 @@ Please evaluate the chatbot's answer on a scale of 1 to 5 for "Faithfulness" and
       throw new Error('Invalid JSON response from Gemini');
     }
 
-    // Parse string values to numbers and validate scores are within range
     const faithfulness = Math.max(1, Math.min(5, parseInt(evaluation.Faithfulness) || 1));
     const helpfulness = Math.max(1, Math.min(5, parseInt(evaluation.Helpfulness) || 1));
 
-    // Calculate keyword matches for backward compatibility
     const keywordMatches: string[] = [];
     const missingKeywords: string[] = [];
     
@@ -105,7 +98,6 @@ Please evaluate the chatbot's answer on a scale of 1 to 5 for "Faithfulness" and
       }
     }
 
-    // Map LLM results to TestScores interface for backward compatibility
     return {
       accuracy: faithfulness,
       completeness: keywordMatches.length > 0 ? Math.round((keywordMatches.length / Math.max(expectedKeywords.length, 1)) * 5) : helpfulness,

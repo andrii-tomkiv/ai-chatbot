@@ -78,7 +78,7 @@ The comparison covers 8 categories:
 ### Console Output
 ```
 🤖 Starting Mistral vs Groq Comparison Test Runner
-📍 Target URL: http://localhost:3000
+📍 Target URL: Auto-detected from environment
 ⏳ Initializing evaluator...
 
 🚀 Running comparison tests...
