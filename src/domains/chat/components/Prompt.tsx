@@ -23,7 +23,7 @@ export default function PromptModal({ isOpen, onClose, promptValue, onSave }: Pr
   };
 
   const handleCancel = () => {
-    setLocalPrompt(promptValue); // Reset to original value
+    setLocalPrompt(promptValue);
     onClose();
   };
 
@@ -32,7 +32,6 @@ export default function PromptModal({ isOpen, onClose, promptValue, onSave }: Pr
   return (
     <div className="fixed top-0 left-0 right-0 bottom-0 bg-black/50 backdrop-blur-sm z-[9999] flex items-center justify-center p-4">
       <div className="bg-white/95 backdrop-blur-xl border border-white/50 rounded-3xl shadow-2xl w-full max-w-2xl max-h-[80vh] overflow-hidden mx-auto my-auto">
-        {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <h3 className="text-xl font-bold text-gray-800">Custom System Prompt</h3>
           <button
@@ -44,7 +43,6 @@ export default function PromptModal({ isOpen, onClose, promptValue, onSave }: Pr
           </button>
         </div>
 
-        {/* Content */}
         <div className="p-6 overflow-y-auto max-h-[60vh]">
           <div className="mb-4">
             <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -69,7 +67,6 @@ export default function PromptModal({ isOpen, onClose, promptValue, onSave }: Pr
           </div>
         </div>
 
-        {/* Footer */}
         <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-200">
           <button
             onClick={handleCancel}

@@ -2,8 +2,8 @@ import { Message } from '@/app/actions';
 
 const CHAT_HISTORY_KEY = 'conab_chat_history';
 const CHAT_TIMESTAMP_KEY = 'conab_chat_timestamp';
-const MAX_HISTORY_AGE = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
-const MAX_HISTORY_LENGTH = 50; // Maximum number of messages to store
+const MAX_HISTORY_AGE = 7 * 24 * 60 * 60 * 1000;
+const MAX_HISTORY_LENGTH = 50
 
 export function saveChatHistory(conversation: Message[]): void {
   try {
