@@ -25,11 +25,10 @@ export default function ChatBoxIframe() {
   const conversationRef = useRef<Message[]>([]);
   
   const defaultSettings = {
-    temperature: 0.7,
+    temperature: 0.3,
     model: 'mistral' as const,
     maxTokens: 1000,
-    maxResults: 0,
-    customPrompt: ''
+    maxResults: 7,
   };
   
   const { 
