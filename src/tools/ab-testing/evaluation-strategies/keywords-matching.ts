@@ -12,13 +12,10 @@ export function evaluateWithKeywords(
 ): KeywordEvaluationResult {
   const keywordResult = calculateKeywordScore(answer, expectedKeywords);
 
-  // Accuracy: Based on keyword matches
   const accuracy = keywordResult.score;
 
-  // Completeness: Based on how many keywords are found
   const completeness = keywordResult.score;
 
-  // Helpfulness: Combination of accuracy and completeness
   const helpfulness = (accuracy + completeness) / 2;
 
   return {

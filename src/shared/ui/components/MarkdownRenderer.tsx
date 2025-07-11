@@ -15,7 +15,6 @@ export default function MarkdownRenderer({ content, className = '' }: MarkdownRe
         remarkPlugins={[remarkGfm]}
         components={{
           a: ({ ...props }) => {
-            // Clean [REF]...[/REF] tags from href only
             let cleanHref = props.href;
             if (cleanHref && cleanHref.includes('[REF]')) {
               const refMatch = cleanHref.match(/\[REF\](https?:\/\/[^\[\]]+)\[\/REF\]/);

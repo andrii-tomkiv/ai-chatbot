@@ -12,16 +12,16 @@ This directory contains the evaluation system for the ConceiveAbilities chatbot.
 
 ### Prerequisites
 
-1. Make sure your chatbot is running on `http://localhost:3000` (or specify a different URL)
+1. Make sure your chatbot is running (the system will auto-detect the URL)
 2. Ensure your chatbot API endpoint `/api/chat` is working
 
 ### Basic Usage
 
 ```bash
-# Run evaluation against localhost:3000
+# Run evaluation (auto-detects URL from environment)
 npm run evaluate
 
-# Run evaluation against a different URL
+# Run evaluation against a specific URL
 npm run evaluate http://your-chatbot-url.com
 ```
 

@@ -24,7 +24,6 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Get requests for specific IP, sorted from newest to oldest
     const requests = await prisma.userRequests.findMany({
       where: {
         userIP: ip

@@ -202,7 +202,6 @@ export class ConfigManager {
   validateConfig(): { isValid: boolean; errors: string[] } {
     const errors: string[] = [];
 
-    // Check required API keys
     if (this.config.llm.primary === 'mistral' && !this.config.apiKeys.mistral) {
       errors.push('MISTRAL_API_KEY is required when using Mistral as primary LLM provider');
     }
@@ -214,8 +213,6 @@ export class ConfigManager {
     if (this.config.embedding.primary === 'mistral' && !this.config.apiKeys.mistral) {
       errors.push('MISTRAL_API_KEY is required when using Mistral as primary embedding provider');
     }
-
-    // No validation for text fallback (text search is always available)
 
     return {
       isValid: errors.length === 0,

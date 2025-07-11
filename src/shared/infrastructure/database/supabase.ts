@@ -9,7 +9,6 @@ if (!supabaseUrl || !supabaseAnonKey) {
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-// Database schema for embeddings
 export interface EmbeddingDocument {
   id: string;
   content: string;
@@ -24,5 +23,4 @@ export interface EmbeddingDocument {
   created_at: string;
 }
 
-// Table name for our embeddings
 export const EMBEDDINGS_TABLE = 'embeddings'; 

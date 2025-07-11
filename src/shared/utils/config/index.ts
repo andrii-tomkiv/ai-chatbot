@@ -1,2 +1,1 @@
-// Configuration
 export * from './config' 

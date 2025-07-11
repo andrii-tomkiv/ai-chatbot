@@ -80,7 +80,6 @@ export default function Toast({ toast, onRemove }: ToastProps) {
   );
 }
 
-// Toast Container Component
 interface ToastContainerProps {
   toasts: Toast[];
   onRemove: (id: string) => void;
@@ -96,14 +95,12 @@ export function ToastContainer({ toasts, onRemove }: ToastContainerProps) {
   );
 }
 
-// Toast Hook
 export function useToast() {
   const [toasts, setToasts] = useState<Toast[]>([]);
 
   const addToast = (message: string, type: Toast['type'] = 'info', duration?: number) => {
-    const id = Math.random().toString(36).substr(2, 9);
+    const id = Math.random().toString(36).substring(2, 11);
     const newToast: Toast = { id, message, type, duration };
-    // Clear all existing toasts and add the new one
     setToasts([newToast]);
   };
 

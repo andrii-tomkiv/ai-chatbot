@@ -60,7 +60,7 @@ GROQ_API_KEY=your_groq_api_key
 npm run dev
 ```
 
-6. Open [http://localhost:3000](http://localhost:3000) in your browser.
+6. Open [http://localhost:3000](http://localhost:3000) in your browser (or your deployed URL).
 
 ## Usage
 

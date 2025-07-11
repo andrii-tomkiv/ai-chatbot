@@ -19,12 +19,10 @@ export default function UserRequestsDashboard({}: UserRequestsDashboardProps) {
   const [loading, setLoading] = useState(true);
   const [expandedResponses, setExpandedResponses] = useState<Set<number>>(new Set());
 
-  // Load unique IP addresses
   useEffect(() => {
     fetchUniqueIPs();
   }, []);
 
-  // Load requests for selected user
   useEffect(() => {
     if (selectedIP) {
       fetchUserRequests(selectedIP);

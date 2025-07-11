@@ -137,26 +137,6 @@ export default function ABTestingResultsPage() {
     return (wins / totalResults) * 100;
   };
 
-  const getAverageScore = (config: 'A' | 'B', results: TestResult[]) => {
-    if (results.length === 0) return 0;
-    
-    const scores = results.map(r => 
-      config === 'A' ? r.configA.scores.helpfulness : r.configB.scores.helpfulness
-    );
-    
-    return scores.reduce((sum, score) => sum + score, 0) / scores.length;
-  };
-
-  const getAverageFaithfulness = (config: 'A' | 'B', results: TestResult[]) => {
-    if (results.length === 0) return 0;
-    
-    const scores = results.map(r => 
-      config === 'A' ? r.configA.scores.accuracy : r.configB.scores.accuracy
-    );
-    
-    return scores.reduce((sum, score) => sum + score, 0) / scores.length;
-  };
-
   const isLLMEvaluation = (report: ABTestReport) => {
     return report.evaluationStrategy === 'llm-evaluation';
   };

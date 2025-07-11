@@ -6,10 +6,8 @@
 export function isGibberishMessage(content: string): boolean {
   const trimmed = content.trim();
   
-  // Very short messages
   if (trimmed.length < 3) return true;
   
-  // Check for random character patterns
   const randomPatterns = [
     /^[a-zA-Z0-9]{2,15}$/, // Random alphanumeric
     /^[0-9]+[a-zA-Z]+[0-9]+$/, // Number-letter-number pattern

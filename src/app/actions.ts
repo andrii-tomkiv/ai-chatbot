@@ -31,10 +31,8 @@ const prisma = new PrismaClient({
   }
 });
 
-// Function for asynchronous database saving
 async function saveToDatabase(userMessage: string, aiResponse: string) {
   try {
-    // Get user IP address
     let userIP = '';
     try {
       const ipRes = await fetch('https://api.ipify.org?format=json');
@@ -46,7 +44,6 @@ async function saveToDatabase(userMessage: string, aiResponse: string) {
       userIP = '';
     }
 
-    // Save to database
     await prisma.userRequests.create({
       data: {
         userIP: userIP,
@@ -250,9 +247,6 @@ export async function continueConversation(
             throw new Error('No content received from primary provider');
           }
 
-          const duration = Date.now() - startTime;
-
-          // Asynchronously save to database (doesn't block display)
           saveToDatabase(latestMessage.content, fullResponse).catch(error => {
             console.error('❌ Async save failed:', error);
           });
@@ -260,13 +254,10 @@ export async function continueConversation(
         } catch (streamError) {
           throw streamError;
         }
-
       } catch (error) {
-
         try {
           const fallbackProvider = llmManager.getFallbackProvider();
           if (fallbackProvider) {
-            // Use the appropriate model for the fallback provider
             const fallbackModel = llmManager.getProviderStatus().fallback === 'mistral'
               ? config.getModels().mistral.chat
               : config.getModels().groq.chat;
@@ -280,7 +271,6 @@ export async function continueConversation(
             if (fallbackResponse) {
               stream.update(fallbackResponse.content);
 
-              // Asynchronously save fallback response
               saveToDatabase(latestMessage.content, fallbackResponse.content).catch(error => {
                 console.error('❌ Async fallback save failed:', error);
               });

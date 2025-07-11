@@ -11,7 +11,6 @@ const prisma = new PrismaClient({
 
 export async function GET() {
   try {
-    // Get unique IP addresses, sorted by request count
     const uniqueIPs = await prisma.userRequests.groupBy({
       by: ['userIP'],
       _count: {
