@@ -1,4 +1,5 @@
 export { default as ChatBox } from './ChatBox'
+export { default as ChatBoxIframe } from './ChatBoxIframe'
 export { default as ChatInput } from './ChatInput'
 export { default as ChatMessages } from './ChatMessages'
 export { default as ChatHeader } from './ChatHeader'
