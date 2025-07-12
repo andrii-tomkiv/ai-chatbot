@@ -9,6 +9,7 @@ import ChatMessages from './ChatMessages';
 import ChatInput from './ChatInput';
 import { ToastContainer, useToast } from '@/shared/ui/components/Toast';
 import { config } from '@/shared/utils/config/config';
+import { SYSTEM_PROMPTS } from '@/shared/utils/helpers/prompts';
 import { useRateLimit } from '../hooks/use-rate-limit';
 
 export const maxDuration = 30;
@@ -29,6 +30,7 @@ export default function ChatBoxIframe() {
     model: 'mistral' as const,
     maxTokens: 1000,
     maxResults: 7,
+    customPrompt: SYSTEM_PROMPTS.default,
   };
   
   const { 
@@ -271,9 +273,31 @@ export default function ChatBoxIframe() {
     setInput(transcript);
   };
 
+  const handleClearHistory = () => {
+    clearChatHistory();
+    setConversation([]);
+    success('Chat history cleared');
+  };
+
   return (
     <div className="flex flex-col h-full w-full bg-white/95 backdrop-blur-sm overflow-hidden">
-      <div className="flex-1 overflow-y-auto p-6 space-y-6">
+      {/* Clear History Button - only show when there are messages */}
+      {conversation.length > 0 && (
+        <div className="flex justify-end p-4 pb-2">
+          <button
+            onClick={handleClearHistory}
+            className="px-4 py-2 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors duration-200 flex items-center space-x-2"
+            title="Clear chat history"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+            <span className="hidden sm:inline">Clear History</span>
+          </button>
+        </div>
+      )}
+
+      <div className="flex-1 overflow-y-auto px-4 sm:px-6 space-y-6 pb-4">
         {conversation.length === 0 ? (
           <WelcomeScreen onQuestionClick={handleSuggestedQuestion} />
         ) : (
