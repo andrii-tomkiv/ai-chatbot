@@ -5,6 +5,7 @@ import {
 } from '../../infrastructure/ai-providers/llm-provider';
 import { MistralProviderImpl } from '../../infrastructure/ai-providers/mistral-provider';
 import { GroqProviderImpl } from '../../infrastructure/ai-providers/groq-provider';
+import { LangChainProviderImpl } from '../../infrastructure/ai-providers/langchain-provider';
 import { 
   EmbeddingProviderManager, 
   createEmbeddingProvider 
@@ -16,6 +17,7 @@ export class ServiceFactory {
   private llmManager!: LLMProviderManager;
   private embeddingManager!: EmbeddingProviderManager;
   private vectorDB!: VectorDBSupabase;
+  private langChainProvider!: LangChainProviderImpl;
 
   private constructor() {
     this.initializeServices();
@@ -37,6 +39,7 @@ export class ServiceFactory {
     this.initializeLLMManager();
     this.initializeEmbeddingManager();
     this.initializeVectorDB();
+    this.initializeLangChainProvider();
   }
 
   private initializeLLMManager(): void {
@@ -109,6 +112,19 @@ export class ServiceFactory {
     console.log('✅ Supabase VectorDB initialized');
   }
 
+  private initializeLangChainProvider(): void {
+    console.log('🔗 Initializing LangChain Provider...');
+    this.langChainProvider = new LangChainProviderImpl({
+      model: config.getModels().mistral.chat,
+      maxTokens: config.getChatConfig().maxTokens,
+      temperature: config.getChatConfig().temperature,
+      useChains: true,
+      useAgents: false,
+      chainType: 'conversation',
+    });
+    console.log('✅ LangChain Provider initialized');
+  }
+
   getLLMManager(): LLMProviderManager {
     return this.llmManager;
   }
@@ -119,6 +135,10 @@ export class ServiceFactory {
 
   getVectorDB(): VectorDBSupabase {
     return this.vectorDB;
+  }
+
+  getLangChainProvider(): LangChainProviderImpl {
+    return this.langChainProvider;
   }
 
   async generateEmbedding(text: string): Promise<number[]> {
