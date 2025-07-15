@@ -171,7 +171,7 @@ export async function continueConversation(
       const vectorDbConfig = config.getVectorDbConfig();
 
       const maxResults = options.maxResults ?? vectorDbConfig.maxResults;
-      const vectorDB = serviceFactory.getVectorDB();
+      const vectorDB = serviceFactory.getHybridVectorDB();
 
       const relevantDocs = await vectorDB.search(latestMessage.content, maxResults, identifier);
 
@@ -188,7 +188,7 @@ export async function continueConversation(
 
       const context = JSON.stringify(
         relevantDocs.map(doc => ({
-          content: doc.content,
+          content: doc.pageContent,
           source: doc.metadata.url
         })),
         null,

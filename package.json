@@ -13,7 +13,9 @@
     "generate-embeddings": "tsx src/scripts/generateEmbeddings.ts",
     "test-sitemap": "tsx src/scripts/test-sitemap.ts",
     "test-groq": "tsx src/scripts/test-groq.ts",
-    "migrate-to-supabase": "tsx src/scripts/migrate-to-supabase.ts"
+    "migrate-to-supabase": "tsx src/scripts/migrate-to-supabase.ts",
+    "migrate-to-semantic": "tsx src/tools/content-processing/migrateToSemanticSearch.ts",
+    "test-semantic": "tsx src/tools/development/test-semantic-search.ts"
   },
   "dependencies": {
     "@ai-sdk/groq": "^1.2.9",

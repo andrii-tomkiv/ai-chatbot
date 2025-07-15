@@ -1,2 +1,5 @@
 export * from './vector-db'
-export * from './vector-db-supabase' 
+export * from './vector-db-supabase'
+export { SemanticVectorDB } from './semantic-vector-db'
+export type { SemanticDocument } from './semantic-vector-db'
+export { HybridVectorDB, hybridVectorDB } from './hybrid-vector-db' 

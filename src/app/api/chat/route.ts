@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
 
     const vectorDbConfig = config.getVectorDbConfig();
     const maxResults = options.maxResults ?? vectorDbConfig.maxResults;
-    const vectorDB = serviceFactory.getVectorDB();
+    const vectorDB = serviceFactory.getHybridVectorDB();
     
     const relevantDocs = await vectorDB.search(userQuestion, maxResults, 'api-user');
     
@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
     
     const context = JSON.stringify(
       relevantDocs.map(doc => ({
-        content: doc.content,
+        content: doc.pageContent,
         source: doc.metadata.url
       })),
       null,

@@ -10,12 +10,14 @@ import {
   createEmbeddingProvider 
 } from '../../infrastructure/ai-providers/embedding-provider';
 import { VectorDBSupabase } from '../../infrastructure/vector-store/vector-db-supabase';
+import { HybridVectorDB } from '../../infrastructure/vector-store/hybrid-vector-db';
 
 export class ServiceFactory {
   private static instance: ServiceFactory;
   private llmManager!: LLMProviderManager;
   private embeddingManager!: EmbeddingProviderManager;
   private vectorDB!: VectorDBSupabase;
+  private hybridVectorDB?: HybridVectorDB;
 
   private constructor() {
     this.initializeServices();
@@ -37,6 +39,7 @@ export class ServiceFactory {
     this.initializeLLMManager();
     this.initializeEmbeddingManager();
     this.initializeVectorDB();
+    this.initializeHybridVectorDB();
   }
 
   private initializeLLMManager(): void {
@@ -109,6 +112,10 @@ export class ServiceFactory {
     console.log('✅ Supabase VectorDB initialized');
   }
 
+  private initializeHybridVectorDB(): void {
+    console.log('🔀 Hybrid VectorDB will be initialized on first use');
+  }
+
   getLLMManager(): LLMProviderManager {
     return this.llmManager;
   }
@@ -119,6 +126,15 @@ export class ServiceFactory {
 
   getVectorDB(): VectorDBSupabase {
     return this.vectorDB;
+  }
+
+  getHybridVectorDB(): HybridVectorDB {
+    if (!this.hybridVectorDB) {
+      console.log('🔀 Initializing Hybrid VectorDB...');
+      this.hybridVectorDB = new HybridVectorDB();
+      console.log('✅ Hybrid VectorDB initialized');
+    }
+    return this.hybridVectorDB;
   }
 
   async generateEmbedding(text: string): Promise<number[]> {
