@@ -100,7 +100,7 @@ export default function ChatInput({
               : 'text-gray-800 placeholder-gray-500'
           }`}
           rows={1}
-          style={{ minHeight: '44px', maxHeight: '200px' }}
+          style={{ minHeight: '52px', maxHeight: '200px' }}
           disabled={isDisabled}
         />
         <div className="flex items-center space-x-1 sm:space-x-2">
