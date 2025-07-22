@@ -54,15 +54,12 @@ export class VectorDBSupabase {
     console.log(`📊 Requesting top ${k} results`);
 
     try {
-      // Generate embedding for the query
       const queryEmbedding = await this.generateEmbedding(query);
       console.log(`✅ Query embedding generated, length: ${queryEmbedding.length}`);
 
-      // Detect the topic of the query
       const queryTopic = this.detectQueryTopic(query);
       console.log(`🎯 Detected query topic: ${queryTopic}`);
 
-      // Perform topic-based search
       const results = await this.topicBasedSearch(queryEmbedding, queryTopic, k);
       
       console.log(`🏆 Final topic-based results: ${results.length} documents`);
@@ -70,7 +67,6 @@ export class VectorDBSupabase {
 
     } catch (error) {
       console.error('Failed to perform topic-based search:', error);
-      // Fallback to simple search
       return await this.simpleSearch(query, k);
     }
   }
@@ -78,7 +74,6 @@ export class VectorDBSupabase {
   private async topicBasedSearch(queryEmbedding: number[], queryTopic: string, k: number): Promise<EmbeddingDocument[]> {
     console.log(`🧠 Performing topic-based search for topic: ${queryTopic}`);
 
-    // Get all documents from Supabase
     const { data: allDocuments, error } = await supabase
       .from(EMBEDDINGS_TABLE)
       .select('*');
@@ -95,7 +90,6 @@ export class VectorDBSupabase {
 
     console.log(`📚 Loaded ${allDocuments.length} documents from Supabase`);
 
-    // Calculate similarities and create scored documents
     const scoredDocuments = allDocuments
       .map(doc => ({
         document: doc,
@@ -103,10 +97,8 @@ export class VectorDBSupabase {
       }))
       .sort((a, b) => b.similarity - a.similarity);
 
-    // Get topic-specific results
     const results = this.getTopicSpecificResults(scoredDocuments, queryTopic, k);
     
-    // Return just the documents (without similarity scores)
     return results.map(item => item.document);
   }
 
@@ -129,7 +121,6 @@ export class VectorDBSupabase {
         return [];
       }
 
-      // Calculate similarities and sort
       const documentsWithSimilarity = data.map(doc => ({
         ...doc,
         similarity: this.cosineSimilarity(queryEmbedding, doc.embedding)
@@ -150,21 +141,18 @@ export class VectorDBSupabase {
   private detectQueryTopic(query: string): 'surrogacy' | 'egg-donor' | 'intended-parents' | 'general' {
     const queryLower = query.toLowerCase();
     
-    // Surrogacy keywords
     const surrogacyKeywords = [
       'surrogacy', 'surrogate', 'surrogate mother', 'gestational carrier',
       'become a surrogate', 'surrogate pregnancy', 'surrogate process',
       'surrogate requirements', 'surrogate compensation', 'surrogate journey'
     ];
     
-    // Egg donor keywords
     const eggDonorKeywords = [
       'egg donor', 'egg donation', 'donate eggs', 'egg donor process',
       'become an egg donor', 'egg donor requirements', 'egg donor compensation',
       'egg retrieval', 'donor eggs', 'egg donation process'
     ];
     
-    // Intended parents keywords
     const intendedParentsKeywords = [
       'intended parents', 'surrogacy parents', 'find a surrogate',
       'surrogate mother', 'surrogacy journey', 'surrogacy cost',
@@ -172,17 +160,14 @@ export class VectorDBSupabase {
       'parent', 'parents', 'family building', 'fertility'
     ];
     
-    // Check for surrogacy keywords
     if (surrogacyKeywords.some(keyword => queryLower.includes(keyword))) {
       return 'surrogacy';
     }
     
-    // Check for egg donor keywords
     if (eggDonorKeywords.some(keyword => queryLower.includes(keyword))) {
       return 'egg-donor';
     }
     
-    // Check for intended parents keywords
     if (intendedParentsKeywords.some(keyword => queryLower.includes(keyword))) {
       return 'intended-parents';
     }
@@ -196,7 +181,6 @@ export class VectorDBSupabase {
     
     if (!url) return 'general';
     
-    // Check URL patterns for topic classification
     if (url.includes('/surrogacy/') || url.includes('/surrogate/')) {
       return 'surrogacy';
     }
@@ -209,7 +193,6 @@ export class VectorDBSupabase {
       return 'intended-parents';
     }
     
-    // Check title patterns as fallback
     if (title) {
       const titleLower = title.toLowerCase();
       if (titleLower.includes('surrogacy') || titleLower.includes('surrogates')) {

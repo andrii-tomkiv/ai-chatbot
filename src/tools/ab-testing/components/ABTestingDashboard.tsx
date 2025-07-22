@@ -327,7 +327,6 @@ export default function ABTestingDashboard() {
               className="w-full text-conab-header px-3 py-2 border border-conab-header/30 rounded-md focus:outline-none focus:ring-2 focus:ring-conab-action focus:border-conab-action"
             >
               <option value="keywords">Keywords Matching</option>
-              <option value="sources">Source Accuracy</option>
               <option value="llm-evaluation">LLM-based Evaluation</option>
             </select>
           </div>

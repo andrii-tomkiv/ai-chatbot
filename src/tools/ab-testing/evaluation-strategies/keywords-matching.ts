@@ -19,7 +19,7 @@ export function evaluateWithKeywords(
   const helpfulness = (accuracy + completeness) / 2;
 
   return {
-    accuracy: Math.round(accuracy * 5), // Convert to 1-5 scale
+    accuracy: Math.round(accuracy * 5),
     completeness: Math.round(completeness * 5),
     helpfulness: Math.round(helpfulness * 5),
     keywordMatches: keywordResult.matches,

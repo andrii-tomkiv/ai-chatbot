@@ -29,7 +29,7 @@ export default function ChatBoxIframe() {
     temperature: 0.3,
     model: 'mistral' as const,
     maxTokens: 1000,
-    maxResults: 7,
+    maxResults: 8,
     customPrompt: SYSTEM_PROMPTS.default,
   };
   
